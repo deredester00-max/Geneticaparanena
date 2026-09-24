@@ -1,35 +1,32 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
-int main() {
-    std::string htmlContent = R"rawhtml(<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genómica & Similitud del ADN - Quiz Interactivo</title>
+    <title>Quiz para mi Amor Bonito 💖</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --accent-color: #38bdf8;
-            --accent-hover: #0284c7;
-            --correct-color: #22c55e;
-            --incorrect-color: #ef4444;
-            --border-color: #334155;
+            --bg-color: #fce7f3;
+            --card-bg: #ffffff;
+            --text-color: #831843;
+            --accent-color: #ec4899;
+            --accent-hover: #db2777;
+            --correct-color: #10b981;
+            --incorrect-color: #f43f5e;
+            --border-color: #fbcfe8;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
+            background-image: radial-gradient(#f472b6 1px, transparent 1px);
+            background-size: 20px 20px;
             color: var(--text-color);
             display: flex;
             justify-content: center;
@@ -40,122 +37,137 @@ int main() {
 
         .container {
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            max-width: 680px;
+            border: 3px solid #f9a8d4;
+            border-radius: 24px;
+            max-width: 650px;
             width: 100%;
-            padding: 32px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            padding: 28px;
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);
+            text-align: center;
         }
 
         header {
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #fbcfe8;
             padding-bottom: 16px;
         }
 
         h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.6rem;
             color: var(--accent-color);
             margin-bottom: 6px;
         }
 
         .progress {
-            font-size: 0.85rem;
-            color: #94a3b8;
+            font-size: 0.95rem;
+            color: #be185d;
+            font-weight: bold;
+        }
+
+        .question-container {
+            background-color: #fff1f2;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #fecdd3;
         }
 
         .question-text {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #9f1239;
+            line-height: 1.4;
         }
 
         .options-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .btn-option {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
+            background-color: #fff;
+            border: 2px solid #fbcfe8;
+            color: #831843;
             padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            text-align: left;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .btn-option:hover:not(:disabled) {
             border-color: var(--accent-color);
-            background-color: rgba(56, 189, 248, 0.05);
+            background-color: #fdf2f8;
+            transform: translateY(-2px);
         }
 
         .btn-option.correct {
             border-color: var(--correct-color);
-            background-color: rgba(34, 197, 94, 0.15);
-            color: #4ade80;
+            background-color: #d1fae5;
+            color: #065f46;
         }
 
         .btn-option.incorrect {
             border-color: var(--incorrect-color);
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-        }
-
-        .btn-option:disabled {
-            cursor: default;
+            background-color: #ffe4e6;
+            color: #9f1239;
         }
 
         .feedback-card {
             display: none;
             padding: 16px;
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.03);
-            border-left: 4px solid var(--accent-color);
-            margin-bottom: 24px;
-            font-size: 0.9rem;
+            border-radius: 16px;
+            background-color: #fdf2f8;
+            border: 2px solid #fbcfe8;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
             line-height: 1.5;
-            color: #cbd5e1;
+            color: #831843;
+        }
+
+        .reaction-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
 
         .action-btn {
             background-color: var(--accent-color);
-            color: #0f172a;
+            color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.05rem;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
         }
 
         .action-btn:hover {
             background-color: var(--accent-hover);
+            transform: scale(1.02);
         }
 
         .result-screen {
             display: none;
-            text-align: center;
         }
 
         .result-screen h2 {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
+            font-size: 2rem;
             color: var(--accent-color);
+            margin-bottom: 12px;
         }
 
         .result-screen p {
-            color: #94a3b8;
-            margin-bottom: 28px;
+            font-size: 1.2rem;
+            color: #9f1239;
+            margin-bottom: 24px;
         }
     </style>
 </head>
@@ -163,25 +175,47 @@ int main() {
 
     <div class="container">
         <header>
-            <h1>Genómica & Similitud del ADN</h1>
+            <h1>💖 Repaso para mi Amor Bonito 🌸</h1>
             <div id="progress" class="progress">Pregunta 1 de 30</div>
         </header>
 
         <main id="quiz-screen">
-            <div id="question" class="question-text">Cargando pregunta...</div>
+            <div class="question-container">
+                <div id="question" class="question-text">Cargando la pregunta para mi reina...</div>
+            </div>
             <div id="options" class="options-grid"></div>
-            <div id="feedback" class="feedback-card"></div>
-            <button id="next-btn" class="action-btn" style="display: none;">Siguiente Pregunta</button>
+            <div id="feedback" class="feedback-card">
+                <div id="reaction-title" class="reaction-header"></div>
+                <div id="explanation-body"></div>
+            </div>
+            <button id="next-btn" class="action-btn" style="display: none;">Siguiente Preguntita 💕</button>
         </main>
 
         <section id="result-screen" class="result-screen">
-            <h2>¡Cuestionario Completado!</h2>
-            <p id="score-text">Obtuviste 0 de 30 puntos posibles.</p>
-            <button onclick="restartQuiz()" class="action-btn">Reiniciar Juego</button>
+            <h2>¡Lo lograste mi vida! 🎉💖</h2>
+            <p id="score-text"></p>
+            <button onclick="restartQuiz()" class="action-btn">Repetir para mi niño consentido 🔄</button>
         </section>
     </div>
 
     <script>
+        // Mensajes cariñosos y divertidos
+        const correctReactions = [
+            "¡Eso mi amor bonito! Te la sabes todita 😍✨",
+            "¡Uff qué inteligente es mi reina carajo! 🧠💖",
+            "¡Anotaste mi vida! Así me gusta ver a mi niña preciosa 🌸",
+            "¡Eso ombe, si tú eres una dura en esto! 👑💕",
+            "¡Exacto mi cielo! Cada día me enamoras más 💖"
+        ];
+
+        const incorrectReactions = [
+            "¡Uy cómo cree marica esa no es! 🤣 Te me despistaste mi amor bonito",
+            "¡Qué le pasa ombe! Si no responde bien esta la que sigue le mamaré esa pepa 😈🔥",
+            "¡Epa mi cielo esa no era! Concéntrese mi niña hermosa 💕",
+            "¡Ay mi vida te me confundiste! Pero te sigo amando igualito 💖",
+            "¡No no no mi reina! Revisa bien pues, ponte atenta mi amor 🌸"
+        ];
+
         const questions = [
             {
                 question: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?",
@@ -199,169 +233,169 @@ int main() {
                 question: "¿Qué porcentaje del genoma humano corresponde al exoma (ADN codificante de proteínas)?",
                 options: ["10%", "23%", "4%", "~1.6%"],
                 correct: 3,
-                explanation: "Solo alrededor del 1.6% del genoma equivale al exoma (exones), el cual codifica directamente para las cadenas de aminoácidos de las proteínas."
+                explanation: "Solo alrededor del 1.6% del genoma equivale al exoma (exones), el cual codifica directamente para las proteínas."
             },
             {
                 question: "¿De cuántos pares de bases (pb) consta la secuencia consenso repetida en el ADN centromérico humano?",
                 options: ["100 pb", "171 pb", "2.4 pb", "1,000 pb"],
                 correct: 1,
-                explanation: "El ADN centromérico (satélite alfa) está compuesto por secuencias repetidas en tándem de 171 pares de bases, esenciales para el ensamblaje del cinetocoro."
+                explanation: "El ADN centromérico está compuesto por repeticiones en tándem de 171 pares de bases, vitales para la división celular."
             },
             {
                 question: "¿Qué nombre recibe el hipotético último ancestro común universal de toda la vida en la Tierra?",
                 options: ["HOMOLOG", "CENTRO", "LUCA", "BOTTLE"],
                 correct: 2,
-                explanation: "LUCA (Last Universal Common Ancestor) fue el organismo procariota ancestral común de los dominios Bacteria, Archaea y Eukarya."
+                explanation: "LUCA (Last Universal Common Ancestor) fue el ancestro común de toda la vida terrestre."
             },
             {
-                question: "¿Cuál de las siguientes especies comparte aproximadamente un 85% de similitud genómica en secuencias codificantes con el ser humano?",
+                question: "¿Qué especie comparte aproximadamente un 85% de similitud genómica en secuencias codificantes con nosotros?",
                 options: ["Ratón (Mus musculus)", "Plátano", "Mosca de la fruta", "Bacterias"],
                 correct: 0,
-                explanation: "El ratón comparte alrededor del 85% de sus secuencias de genes codificantes con el ser humano, convirtiéndolo en un modelo bio-médico indispensable."
+                explanation: "El ratón comparte alrededor del 85% de sus genes codificantes, siendo clave para estudios médicos."
             },
             {
-                question: "¿Qué porcentaje aproximado de similitud genómica compartimos con la mosca de la fruta (Drosophila melanogaster)?",
+                question: "¿Qué porcentaje aproximado de similitud genómica compartimos con la mosca de la fruta?",
                 options: ["10%", "30%", "60%", "90%"],
                 correct: 2,
-                explanation: "Compartimos cerca del 60% de los genes con la mosca de la fruta, en particular los que regulan el ciclo celular, el desarrollo corporal y el metabolismo."
+                explanation: "Compartimos cerca del 60% de los genes con la mosca de la fruta para funciones biológicas básicas."
             },
             {
                 question: "¿Qué fenómeno evolutivo explica la reducida diversidad genética entre la población humana actual?",
                 options: ["Cuello de botella poblacional", "Deriva génica acelerada", "Especiación simpátrica", "Mutación dirigida"],
                 correct: 0,
-                explanation: "Un cuello de botella poblacional drástico redujo drásticamente el tamaño efectivo de la población humana ancestral en África."
+                explanation: "Un cuello de botella drástico redujo drásticamente a la población ancestral en África."
             },
             {
                 question: "¿Qué constituyen la mayor parte del genoma humano no codificante (aproximadamente el 45-50%)?",
                 options: ["Genes ribosomales", "Elementos transponibles (transposones)", "Promotores básicos", "Exones primarios"],
                 correct: 1,
-                explanation: "Los elementos móviles o transposones representan cerca del 45-50% del genoma humano y juegan roles cruciales en la evolución y estructuración genómica."
+                explanation: "Los transposones o elementos móviles representan casi la mitad de nuestro ADN."
             },
             {
-                question: "¿Cómo se denomina al conjunto de regiones no codificantes que son removidas durante el procesamiento del pre-ARNm?",
+                question: "¿Cómo se llama al conjunto de regiones no codificantes que son removidas durante el Splicing?",
                 options: ["Exones", "Intrones", "Cromómeros", "Centrómeros"],
                 correct: 1,
-                explanation: "Los intrones son secuencias no codificantes intercaladas que son eliminadas mediante el proceso de Splicing (corte y empalme) para madurar el ARNm."
+                explanation: "Los intrones se eliminan para que los exones se unan y formen el ARNm maduro."
             },
             {
-                question: "¿Qué representa la similitud genómica aproximada del 50% con organismos vegetales como el plátano?",
-                options: ["Proteínas estructurales idénticas", "Vías metabólicas y celulares básicas de eucariotas", "Sistemas vasculares complejos", "Paredes celulares idénticas"],
+                question: "¿Qué representa la similitud genómica del 50% con plantas como el plátano?",
+                options: ["Proteínas estructurales idénticas", "Vías metabólicas y celulares básicas de eucariotas", "Sistemas vasculares", "Paredes celulares"],
                 correct: 1,
-                explanation: "Refleja genes ancestrales compartidos de funciones eucariotas universales como duplicación de ADN, transcripción, síntesis de ATP y división celular."
+                explanation: "Refleja funciones celulares universales que compartimos desde los primeros eucariotas."
             },
             {
-                question: "¿Qué tipo de variación genética de un solo nucleótido es la fuente más abundante de diferencias entre dos personas?",
-                options: ["CNVs", "SNPs (Polimorfismos de nucleótido único)", "Inversiones cromosómicas", "Translocaciones"],
+                question: "¿Qué variación de una sola base nitrogenada es la fuente más abundante de diferencias entre dos personas?",
+                options: ["CNVs", "SNPs (Polimorfismos de nucleótido único)", "Inversiones", "Translocaciones"],
                 correct: 1,
-                explanation: "Los SNPs (Single Nucleotide Polymorphisms) cambian un solo nucleótido y constituyen la mayor parte de la variación genética entre individuos."
+                explanation: "Los SNPs representan los cambios nucleótido a nucleótido que nos hacen únicos."
             },
             {
-                question: "¿Qué estructura cromosómica garantiza la segregación equitativa de las cromátidas hermanas durante la mitosis?",
+                question: "¿Qué estructura cromosómica garantiza la segregación equitativa del ADN en la división celular?",
                 options: ["Telómero", "Centrómero", "Intrón", "Origen de replicación"],
                 correct: 1,
-                explanation: "El centrómero une las cromátidas hermanas y actúa como punto de anclaje para los microtúbulos del huso acromático a través del cinetocoro."
+                explanation: "El centrómero une las cromátidas y permite el agarre del huso acromático."
             },
             {
-                question: "¿Cuál es la función principal de los telómeros en las extremidades cromosómicas?",
-                options: ["Codificar enzimas", "Proteger contra la degradación y acortamiento del ADN", "Unir cromosomas homólogos", "Sintetizar ribosomas"],
+                question: "¿Cuál es la función principal de los telómeros?",
+                options: ["Codificar enzimas", "Proteger contra la degradación y acortamiento del ADN", "Unir cromosomas", "Sintetizar ribosomas"],
                 correct: 1,
-                explanation: "Los telómeros consisten en secuencias repetitivas no codificantes que protegen los extremos del cromosoma para evitar pérdida de información genética útil."
+                explanation: "Protegen las puntas del cromosoma para no perder información vital."
             },
             {
-                question: "¿Cuál es el rango estimado del número total de genes codificantes de proteínas en el genoma humano?",
+                question: "¿Cuántos genes codificantes de proteínas se estima que tenemos en el genoma humano?",
                 options: ["100,000 - 150,000", "20,000 - 25,000", "5,000 - 10,000", "1,000,000"],
                 correct: 1,
-                explanation: "El Proyecto Genoma Humano reveló que solo tenemos entre 20,000 y 25,000 genes codificantes de proteínas, mucho menos de los 100,000 proyectados inicialmente."
+                explanation: "Tenemos solo entre 20,000 y 25,000 genes codificantes."
             },
             {
-                question: "¿Qué tipo de ARN transporta la información genética desde el núcleo hasta los ribosomas en el citoplasma?",
-                options: ["ARNm (mensajero)", "ARNt (transferencia)", "ARNr (ribosómico)", "ARNsn (nucleolar)"],
+                question: "¿Qué tipo de ARN lleva la información del ADN a los ribosomas?",
+                options: ["ARNm (mensajero)", "ARNt", "ARNr", "ARNsn"],
                 correct: 0,
-                explanation: "El ARNm copia la secuencia codificante del ADN en el núcleo y sirve de plantilla para la traducción de proteínas en los ribosomas."
+                explanation: "El ARNm lleva el mensaje del núcleo al citoplasma."
             },
             {
-                question: "¿Qué nombre reciben las secuencias de ADN altamente repetidas dispuestas una tras otra consecutivamente?",
-                options: ["Repeticiones en tándem", "Retrotransposones discontinuos", "Exones alternativos", "Pseudo-genes transcritos"],
+                question: "¿Cómo se le llama a las secuencias altamente repetidas puestas una al lado de la otra?",
+                options: ["Repeticiones en tándem", "Retrotransposones", "Exones alternativos", "Pseudo-genes"],
                 correct: 0,
-                explanation: "Las repeticiones en tándem son bloques de secuencias idénticas o muy similares organizadas adyacentemente, abundantes en heterocromatina centromérica y telomérica."
+                explanation: "Las repeticiones en tándem están pegaditas una tras otra en el ADN."
             },
             {
-                question: "¿Qué enzima es la encargada de catalizar la adición de unidades monoméricas de nucleótidos durante la replicación del ADN?",
-                options: ["ARN Polimerasa II", "ADN Polimerasa", "Helicasa", "Ligasa"],
+                question: "¿Qué enzima sintetiza la nueva cadena de ADN en la replicación?",
+                options: ["ARN Polimerasa", "ADN Polimerasa", "Helicasa", "Ligasa"],
                 correct: 1,
-                explanation: "La ADN Polimerasa añade dNTPs complementarios en dirección 5' a 3' garantizando la copia exacta del genoma."
+                explanation: "La ADN Polimerasa se encarga de ir copiando la hebra de ADN."
             },
             {
-                question: "¿Qué fenómeno permite que un solo gen codifique para múltiples isoformas de proteínas diferentes?",
-                options: ["Splicing alternativo", "Mutación puntual", "Replicación semiconservativa", "Traducción frame-shift"],
+                question: "¿Qué proceso permite obtener varias proteínas distintas a partir de un mismo gen?",
+                options: ["Splicing alternativo", "Mutación puntual", "Replicación", "Traducción"],
                 correct: 0,
-                explanation: "El Splicing alternativo combina diferentes selecciones de exones de un mismo pre-ARNm, generando diversas isoformas funcionales de proteínas."
+                explanation: "El Splicing alternativo combina exones de formas distintas para crear varias proteínas."
             },
             {
-                question: "¿Qué fracción aproximada del genoma humano está formada por secuencias únicas (no repetitivas)?",
+                question: "¿Qué porcentaje del genoma humano corresponde a secuencias únicas (no repetitivas)?",
                 options: ["10%", "Cerca del 50%", "99%", "0.5%"],
                 correct: 1,
-                explanation: "Aproximadamente la mitad del genoma humano consiste en secuencias únicas o presentes en muy pocas copias, incluyendo la mayoría de los genes."
+                explanation: "Aproximadamente el 50% de nuestro genoma son secuencias únicas."
             },
             {
-                question: "¿Qué enzima sintetiza los extremos de los cromosomas para contrarrestar el problema del acortamiento terminal en células germinales?",
+                question: "¿Qué enzima evita el acortamiento de las puntas cromosómicas en células germinales?",
                 options: ["Telomerasa", "Topoisomerasa", "Primasa", "Cinetocoras"],
                 correct: 0,
-                explanation: "La telomerasa es una ribonucleoproteína con actividad de transcriptasa inversa que alarga las repeticiones teloméricas en células madre y germinales."
+                explanation: "La telomerasa alarga y mantiene protegidos los telómeros."
             },
             {
-                question: "¿Qué denominación reciben las variaciones estructurales donde se gana o pierde un segmento cromosómico amplio?",
-                options: ["CNV (Variación en número de copias)", "SNV", "Polimorfismo silencioso", "Transición simple"],
+                question: "¿Cómo se llama la variación estructural donde se ganan o pierden trozos grandes de ADN?",
+                options: ["CNV (Variación en número de copias)", "SNV", "Polimorfismo silencioso", "Transición"],
                 correct: 0,
-                explanation: "Las CNVs (Copy Number Variations) involucran duplicaciones o deleciones de más de 1,000 pares de bases que alteran el número de copias de un gen."
+                explanation: "Las CNVs son duplicaciones o deleciones de más de 1,000 bases."
             },
             {
-                question: "¿Cómo se llama el proceso por el cual la secuencia de bases del ARNm se convierte en una cadena de aminoácidos?",
+                question: "¿Cómo se le llama al proceso de síntesis de proteínas a partir del ARNm?",
                 options: ["Transcripción", "Traducción", "Splicing", "Replicación"],
                 correct: 1,
-                explanation: "La traducción ocurre en los ribosomas, leyendo codones de 3 nucleótidos en el ARNm para ensamblar aminoácidos."
+                explanation: "La traducción lee el código del ARNm para construir la proteína."
             },
             {
-                question: "¿Qué porcentaje del ADN genómico mitocondrial se hereda casi exclusivamente por vía materna?",
-                options: ["50%", "100%", "25%", "0%"],
+                question: "¿De quién heredamos el ADN mitocondrial prácticamente en un 100%?",
+                options: ["Del papá", "De la mamá", "De ambos por igual", "De los abuelos patenor"],
                 correct: 1,
-                explanation: "El ADN mitocondrial (ADNmt) es transmitido de forma matrilineal porque los mitocondrias del cigoto provienen fundamentalmente del ovocito."
+                explanation: "El ADNmt es 100% de herencia materna a través del óvulo."
             },
             {
-                question: "¿Qué tipo de elementos móviles utilizan un intermediario de ARN para desplazarse e insertarse en el genoma?",
+                question: "¿Qué transposones se mueven usando un molde de ARN intermediario?",
                 options: ["Retrotransposones", "Transposones de ADN", "Plásmidos", "Bacteriófagos"],
                 correct: 0,
-                explanation: "Los retrotransposones se transcriben a ARN y luego se convierten de nuevo a ADN por transcriptasa inversa para integrarse en una nueva posición."
+                explanation: "Los retrotransposones se copian a ARN y luego de vuelta a ADN para moverse."
             },
             {
-                question: "¿Qué familia de secuencias cortas interspersed (SINE) representa cerca del 10% del genoma humano total?",
+                question: "¿Qué elementos repetidos representan casi el 10% de todo nuestro genoma?",
                 options: ["Elementos Alu", "LINE-1", "HERV", "Microsatélites"],
                 correct: 0,
-                explanation: "Los elementos Alu son retrotransposones no autónomos de ~300 pb que superan un millón de copias en el genoma humano."
+                explanation: "Los elementos Alu son cortitos y súper abundantes en el genoma humano."
             },
             {
-                question: "¿Qué región cromosómica condensada e inactiva transcripcionalmente se conoce como cromatina densa?",
+                question: "¿Cómo se llama la cromatina súper compactada e inactiva?",
                 options: ["Eucromatina", "Heterocromatina", "Nucleosoma", "Promotor"],
                 correct: 1,
-                explanation: "La heterocromatina es altamente compacta y genéticamente inactiva, hallada comúnmente en regiones centroméricas y teloméricas."
+                explanation: "La heterocromatina está muy apretada y casi no se transcribe."
             },
             {
-                question: "¿Qué complejo de 8 proteínas histonas forma la unidad básica de empaquetamiento de la cromatina eucariota?",
+                question: "¿Cuál es la unidad básica de empaquetamiento del ADN formada por 8 histonas?",
                 options: ["Nucleosoma", "Centrómero", "Cinetocoro", "Polimerasa"],
                 correct: 0,
-                explanation: "El nucleosoma está formado por un octámero de histonas (dos copias de H2A, H2B, H3 y H4) alrededor del cual se enrolla el ADN."
+                explanation: "El nucleosoma es la 'bolita' sobre la que se enrolla el ADN."
             },
             {
-                question: "¿Qué técnica de secuenciación masiva se enfoca únicamente en analizar el 1.6% codificante del genoma?",
-                options: ["Secuenciación del Exoma Completo (WES)", "WGS", "Kariotipo", "PCR en tiempo real"],
+                question: "¿Qué prueba analiza solamente el 1.6% codificante del ADN para buscar enfermedades?",
+                options: ["Secuenciación del Exoma Completo (WES)", "WGS", "Kariotipo", "PCR"],
                 correct: 0,
-                explanation: "WES (Whole Exome Sequencing) captura solo las regiones exónicas, reduciendo costos de secuenciación y concentrándose en mutaciones asociadas a enfermedades."
+                explanation: "WES busca directo en el exoma para ver si hay mutaciones en proteínas."
             },
             {
-                question: "¿Qué concepto evolutivo mide la acumulación de mutaciones neutras para estimar el tiempo de divergencia entre especies?",
-                options: ["Reloj Molecular", "Selección Natural", "Splicing alternativo", "Apareamiento preferencial"],
+                question: "¿Qué herramienta evolutiva usa la tasa de mutación constante para medir tiempo entre especies?",
+                options: ["Reloj Molecular", "Selección Natural", "Splicing", "Apareamiento"],
                 correct: 0,
-                explanation: "El reloj molecular asume que las mutaciones neutras se acumulan a una tasa constante a lo largo del tiempo en secuencias genómicas no sometidas a selección fuerte."
+                explanation: "El reloj molecular calcula cuándo se separaron dos especies evolutivamente."
             }
         ];
 
@@ -371,6 +405,8 @@ int main() {
         const questionEl = document.getElementById('question');
         const optionsEl = document.getElementById('options');
         const feedbackEl = document.getElementById('feedback');
+        const reactionTitle = document.getElementById('reaction-title');
+        const explanationBody = document.getElementById('explanation-body');
         const nextBtn = document.getElementById('next-btn');
         const progressEl = document.getElementById('progress');
         const quizScreen = document.getElementById('quiz-screen');
@@ -383,7 +419,7 @@ int main() {
             optionsEl.innerHTML = '';
 
             const q = questions[currentQuestion];
-            progressEl.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            progressEl.textContent = `Preguntita ${currentQuestion + 1} de ${questions.length}`;
             questionEl.textContent = q.question;
 
             q.options.forEach((opt, idx) => {
@@ -411,9 +447,16 @@ int main() {
 
             if (selectedIndex === q.correct) {
                 score++;
+                const randomMsg = correctReactions[Math.floor(Math.random() * correctReactions.length)];
+                reactionTitle.textContent = randomMsg;
+                reactionTitle.style.color = "#059669";
+            } else {
+                const randomMsg = incorrectReactions[Math.floor(Math.random() * incorrectReactions.length)];
+                reactionTitle.textContent = randomMsg;
+                reactionTitle.style.color = "#e11d48";
             }
 
-            feedbackEl.textContent = q.explanation;
+            explanationBody.textContent = q.explanation;
             feedbackEl.style.display = 'block';
             nextBtn.style.display = 'block';
         }
@@ -430,7 +473,7 @@ int main() {
         function showResults() {
             quizScreen.style.display = 'none';
             resultScreen.style.display = 'block';
-            scoreText.textContent = `Obtuviste ${score} de ${questions.length} respuestas correctas.`;
+            scoreText.textContent = `Puntaje final de mi reina: ${score} de ${questions.length} correctas. ¡Eres la más inteligente del mundo! 💕👑`;
         }
 
         function restartQuiz() {
@@ -444,21 +487,5 @@ int main() {
         loadQuestion();
     </script>
 </body>
-</html>)rawhtml";
-
-    std::ofstream outFile("index.html");
-    if (outFile.is_open()) {
-        outFile << htmlContent;
-        outFile.close();
-        std::cout << "========================================================\n";
-        std::cout << " [EXITO] Archivo 'index.html' generado exitosamente.\n";
-        std::cout << " Contiene 30 preguntas completas con explicaciones.\n";
-        std::cout << "========================================================\n";
-    } else {
-        std::cerr << "[ERROR] No se pudo escribir el archivo 'index.html'.\n";
-        return 1;
-    }
-
-    return 0;
-}
+</html>
 
