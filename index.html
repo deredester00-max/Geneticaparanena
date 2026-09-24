@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz para mi Amor Bonito 💖</title>
+    <title>Quiz para mi Amor Bonito 🍑💖</title>
     <style>
         :root {
-            --bg-color: #fce7f3;
+            --bg-color: #fdf2f8;
             --card-bg: #ffffff;
             --text-color: #831843;
             --accent-color: #ec4899;
@@ -25,8 +25,8 @@
 
         body {
             background-color: var(--bg-color);
-            background-image: radial-gradient(#f472b6 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-image: radial-gradient(#f472b6 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
             color: var(--text-color);
             display: flex;
             justify-content: center;
@@ -37,18 +37,18 @@
 
         .container {
             background-color: var(--card-bg);
-            border: 3px solid #f9a8d4;
-            border-radius: 24px;
+            border: 4px solid #f9a8d4;
+            border-radius: 35px;
             max-width: 650px;
             width: 100%;
             padding: 28px;
-            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);
+            box-shadow: 0 20px 35px rgba(236, 72, 153, 0.25);
             text-align: center;
         }
 
         header {
             margin-bottom: 20px;
-            border-bottom: 2px dashed #fbcfe8;
+            border-bottom: 3px dashed #fbcfe8;
             padding-bottom: 16px;
         }
 
@@ -66,10 +66,10 @@
 
         .question-container {
             background-color: #fff1f2;
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 25px;
+            padding: 22px;
             margin-bottom: 20px;
-            border: 2px solid #fecdd3;
+            border: 3px solid #fecdd3;
         }
 
         .question-text {
@@ -82,47 +82,56 @@
         .options-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 20px;
         }
 
+        /* Botones afelpados estilo 'cachetito' */
         .btn-option {
             background-color: #fff;
-            border: 2px solid #fbcfe8;
+            border: 3px solid #fbcfe8;
             color: #831843;
-            padding: 14px 18px;
-            border-radius: 50px;
+            padding: 16px 20px;
+            border-radius: 30px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 0px #f9a8d4;
         }
 
         .btn-option:hover:not(:disabled) {
             border-color: var(--accent-color);
             background-color: #fdf2f8;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0px #f472b6;
+        }
+
+        .btn-option:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0px #f472b6;
         }
 
         .btn-option.correct {
             border-color: var(--correct-color);
             background-color: #d1fae5;
             color: #065f46;
+            box-shadow: 0 6px 0px #34d399;
         }
 
         .btn-option.incorrect {
             border-color: var(--incorrect-color);
             background-color: #ffe4e6;
             color: #9f1239;
+            box-shadow: 0 6px 0px #fb7185;
         }
 
         .feedback-card {
             display: none;
-            padding: 16px;
-            border-radius: 16px;
+            padding: 18px;
+            border-radius: 25px;
             background-color: #fdf2f8;
-            border: 2px solid #fbcfe8;
+            border: 3px solid #fbcfe8;
             margin-bottom: 20px;
             font-size: 0.95rem;
             line-height: 1.5;
@@ -130,7 +139,7 @@
         }
 
         .reaction-header {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
             margin-bottom: 8px;
         }
@@ -139,19 +148,25 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
+            padding: 16px 28px;
+            border-radius: 30px;
             font-weight: bold;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             cursor: pointer;
             width: 100%;
             transition: all 0.2s ease;
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 6px 0px #be185d;
         }
 
         .action-btn:hover {
             background-color: var(--accent-hover);
-            transform: scale(1.02);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0px #9d174d;
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0px #9d174d;
         }
 
         .result-screen {
@@ -175,7 +190,7 @@
 
     <div class="container">
         <header>
-            <h1>💖 Repaso para mi Amor Bonito 🌸</h1>
+            <h1>🍑 Repaso para mi Amor Bonito 💖</h1>
             <div id="progress" class="progress">Pregunta 1 de 30</div>
         </header>
 
@@ -192,209 +207,252 @@
         </main>
 
         <section id="result-screen" class="result-screen">
-            <h2>¡Lo lograste mi vida! 🎉💖</h2>
+            <h2>¡Lo lograste mi reina hermosa! 🎉🔥</h2>
             <p id="score-text"></p>
-            <button onclick="restartQuiz()" class="action-btn">Repetir para mi niño consentido 🔄</button>
+            <button onclick="restartQuiz()" class="action-btn">Volver a jugar mi vida 🔄</button>
         </section>
     </div>
 
     <script>
-        // Mensajes cariñosos y divertidos
-        const correctReactions = [
-            "¡Eso mi amor bonito! Te la sabes todita 😍✨",
-            "¡Uff qué inteligente es mi reina carajo! 🧠💖",
-            "¡Anotaste mi vida! Así me gusta ver a mi niña preciosa 🌸",
-            "¡Eso ombe, si tú eres una dura en esto! 👑💕",
-            "¡Exacto mi cielo! Cada día me enamoras más 💖"
-        ];
-
-        const incorrectReactions = [
-            "¡Uy cómo cree marica esa no es! 🤣 Te me despistaste mi amor bonito",
-            "¡Qué le pasa ombe! Si no responde bien esta la que sigue le mamaré esa pepa 😈🔥",
-            "¡Epa mi cielo esa no era! Concéntrese mi niña hermosa 💕",
-            "¡Ay mi vida te me confundiste! Pero te sigo amando igualito 💖",
-            "¡No no no mi reina! Revisa bien pues, ponte atenta mi amor 🌸"
-        ];
-
         const questions = [
             {
                 question: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?",
                 options: ["80%", "90%", "Más del 99%", "50%"],
                 correct: 2,
+                correctMsg: "¡Eso mi amor bonito! Te la sabes todita, me dan unas ganas de manosearte esas nalgas por inteligente 😍🍑",
+                incorrectMsg: "¡Uy cómo cree marica esa no es! Te me despistaste mi amor bonito, ponte atenta 🤣💕",
                 explanation: "Todos los seres humanos compartimos más del 99% del genoma debido al cuello de botella poblacional ocurrido hace ~200,000 años en África."
             },
             {
                 question: "¿Cuál es el porcentaje aproximado de homología genómica entre el ser humano y el chimpancé?",
                 options: ["98%", "85%", "99.9%", "70%"],
                 correct: 0,
+                correctMsg: "¡Eso ombe, acertaste! Ven acá que te voy a dar una buena apretada de nalgas de premio 😈🔥",
+                incorrectMsg: "¡Qué le pasa ombe! Si no responde bien esta, en la que sigue le mamaré esa pepa 😈🔥",
                 explanation: "Compartimos aproximadamente un 98% de homología genómica con el chimpancé, teniendo un ancestro común hace unos 6 millones de años."
             },
             {
                 question: "¿Qué porcentaje del genoma humano corresponde al exoma (ADN codificante de proteínas)?",
                 options: ["10%", "23%", "4%", "~1.6%"],
                 correct: 3,
+                correctMsg: "¡Anotaste mi reina preciosa! Qué rico cómo aprendes mi cielo, te amo 💖✨",
+                incorrectMsg: "¡Epa mi cielo esa no era! Concéntrese mi niña hermosa que te me distraes 💕",
                 explanation: "Solo alrededor del 1.6% del genoma equivale al exoma (exones), el cual codifica directamente para las proteínas."
             },
             {
                 question: "¿De cuántos pares de bases (pb) consta la secuencia consenso repetida en el ADN centromérico humano?",
                 options: ["100 pb", "171 pb", "2.4 pb", "1,000 pb"],
                 correct: 1,
+                correctMsg: "¡Buenas nalgas y buena memoria! Así me gusta mi amor bonito 🍑💋",
+                incorrectMsg: "¡No no no mi reina! Revisa bien pues, ponte atenta mi amor 🌸",
                 explanation: "El ADN centromérico está compuesto por repeticiones en tándem de 171 pares de bases, vitales para la división celular."
             },
             {
                 question: "¿Qué nombre recibe el hipotético último ancestro común universal de toda la vida en la Tierra?",
                 options: ["HOMOLOG", "CENTRO", "LUCA", "BOTTLE"],
                 correct: 2,
+                correctMsg: "¡LUCA como la reina que eres! Ven pa darle un mordisquito a esos cachetitos 💖😚",
+                incorrectMsg: "¡Ay mi vida te me confundiste! Pero te sigo amando y deseando igualito 💖",
                 explanation: "LUCA (Last Universal Common Ancestor) fue el ancestro común de toda la vida terrestre."
             },
             {
                 question: "¿Qué especie comparte aproximadamente un 85% de similitud genómica en secuencias codificantes con nosotros?",
                 options: ["Ratón (Mus musculus)", "Plátano", "Mosca de la fruta", "Bacterias"],
                 correct: 0,
+                correctMsg: "¡Eso mi vida! Respuesta correcta, te ganaste una sobada de nalgas bien sabrosa 🔥🍑",
+                incorrectMsg: "¡Uy mi amor, te me caíste ahí! Concéntrate que si no te castigo a besos 💋",
                 explanation: "El ratón comparte alrededor del 85% de sus genes codificantes, siendo clave para estudios médicos."
             },
             {
                 question: "¿Qué porcentaje aproximado de similitud genómica compartimos con la mosca de la fruta?",
                 options: ["10%", "30%", "60%", "90%"],
                 correct: 2,
+                correctMsg: "¡Uff qué Bárbara mi niña! 60% como la ganas que te tengo ahorita mismo 😍🔥",
+                incorrectMsg: "¡Qué le pasa ombe! Póngale mente que tú eres bien inteligente mi vida 🌸",
                 explanation: "Compartimos cerca del 60% de los genes con la mosca de la fruta para funciones biológicas básicas."
             },
             {
                 question: "¿Qué fenómeno evolutivo explica la reducida diversidad genética entre la población humana actual?",
                 options: ["Cuello de botella poblacional", "Deriva génica acelerada", "Especiación simpátrica", "Mutación dirigida"],
                 correct: 0,
+                correctMsg: "¡Cuello de botella! Excelente mi amor bonito, ven que te mamaré esa pepa por lista 😈🔥",
+                incorrectMsg: "¡Uy cómo cree marica esa no es! Dale de nuevo mi amorcito que tú puedes 🤣💕",
                 explanation: "Un cuello de botella drástico redujo drásticamente a la población ancestral en África."
             },
             {
                 question: "¿Qué constituyen la mayor parte del genoma humano no codificante (aproximadamente el 45-50%)?",
                 options: ["Genes ribosomales", "Elementos transponibles (transposones)", "Promotores básicos", "Exones primarios"],
                 correct: 1,
+                correctMsg: "¡Eso mi cielo! Transposones como los brincos que vamos a dar al rato 🙈💖",
+                incorrectMsg: "¡Epa mi reina! Esa no era, respira hondo y dale a la otra 💕",
                 explanation: "Los transposones o elementos móviles representan casi la mitad de nuestro ADN."
             },
             {
                 question: "¿Cómo se llama al conjunto de regiones no codificantes que son removidas durante el Splicing?",
                 options: ["Exones", "Intrones", "Cromómeros", "Centrómeros"],
                 correct: 1,
+                correctMsg: "¡Intrones! Perfecta mi amor bonito, qué bien te ves estudiando e inteligente 👑💖",
+                incorrectMsg: "¡Ay mi vida te me cruzaste! No te preocupes mi niña, sigue intentando 🌸",
                 explanation: "Los intrones se eliminan para que los exones se unan y formen el ARNm maduro."
             },
             {
                 question: "¿Qué representa la similitud genómica del 50% con plantas como el plátano?",
                 options: ["Proteínas estructurales idénticas", "Vías metabólicas y celulares básicas de eucariotas", "Sistemas vasculares", "Paredes celulares"],
                 correct: 1,
+                correctMsg: "¡Eso mi reina! Muy bien contestado, esas nalgas merecen un aplauso 👏🍑",
+                incorrectMsg: "¡Qué le paja ombe! Ponete seria mi amor que tú te sabes esto de memoria 🔥",
                 explanation: "Refleja funciones celulares universales que compartimos desde los primeros eucariotas."
             },
             {
                 question: "¿Qué variación de una sola base nitrogenada es la fuente más abundante de diferencias entre dos personas?",
                 options: ["CNVs", "SNPs (Polimorfismos de nucleótido único)", "Inversiones", "Translocaciones"],
                 correct: 1,
+                correctMsg: "¡Los SNPs! Tan única e inteligente como tú, mi amor bonito 😍✨",
+                incorrectMsg: "¡Uy marica esa no era! Jajaja concéntrate mi amorcito bello 💕",
                 explanation: "Los SNPs representan los cambios nucleótido a nucleótido que nos hacen únicos."
             },
             {
                 question: "¿Qué estructura cromosómica garantiza la segregación equitativa del ADN en la división celular?",
                 options: ["Telómero", "Centrómero", "Intrón", "Origen de replicación"],
                 correct: 1,
+                correctMsg: "¡Centrómero! Exacto mi cielo, ven pa agarrarte esos cachetitos hermosos 😚💖",
+                incorrectMsg: "¡Epa mi vida! Te equivocaste pero igual te mamaré todo eso después 😈💋",
                 explanation: "El centrómero une las cromátidas y permite el agarre del huso acromático."
             },
             {
                 question: "¿Cuál es la función principal de los telómeros?",
                 options: ["Codificar enzimas", "Proteger contra la degradación y acortamiento del ADN", "Unir cromosomas", "Sintetizar ribosomas"],
                 correct: 1,
+                correctMsg: "¡Proteger el ADN! Como yo te protejo y te cuido a ti mi reina hermosa 👑💕",
+                incorrectMsg: "¡No no no mi amor! Concéntrese que si no no hay premio al rato 😜🔥",
                 explanation: "Protegen las puntas del cromosoma para no perder información vital."
             },
             {
                 question: "¿Cuántos genes codificantes de proteínas se estima que tenemos en el genoma humano?",
                 options: ["100,000 - 150,000", "20,000 - 25,000", "5,000 - 10,000", "1,000,000"],
                 correct: 1,
+                correctMsg: "¡De 20,000 a 25,000! Qué bárbara mi amor, te voy a manosear todita por lista 🍑🔥",
+                incorrectMsg: "¡Uy te pasaste de números mi cielo! Revisa bien mi amor bonito 🌸",
                 explanation: "Tenemos solo entre 20,000 y 25,000 genes codificantes."
             },
             {
                 question: "¿Qué tipo de ARN lleva la información del ADN a los ribosomas?",
                 options: ["ARNm (mensajero)", "ARNt", "ARNr", "ARNsn"],
                 correct: 0,
+                correctMsg: "¡El Mensajero! El mismo mensaje que te mando: Te Amo y estás bien buena 😍💖",
+                incorrectMsg: "¡Qué le pasa ombe! Lee bien las opciones mi amorcito bello 💕",
                 explanation: "El ARNm lleva el mensaje del núcleo al citoplasma."
             },
             {
                 question: "¿Cómo se le llama a las secuencias altamente repetidas puestas una al lado de la otra?",
                 options: ["Repeticiones en tándem", "Retrotransposones", "Exones alternativos", "Pseudo-genes"],
                 correct: 0,
+                correctMsg: "¡En tándem! Pegaditas una tras otra, como te quiero pegar a mí ahorita 😈🔥",
+                incorrectMsg: "¡Epa mi reina te me chispoteaste! Vuelve a leer mi cielo 💕",
                 explanation: "Las repeticiones en tándem están pegaditas una tras otra en el ADN."
             },
             {
                 question: "¿Qué enzima sintetiza la nueva cadena de ADN en la replicación?",
                 options: ["ARN Polimerasa", "ADN Polimerasa", "Helicasa", "Ligasa"],
                 correct: 1,
+                correctMsg: "¡ADN Polimerasa! Bella, inteligente y con unas nalgas hermosas, lo tienes todo 🍑✨",
+                incorrectMsg: "¡Uy marica esa no es! Concéntrate mi niña consentida 🤣💖",
                 explanation: "La ADN Polimerasa se encarga de ir copiando la hebra de ADN."
             },
             {
                 question: "¿Qué proceso permite obtener varias proteínas distintas a partir de un mismo gen?",
                 options: ["Splicing alternativo", "Mutación puntual", "Replicación", "Traducción"],
                 correct: 0,
+                correctMsg: "¡Splicing alternativo! Uff te la sabes perfecta mi amor bonito, te amo 💕👑",
+                incorrectMsg: "¡Ay mi vida! Esa no era, pero te perdono porque estás bien hermosa 😍",
                 explanation: "El Splicing alternativo combina exones de formas distintas para crear varias proteínas."
             },
             {
                 question: "¿Qué porcentaje del genoma humano corresponde a secuencias únicas (no repetitivas)?",
                 options: ["10%", "Cerca del 50%", "99%", "0.5%"],
                 correct: 1,
+                correctMsg: "¡Cerca del 50%! Como el 100% de mi corazón que es todo tuyo mi reina 💖✨",
+                incorrectMsg: "¡Qué le paja ombe! Ponte atenta mi reina que ya falta poquito 🔥",
                 explanation: "Aproximadamente el 50% de nuestro genoma son secuencias únicas."
             },
             {
                 question: "¿Qué enzima evita el acortamiento de las puntas cromosómicas en células germinales?",
                 options: ["Telomerasa", "Topoisomerasa", "Primasa", "Cinetocoras"],
                 correct: 0,
+                correctMsg: "¡Telomerasa! Ven acá pa darte un besote en la boca y una agarrada de nalgas 💋🍑",
+                incorrectMsg: "¡Epa mi cielo te confundiste! Dale con calma mi amor bonito 💕",
                 explanation: "La telomerasa alarga y mantiene protegidos los telómeros."
             },
             {
                 question: "¿Cómo se llama la variación estructural donde se ganan o pierden trozos grandes de ADN?",
                 options: ["CNV (Variación en número de copias)", "SNV", "Polimorfismo silencioso", "Transición"],
                 correct: 0,
+                correctMsg: "¡Las CNV! Estás hecha una dura en biología mi amor bonito 🧠🔥",
+                incorrectMsg: "¡No no no mi vida! Revisa bien esa respuesta 🌸",
                 explanation: "Las CNVs son duplicaciones o deleciones de más de 1,000 bases."
             },
             {
                 question: "¿Cómo se le llama al proceso de síntesis de proteínas a partir del ARNm?",
                 options: ["Transcripción", "Traducción", "Splicing", "Replicación"],
                 correct: 1,
+                correctMsg: "¡Traducción! Te traduzco lo que siento: Te mamaré esa pepa bien sabroso 😈🔥",
+                incorrectMsg: "¡Uy te me despistaste! Dale a la siguiente mi vida hermosa 💕",
                 explanation: "La traducción lee el código del ARNm para construir la proteína."
             },
             {
                 question: "¿De quién heredamos el ADN mitocondrial prácticamente en un 100%?",
-                options: ["Del papá", "De la mamá", "De ambos por igual", "De los abuelos patenor"],
+                options: ["Del papá", "De la mamá", "De ambos por igual", "De los abuelos paternos"],
                 correct: 1,
+                correctMsg: "¡De la mamá! Mami hermosa eres tú, te amo mi amor bonito 😍💖",
+                incorrectMsg: "¡Qué le pasa ombe! Esa la sabe cualquiera mi cielo, concéntrate 🤣💕",
                 explanation: "El ADNmt es 100% de herencia materna a través del óvulo."
             },
             {
                 question: "¿Qué transposones se mueven usando un molde de ARN intermediario?",
                 options: ["Retrotransposones", "Transposones de ADN", "Plásmidos", "Bacteriófagos"],
                 correct: 0,
+                correctMsg: "¡Retrotransposones! Mi niña inteligente, me das un orgullo enorme 👑✨",
+                incorrectMsg: "¡Ay mi reina esa no era! Tranquila que te sigo amando igual 💖",
                 explanation: "Los retrotransposones se copian a ARN y luego de vuelta a ADN para moverse."
             },
             {
                 question: "¿Qué elementos repetidos representan casi el 10% de todo nuestro genoma?",
                 options: ["Elementos Alu", "LINE-1", "HERV", "Microsatélites"],
                 correct: 0,
+                correctMsg: "¡Elementos Alu! Eso es, te ganaste mil besos en esos cachetitos hermosos 😚💋",
+                incorrectMsg: "¡Epa mi vida te me caíste ahí! Lee con cuidado 💕",
                 explanation: "Los elementos Alu son cortitos y súper abundantes en el genoma humano."
             },
             {
                 question: "¿Cómo se llama la cromatina súper compactada e inactiva?",
                 options: ["Eucromatina", "Heterocromatina", "Nucleosoma", "Promotor"],
                 correct: 1,
+                correctMsg: "¡Heterocromatina! Súper apretada como la nalgada que te voy a dar ahorita 🍑😈",
+                incorrectMsg: "¡Uy marica esa no era! Dale mi amorcito que tú puedes con todas 🤣💖",
                 explanation: "La heterocromatina está muy apretada y casi no se transcribe."
             },
             {
                 question: "¿Cuál es la unidad básica de empaquetamiento del ADN formada por 8 histonas?",
                 options: ["Nucleosoma", "Centrómero", "Cinetocoro", "Polimerasa"],
                 correct: 0,
+                correctMsg: "¡Nucleosoma! Redondito como tus cachetitos que me encantan 😍🌸",
+                incorrectMsg: "¡Qué le paja ombe! Piénsale bien mi reina bella 🔥",
                 explanation: "El nucleosoma es la 'bolita' sobre la que se enrolla el ADN."
             },
             {
                 question: "¿Qué prueba analiza solamente el 1.6% codificante del ADN para buscar enfermedades?",
                 options: ["Secuenciación del Exoma Completo (WES)", "WGS", "Kariotipo", "PCR"],
                 correct: 0,
+                correctMsg: "¡El Exoma Completo (WES)! Estás a nivel profesional mi amor bonito 🧠💖",
+                incorrectMsg: "¡Epa mi cielo no te rindas! Ya casi terminamos 💕",
                 explanation: "WES busca directo en el exoma para ver si hay mutaciones en proteínas."
             },
             {
                 question: "¿Qué herramienta evolutiva usa la tasa de mutación constante para medir tiempo entre especies?",
                 options: ["Reloj Molecular", "Selección Natural", "Splicing", "Apareamiento"],
                 correct: 0,
+                correctMsg: "¡Reloj Molecular! ¡Terminaste mi reina! Eres la más inteligente y la más buena del mundo 👑🍑🔥",
+                incorrectMsg: "¡Uy casi mi amor! Pero completaste el examen, eres la mejor mi vida 💖",
                 explanation: "El reloj molecular calcula cuándo se separaron dos especies evolutivamente."
             }
         ];
@@ -447,12 +505,10 @@
 
             if (selectedIndex === q.correct) {
                 score++;
-                const randomMsg = correctReactions[Math.floor(Math.random() * correctReactions.length)];
-                reactionTitle.textContent = randomMsg;
+                reactionTitle.textContent = q.correctMsg;
                 reactionTitle.style.color = "#059669";
             } else {
-                const randomMsg = incorrectReactions[Math.floor(Math.random() * incorrectReactions.length)];
-                reactionTitle.textContent = randomMsg;
+                reactionTitle.textContent = q.incorrectMsg;
                 reactionTitle.style.color = "#e11d48";
             }
 
@@ -473,7 +529,7 @@
         function showResults() {
             quizScreen.style.display = 'none';
             resultScreen.style.display = 'block';
-            scoreText.textContent = `Puntaje final de mi reina: ${score} de ${questions.length} correctas. ¡Eres la más inteligente del mundo! 💕👑`;
+            scoreText.textContent = `Puntaje final de mi amor bonito: ${score} de ${questions.length} correctas. ¡Te ganaste todas las sobadas de nalgas y los besitos del mundo! 🍑💖🔥`;
         }
 
         function restartQuiz() {
@@ -488,4 +544,3 @@
     </script>
 </body>
 </html>
-
