@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudio Interactivo para mi Reina 💖</title>
+    <title>Estudio Completo de Genómica para mi Reina 💖</title>
     <style>
         :root {
             --bg-color: #fdf2f8;
@@ -39,7 +39,7 @@
             background-color: var(--card-bg);
             border: 4px solid #f9a8d4;
             border-radius: 35px;
-            max-width: 700px;
+            max-width: 720px;
             width: 100%;
             padding: 28px;
             box-shadow: 0 20px 35px rgba(236, 72, 153, 0.25);
@@ -66,12 +66,21 @@
             margin-bottom: 8px;
         }
 
-        /* Navegación con Flechas */
+        .item-progress {
+            font-size: 0.9rem;
+            color: #9f1239;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        /* Navegación con Flechas Principal */
         .nav-arrows {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 20px;
+            border-top: 2px dashed #fbcfe8;
+            padding-top: 15px;
         }
 
         .arrow-btn {
@@ -81,7 +90,7 @@
             padding: 10px 18px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 0px #f472b6;
@@ -121,6 +130,7 @@
             color: #9f1239;
             font-size: 1.1rem;
             margin-bottom: 10px;
+            line-height: 1.4;
         }
 
         .write-box {
@@ -136,7 +146,7 @@
             margin-bottom: 6px;
         }
 
-        .write-box input, .write-box textarea {
+        .write-box textarea, .write-box input {
             width: 100%;
             padding: 12px;
             border: 2px solid #fbcfe8;
@@ -146,7 +156,7 @@
             color: #831843;
         }
 
-        .write-box input:focus, .write-box textarea:focus {
+        .write-box textarea:focus, .write-box input:focus {
             border-color: var(--accent-color);
         }
 
@@ -221,13 +231,30 @@
             background-color: var(--accent-hover);
         }
 
+        .sub-nav-btn {
+            background-color: #fbcfe8;
+            color: #be185d;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin: 0 4px;
+        }
+
+        .sub-nav-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
         .notes-summary {
             text-align: left;
             background-color: #fff1f2;
             padding: 18px;
             border-radius: 20px;
             border: 2px solid #fbcfe8;
-            max-height: 280px;
+            max-height: 350px;
             overflow-y: auto;
             margin-bottom: 15px;
             font-size: 0.9rem;
@@ -246,159 +273,535 @@
     <div class="container">
         <header>
             <h1>💖 Estudio de Genómica para mi Reina 🍑</h1>
-            <div id="page-subtitle" class="subtitle">Página 1: Tarjetas de Lectura y Transcripción ✍️</div>
+            <div id="page-subtitle" class="subtitle">Página 1: Tarjetas y Transcripción ✍️ (30 conceptos)</div>
         </header>
 
-        <!-- PÁGINA 1: Tarjetas + Transcripción obligatoria -->
+        <!-- PÁGINA 1: Transcripción y Lectura (30 ítems) -->
         <div id="page-1" class="page active">
+            <div id="p1-progress" class="item-progress">Concepto 1 de 30</div>
             <div class="card-box">
-                <div class="card-title">📖 Concepto clave 1: Similitud Humana</div>
-                <p>Todos los seres humanos compartimos **más del 99%** de la secuencia de ADN. Esto se debe a un cuello de botella poblacional ancestral en África.</p>
+                <div id="p1-title" class="card-title">Cargando concepto...</div>
+                <p id="p1-desc"></p>
             </div>
             <div class="write-box">
-                <label for="p1-input">✍️ Transcribe este dato clave para fijarlo en tu memoria:</label>
-                <textarea id="p1-input" rows="2" placeholder="Escribe aquí: 'Los humanos compartimos más del 99% del ADN...'"></textarea>
+                <label for="p1-input">✍️ Transcribe la idea clave para guardarla en tu cuaderno físico/virtual:</label>
+                <textarea id="p1-input" rows="2" placeholder="Escribe aquí el apunte..."></textarea>
             </div>
-            <button onclick="savePage1Note()" class="action-btn">Guardar en mi Cuaderno y Continuar ✨</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button class="sub-nav-btn" onclick="prevItemP1()">⬅️ Anterior</button>
+                <button class="action-btn" onclick="saveP1Item()">Guardar y Siguiente concepto ✨</button>
+                <button class="sub-nav-btn" onclick="nextItemP1()">Siguiente ➡️</button>
+            </div>
         </div>
 
-        <!-- PÁGINA 2: Quiz Pícaro / Pregunta y Respuesta con cachetitos -->
+        <!-- PÁGINA 2: Quiz Pícaro / Cachetitos (30 preguntas) -->
         <div id="page-2" class="page">
+            <div id="p2-progress" class="item-progress">Pregunta 1 de 30</div>
             <div class="card-box">
-                <div id="p2-question" class="card-title">¿Qué porcentaje de homología genómica compartimos con el chimpancé?</div>
+                <div id="p2-question" class="card-title">Cargando pregunta...</div>
             </div>
-            <div id="p2-options" class="options-grid">
-                <button class="btn-option" onclick="checkP2(0)">98%</button>
-                <button class="btn-option" onclick="checkP2(1)">85%</button>
-                <button class="btn-option" onclick="checkP2(2)">70%</button>
-            </div>
+            <div id="p2-options" class="options-grid"></div>
             <div id="p2-feedback" class="feedback-card"></div>
+            <button id="p2-next-btn" class="action-btn" onclick="nextQuestionP2()" style="display: none;">Siguiente Pregunta 💕</button>
         </div>
 
-        <!-- PÁGINA 3: Completar Espacios / Términos Claves -->
+        <!-- PÁGINA 3: Completa la Palabra clave (30 ejercicios) -->
         <div id="page-3" class="page">
+            <div id="p3-progress" class="item-progress">Ejercicio 1 de 30</div>
             <div class="card-box">
-                <div class="card-title">🧩 Completa la frase clave:</div>
-                <p>Las secuencias de ADN repetidas de <strong>171 pares de bases</strong> que aseguran la división celular se encuentran en el 
-                <input type="text" id="p3-blank" placeholder="escribe la palabra..." style="width: 140px; padding: 4px 8px; border-radius: 8px; border: 1px solid #fbcfe8;">.</p>
+                <div id="p3-title" class="card-title">Cargando ejercicio...</div>
+                <p id="p3-sentence"></p>
             </div>
-            <button onclick="checkP3()" class="action-btn">Comprobar Palabra 🔍</button>
+            <button onclick="checkP3()" class="action-btn" style="margin-bottom: 12px;">Comprobar Respuesta 🔍</button>
             <div id="p3-feedback" class="feedback-card"></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <button class="sub-nav-btn" onclick="prevItemP3()">⬅️ Anterior</button>
+                <button class="sub-nav-btn" onclick="nextItemP3()">Siguiente ➡️</button>
+            </div>
         </div>
 
-        <!-- PÁGINA 4: Cuaderno de Apuntes Acumulado -->
+        <!-- PÁGINA 4: Cuaderno de Apuntes Acumulado (Consolidado de las 30 preguntas) -->
         <div id="page-4" class="page">
             <div class="card-box" style="text-align: center;">
-                <div class="card-title">📚 ¡Tu Cuaderno de Notas Acumuladas!</div>
-                <p>Aquí tienes todo lo que has escrito y repasado en esta sesión:</p>
+                <div class="card-title">📚 ¡Tu Cuaderno de Apuntes Completo (30 Conceptos)!</div>
+                <p>Aquí tienes el resumen acumulado listo para repasar antes del examen:</p>
             </div>
             <div class="notes-summary">
-                <div id="accumulated-list">
-                    <p style="color: #be185d;">Aún no has guardado notas. ¡Avanza escribiendo en las páginas anteriores!</p>
-                </div>
+                <div id="accumulated-list"></div>
             </div>
-            <button onclick="copyAllNotes()" class="action-btn" style="background-color: #059669; box-shadow: 0 5px 0px #047857;">📋 Copiar todos mis apuntes al portapapeles</button>
+            <button onclick="copyAllNotes()" class="action-btn" style="background-color: #059669; box-shadow: 0 5px 0px #047857;">📋 Copiar todos mis 30 apuntes al portapapeles</button>
         </div>
 
-        <!-- NAVEGACIÓN FLECHAS -->
+        <!-- NAVEGACIÓN PRINCIPAL CON FLECHAS ENTRE LAS 4 PÁGINAS -->
         <div class="nav-arrows">
-            <button id="prev-arrow" class="arrow-btn" onclick="changePage(-1)" disabled>⬅️ Anterior</button>
+            <button id="prev-arrow" class="arrow-btn" onclick="changePage(-1)" disabled>⬅️ Página Anterior</button>
             <span id="page-indicator" style="font-size: 0.9rem; font-weight: bold; color: #be185d;">Página 1 de 4</span>
-            <button id="next-arrow" class="arrow-btn" onclick="changePage(1)">Siguiente ➡️</button>
+            <button id="next-arrow" class="arrow-btn" onclick="changePage(1)">Página Siguiente ➡️</button>
         </div>
     </div>
 
     <script>
+        // BANCO BASE DE LAS 30 PREGUNTAS Y CONCEPTOS
+        const database = [
+            {
+                q: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?",
+                options: ["80%", "90%", "Más del 99%", "50%"],
+                correct: 2,
+                keyword: "99%",
+                correctMsg: "¡Eso mi amor bonito! Te la sabes todita, me dan unas ganas de manosearte esas nalgas por inteligente 😍🍑",
+                incorrectMsg: "¡Uy cómo cree marica esa no es! Te me despistaste mi amor bonito, ponte atenta 🤣💕",
+                exp: "Todos los seres humanos compartimos más del 99% del genoma debido al cuello de botella poblacional ocurrido hace ~200,000 años en África."
+            },
+            {
+                q: "¿Cuál es el porcentaje aproximado de homología genómica entre el ser humano y el chimpancé?",
+                options: ["98%", "85%", "99.9%", "70%"],
+                correct: 0,
+                keyword: "98%",
+                correctMsg: "¡Eso ombe, acertaste! Ven acá que te voy a dar una buena apretada de nalgas de premio 😈🔥",
+                incorrectMsg: "¡Qué le pasa ombe! Si no responde bien esta, en la que sigue le mamaré esa pepa 😈🔥",
+                exp: "Compartimos aproximadamente un 98% de homología genómica con el chimpancé, teniendo un ancestro común hace unos 6 millones de años."
+            },
+            {
+                q: "¿Qué porcentaje del genoma humano corresponde al exoma (ADN codificante de proteínas)?",
+                options: ["10%", "23%", "4%", "~1.6%"],
+                correct: 3,
+                keyword: "1.6%",
+                correctMsg: "¡Anotaste mi reina preciosa! Qué rico cómo aprendes mi cielo, te amo 💖✨",
+                incorrectMsg: "¡Epa mi cielo esa no era! Concéntrese mi niña hermosa que te me distraes 💕",
+                exp: "Solo alrededor del 1.6% del genoma equivale al exoma (exones), el cual codifica directamente para las proteínas."
+            },
+            {
+                q: "¿De cuántos pares de bases (pb) consta la secuencia consenso repetida en el ADN centromérico humano?",
+                options: ["100 pb", "171 pb", "2.4 pb", "1,000 pb"],
+                correct: 1,
+                keyword: "171 pb",
+                correctMsg: "¡Buenas nalgas y buena memoria! Así me gusta mi amor bonito 🍑💋",
+                incorrectMsg: "¡No no no mi reina! Revisa bien pues, ponte atenta mi amor 🌸",
+                exp: "El ADN centromérico está compuesto por repeticiones en tándem de 171 pares de bases, vitales para la división celular."
+            },
+            {
+                q: "¿Qué nombre recibe el hipotético último ancestro común universal de toda la vida en la Tierra?",
+                options: ["HOMOLOG", "CENTRO", "LUCA", "BOTTLE"],
+                correct: 2,
+                keyword: "LUCA",
+                correctMsg: "¡LUCA como la reina que eres! Ven pa darle un mordisquito a esos cachetitos 💖😚",
+                incorrectMsg: "¡Ay mi vida te me confundiste! Pero te sigo amando y deseando igualito 💖",
+                exp: "LUCA (Last Universal Common Ancestor) fue el ancestro común de toda la vida terrestre."
+            },
+            {
+                q: "¿Qué especie comparte aproximadamente un 85% de similitud genómica en secuencias codificantes con nosotros?",
+                options: ["Ratón (Mus musculus)", "Plátano", "Mosca de la fruta", "Bacterias"],
+                correct: 0,
+                keyword: "ratón",
+                correctMsg: "¡Eso mi vida! Respuesta correcta, te ganaste una sobada de nalgas bien sabrosa 🔥🍑",
+                incorrectMsg: "¡Uy mi amor, te me caíste ahí! Concéntrate que si no te castigo a besos 💋",
+                exp: "El ratón comparte alrededor del 85% de sus genes codificantes, siendo clave para estudios médicos."
+            },
+            {
+                q: "¿Qué porcentaje aproximado de similitud genómica compartimos con la mosca de la fruta?",
+                options: ["10%", "30%", "60%", "90%"],
+                correct: 2,
+                keyword: "60%",
+                correctMsg: "¡Uff qué Bárbara mi niña! 60% como la ganas que te tengo ahorita mismo 😍🔥",
+                incorrectMsg: "¡Qué le pasa ombe! Póngale mente que tú eres bien inteligente mi vida 🌸",
+                exp: "Compartimos cerca del 60% de los genes con la mosca de la fruta para funciones biológicas básicas."
+            },
+            {
+                q: "¿Qué fenómeno evolutivo explica la reducida diversidad genética entre la población humana actual?",
+                options: ["Cuello de botella poblacional", "Deriva génica acelerada", "Especiación simpátrica", "Mutación dirigida"],
+                correct: 0,
+                keyword: "cuello de botella",
+                correctMsg: "¡Cuello de botella! Excelente mi amor bonito, ven que te mamaré esa pepa por lista 😈🔥",
+                incorrectMsg: "¡Uy cómo cree marica esa no es! Dale de nuevo mi amorcito que tú puedes 🤣💕",
+                exp: "Un cuello de botella drástico redujo drásticamente a la población ancestral en África."
+            },
+            {
+                q: "¿Qué constituyen la mayor parte del genoma humano no codificante (aproximadamente el 45-50%)?",
+                options: ["Genes ribosomales", "Elementos transponibles (transposones)", "Promotores básicos", "Exones primarios"],
+                correct: 1,
+                keyword: "transposones",
+                correctMsg: "¡Eso mi cielo! Transposones como los brincos que vamos a dar al rato 🙈💖",
+                incorrectMsg: "¡Epa mi reina! Esa no era, respira hondo y dale a la otra 💕",
+                exp: "Los transposones o elementos móviles representan casi la mitad de nuestro ADN."
+            },
+            {
+                q: "¿Cómo se llama al conjunto de regiones no codificantes que son removidas durante el Splicing?",
+                options: ["Exones", "Intrones", "Cromómeros", "Centrómeros"],
+                correct: 1,
+                keyword: "intrones",
+                correctMsg: "¡Intrones! Perfecta mi amor bonito, qué bien te ves estudiando e inteligente 👑💖",
+                incorrectMsg: "¡Ay mi vida te me cruzaste! No te preocupes mi niña, sigue intentando 🌸",
+                exp: "Los intrones se eliminan para que los exones se unan y formen el ARNm maduro."
+            },
+            {
+                q: "¿Qué representa la similitud genómica del 50% con plantas como el plátano?",
+                options: ["Proteínas estructurales idénticas", "Vías metabólicas y celulares básicas de eucariotas", "Sistemas vasculares", "Paredes celulares"],
+                correct: 1,
+                keyword: "eucariotas",
+                correctMsg: "¡Eso mi reina! Muy bien contestado, esas nalgas merecen un aplauso 👏🍑",
+                incorrectMsg: "¡Qué le paja ombe! Ponete seria mi amor que tú te sabes esto de memoria 🔥",
+                exp: "Refleja funciones celulares universales que compartimos desde los primeros eucariotas."
+            },
+            {
+                q: "¿Qué variación de una sola base nitrogenada es la fuente más abundante de diferencias entre dos personas?",
+                options: ["CNVs", "SNPs (Polimorfismos de nucleótido único)", "Inversiones", "Translocaciones"],
+                correct: 1,
+                keyword: "snps",
+                correctMsg: "¡Los SNPs! Tan única e inteligente como tú, mi amor bonito 😍✨",
+                incorrectMsg: "¡Uy marica esa no era! Jajaja concéntrate mi amorcito bello 💕",
+                exp: "Los SNPs representan los cambios nucleótido a nucleótido que nos hacen únicos."
+            },
+            {
+                q: "¿Qué estructura cromosómica garantiza la segregación equitativa del ADN en la división celular?",
+                options: ["Telómero", "Centrómero", "Intrón", "Origen de replicación"],
+                correct: 1,
+                keyword: "centrómero",
+                correctMsg: "¡Centrómero! Exacto mi cielo, ven pa agarrarte esos cachetitos hermosos 😚💖",
+                incorrectMsg: "¡Epa mi vida! Te equivocaste pero igual te mamaré todo eso después 😈💋",
+                exp: "El centrómero une las cromátidas y permite el agarre del huso acromático."
+            },
+            {
+                q: "¿Cuál es la función principal de los telómeros?",
+                options: ["Codificar enzimas", "Proteger contra la degradación y acortamiento del ADN", "Unir cromosomas", "Sintetizar ribosomas"],
+                correct: 1,
+                keyword: "proteger",
+                correctMsg: "¡Proteger el ADN! Como yo te protejo y te cuido a ti mi reina hermosa 👑💕",
+                incorrectMsg: "¡No no no mi amor! Concéntrese que si no no hay premio al rato 😜🔥",
+                exp: "Protegen las puntas del cromosoma para no perder información vital."
+            },
+            {
+                q: "¿Cuántos genes codificantes de proteínas se estima que tenemos en el genoma humano?",
+                options: ["100,000 - 150,000", "20,000 - 25,000", "5,000 - 10,000", "1,000,000"],
+                correct: 1,
+                keyword: "20,000",
+                correctMsg: "¡De 20,000 a 25,000! Qué bárbara mi amor, te voy a manosear todita por lista 🍑🔥",
+                incorrectMsg: "¡Uy te pasaste de números mi cielo! Revisa bien mi amor bonito 🌸",
+                exp: "Tenemos solo entre 20,000 y 25,000 genes codificantes."
+            },
+            {
+                q: "¿Qué tipo de ARN lleva la información del ADN a los ribosomas?",
+                options: ["ARNm (mensajero)", "ARNt", "ARNr", "ARNsn"],
+                correct: 0,
+                keyword: "arnm",
+                correctMsg: "¡El Mensajero! El mismo mensaje que te mando: Te Amo y estás bien buena 😍💖",
+                incorrectMsg: "¡Qué le pasa ombe! Lee bien las opciones mi amorcito bello 💕",
+                exp: "El ARNm lleva el mensaje del núcleo al citoplasma."
+            },
+            {
+                q: "¿Cómo se le llama a las secuencias altamente repetidas puestas una al lado de la otra?",
+                options: ["Repeticiones en tándem", "Retrotransposones", "Exones alternativos", "Pseudo-genes"],
+                correct: 0,
+                keyword: "tándem",
+                correctMsg: "¡En tándem! Pegaditas una tras otra, como te quiero pegar a mí ahorita 😈🔥",
+                incorrectMsg: "¡Epa mi reina te me chispoteaste! Vuelve a leer mi cielo 💕",
+                exp: "Las repeticiones en tándem están pegaditas una tras otra en el ADN."
+            },
+            {
+                q: "¿Qué enzima sintetiza la nueva cadena de ADN en la replicación?",
+                options: ["ARN Polimerasa", "ADN Polimerasa", "Helicasa", "Ligasa"],
+                correct: 1,
+                keyword: "adn polimerasa",
+                correctMsg: "¡ADN Polimerasa! Bella, inteligente y con unas nalgas hermosas, lo tienes todo 🍑✨",
+                incorrectMsg: "¡Uy marica esa no es! Concéntrate mi niña consentida 🤣💖",
+                exp: "La ADN Polimerasa se encarga de ir copiando la hebra de ADN."
+            },
+            {
+                q: "¿Qué proceso permite obtener varias proteínas distintas a partir de un mismo gen?",
+                options: ["Splicing alternativo", "Mutación puntual", "Replicación", "Traducción"],
+                correct: 0,
+                keyword: "splicing alternativo",
+                correctMsg: "¡Splicing alternativo! Uff te la sabes perfecta mi amor bonito, te amo 💕👑",
+                incorrectMsg: "¡Ay mi vida! Esa no era, pero te perdono porque estás bien hermosa 😍",
+                exp: "El Splicing alternativo combina exones de formas distintas para crear varias proteínas."
+            },
+            {
+                q: "¿Qué porcentaje del genoma humano corresponde a secuencias únicas (no repetitivas)?",
+                options: ["10%", "Cerca del 50%", "99%", "0.5%"],
+                correct: 1,
+                keyword: "50%",
+                correctMsg: "¡Cerca del 50%! Como el 100% de mi corazón que es todo tuyo mi reina 💖✨",
+                incorrectMsg: "¡Qué le paja ombe! Ponte atenta mi reina que ya falta poquito 🔥",
+                exp: "Aproximadamente el 50% de nuestro genoma son secuencias únicas."
+            },
+            {
+                q: "¿Qué enzima evita el acortamiento de las puntas cromosómicas en células germinales?",
+                options: ["Telomerasa", "Topoisomerasa", "Primasa", "Cinetocoras"],
+                correct: 0,
+                keyword: "telomerasa",
+                correctMsg: "¡Telomerasa! Ven acá pa darte un besote en la boca y una agarrada de nalgas 💋🍑",
+                incorrectMsg: "¡Epa mi cielo te confundiste! Dale con calma mi amor bonito 💕",
+                exp: "La telomerasa alarga y mantiene protegidos los telómeros."
+            },
+            {
+                q: "¿Cómo se llama la variación estructural donde se ganan o pierden trozos grandes de ADN?",
+                options: ["CNV (Variación en número de copias)", "SNV", "Polimorfismo silencioso", "Transición"],
+                correct: 0,
+                keyword: "cnv",
+                correctMsg: "¡Las CNV! Estás hecha una dura en biología mi amor bonito 🧠🔥",
+                incorrectMsg: "¡No no no mi vida! Revisa bien esa respuesta 🌸",
+                exp: "Las CNVs son duplicaciones o deleciones de más de 1,000 bases."
+            },
+            {
+                q: "¿Cómo se le llama al proceso de síntesis de proteínas a partir del ARNm?",
+                options: ["Transcripción", "Traducción", "Splicing", "Replicación"],
+                correct: 1,
+                keyword: "traducción",
+                correctMsg: "¡Traducción! Te traduzco lo que siento: Te mamaré esa pepa bien sabroso 😈🔥",
+                incorrectMsg: "¡Uy te me despistaste! Dale a la siguiente mi vida hermosa 💕",
+                exp: "La traducción lee el código del ARNm para construir la proteína."
+            },
+            {
+                q: "¿De quién heredamos el ADN mitocondrial prácticamente en un 100%?",
+                options: ["Del papá", "De la mamá", "De ambos por igual", "De los abuelos paternos"],
+                correct: 1,
+                keyword: "mamá",
+                correctMsg: "¡De la mamá! Mami hermosa eres tú, te amo mi amor bonito 😍💖",
+                incorrectMsg: "¡Qué le pasa ombe! Esa la sabe cualquiera mi cielo, concéntrate 🤣💕",
+                exp: "El ADNmt es 100% de herencia materna a través del óvulo."
+            },
+            {
+                q: "¿Qué transposones se mueven usando un molde de ARN intermediario?",
+                options: ["Retrotransposones", "Transposones de ADN", "Plásmidos", "Bacteriófagos"],
+                correct: 0,
+                keyword: "retrotransposones",
+                correctMsg: "¡Retrotransposones! Mi niña inteligente, me das un orgullo enorme 👑✨",
+                incorrectMsg: "¡Ay mi reina esa no era! Tranquila que te sigo amando igual 💖",
+                exp: "Los retrotransposones se copian a ARN y luego de vuelta a ADN para moverse."
+            },
+            {
+                q: "¿Qué elementos repetidos representan casi el 10% de todo nuestro genoma?",
+                options: ["Elementos Alu", "LINE-1", "HERV", "Microsatélites"],
+                correct: 0,
+                keyword: "alu",
+                correctMsg: "¡Elementos Alu! Eso es, te ganaste mil besos en esos cachetitos hermosos 😚💋",
+                incorrectMsg: "¡Epa mi vida te me caíste ahí! Lee con cuidado 💕",
+                exp: "Los elementos Alu son cortitos y súper abundantes en el genoma humano."
+            },
+            {
+                q: "¿Cómo se llama la cromatina súper compactada e inactiva?",
+                options: ["Eucromatina", "Heterocromatina", "Nucleosoma", "Promotor"],
+                correct: 1,
+                keyword: "heterocromatina",
+                correctMsg: "¡Heterocromatina! Súper apretada como la nalgada que te voy a dar ahorita 🍑😈",
+                incorrectMsg: "¡Uy marica esa no era! Dale mi amorcito que tú puedes con todas 🤣💖",
+                exp: "La heterocromatina está muy apretada y casi no se transcribe."
+            },
+            {
+                q: "¿Cuál es la unidad básica de empaquetamiento del ADN formada por 8 histonas?",
+                options: ["Nucleosoma", "Centrómero", "Cinetocoro", "Polimerasa"],
+                correct: 0,
+                keyword: "nucleosoma",
+                correctMsg: "¡Nucleosoma! Redondito como tus cachetitos que me encantan 😍🌸",
+                incorrectMsg: "¡Qué le paja ombe! Piénsale bien mi reina bella 🔥",
+                exp: "El nucleosoma es la 'bolita' sobre la que se enrolla el ADN."
+            },
+            {
+                q: "¿Qué prueba analiza solamente el 1.6% codificante del ADN para buscar enfermedades?",
+                options: ["Secuenciación del Exoma Completo (WES)", "WGS", "Kariotipo", "PCR"],
+                correct: 0,
+                keyword: "wes",
+                correctMsg: "¡El Exoma Completo (WES)! Estás a nivel profesional mi amor bonito 🧠💖",
+                incorrectMsg: "¡Epa mi cielo no te rindas! Ya casi terminamos 💕",
+                exp: "WES busca directo en el exoma para ver si hay mutaciones en proteínas."
+            },
+            {
+                q: "¿Qué herramienta evolutiva usa la tasa de mutación constante para medir tiempo entre especies?",
+                options: ["Reloj Molecular", "Selección Natural", "Splicing", "Apareamiento"],
+                correct: 0,
+                keyword: "reloj molecular",
+                correctMsg: "¡Reloj Molecular! ¡Terminaste mi reina! Eres la más inteligente y la más buena del mundo 👑🍑🔥",
+                incorrectMsg: "¡Uy casi mi amor! Pero completaste el examen, eres la mejor mi vida 💖",
+                exp: "El reloj molecular calcula cuándo se separaron dos especies evolutivamente."
+            }
+        ];
+
         let currentPage = 1;
         const totalPages = 4;
-        let myNotes = [];
+        let p1Index = 0;
+        let p2Index = 0;
+        let p3Index = 0;
+        let userNotesList = [];
 
-        const subtitles = [
-            "Página 1: Tarjetas de Lectura y Transcripción ✍️",
-            "Página 2: Quiz Interactivo y Preguntas Pícaras 🍑",
-            "Página 3: Completa la Palabra y Asocia Conceptos 🧩",
-            "Página 4: Mi Cuaderno de Apuntes Acumulado 📖"
+        const pageSubtitles = [
+            "Página 1: Tarjetas y Transcripción ✍️ (30 conceptos)",
+            "Página 2: Quiz Pícaro / Botones Cachetito 🍑 (30 preguntas)",
+            "Página 3: Completa la Palabra Clave 🧩 (30 ejercicios)",
+            "Página 4: Mi Cuaderno de Apuntes Completo 📖"
         ];
 
         function updatePageDisplay() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(`page-${currentPage}`).classList.add('active');
 
-            document.getElementById('page-subtitle').textContent = subtitles[currentPage - 1];
+            document.getElementById('page-subtitle').textContent = pageSubtitles[currentPage - 1];
             document.getElementById('page-indicator').textContent = `Página ${currentPage} de ${totalPages}`;
 
             document.getElementById('prev-arrow').disabled = (currentPage === 1);
             document.getElementById('next-arrow').disabled = (currentPage === totalPages);
 
-            if (currentPage === 4) {
-                renderNotebook();
-            }
+            if (currentPage === 1) renderP1();
+            if (currentPage === 2) renderP2();
+            if (currentPage === 3) renderP3();
+            if (currentPage === 4) renderP4();
         }
 
-        function changePage(direction) {
-            currentPage += direction;
+        function changePage(dir) {
+            currentPage += dir;
             if (currentPage < 1) currentPage = 1;
             if (currentPage > totalPages) currentPage = totalPages;
             updatePageDisplay();
         }
 
-        /* Lógica Página 1 */
-        function savePage1Note() {
+        /* --- PÁGINA 1: Transcripción (30 ítems) --- */
+        function renderP1() {
+            const item = database[p1Index];
+            document.getElementById('p1-progress').textContent = `Concepto ${p1Index + 1} de 30`;
+            document.getElementById('p1-title').textContent = item.q;
+            document.getElementById('p1-desc').textContent = item.exp;
+            document.getElementById('p1-input').value = "";
+        }
+
+        function saveP1Item() {
             const val = document.getElementById('p1-input').value.trim();
-            if (val !== "") {
-                myNotes.push("• " + val);
-                alert("¡Apunte guardado en tu cuaderno bonito! 💕");
-                changePage(1);
-            } else {
-                alert("Escribe una ideita en la casilla primero mi amor 💕");
+            const item = database[p1Index];
+            const textToSave = val !== "" ? val : item.options[item.correct];
+
+            userNotesList[p1Index] = {
+                num: p1Index + 1,
+                question: item.q,
+                note: textToSave,
+                exp: item.exp
+            };
+
+            alert(`¡Concepto ${p1Index + 1} guardado en tu cuaderno! 💕`);
+            if (p1Index < 29) {
+                p1Index++;
+                renderP1();
             }
         }
 
-        /* Lógica Página 2 */
-        function checkP2(optionIndex) {
+        function prevItemP1() { if (p1Index > 0) { p1Index--; renderP1(); } }
+        function nextItemP1() { if (p1Index < 29) { p1Index++; renderP1(); } }
+
+        /* --- PÁGINA 2: Quiz Cachetito (30 preguntas) --- */
+        function renderP2() {
+            const item = database[p2Index];
+            document.getElementById('p2-progress').textContent = `Pregunta ${p2Index + 1} de 30`;
+            document.getElementById('p2-question').textContent = item.q;
+            document.getElementById('p2-feedback').style.display = 'none';
+            document.getElementById('p2-next-btn').style.display = 'none';
+
+            const optsDiv = document.getElementById('p2-options');
+            optsDiv.innerHTML = '';
+
+            item.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.textContent = opt;
+                btn.onclick = () => selectOptionP2(idx);
+                optsDiv.appendChild(btn);
+            });
+        }
+
+        function selectOptionP2(selectedIndex) {
+            const item = database[p2Index];
+            const buttons = document.querySelectorAll('#p2-options .btn-option');
             const feedback = document.getElementById('p2-feedback');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === item.correct) btn.classList.add('correct');
+                if (idx === selectedIndex && selectedIndex !== item.correct) btn.classList.add('incorrect');
+            });
+
             feedback.style.display = 'block';
-            if (optionIndex === 0) {
-                feedback.innerHTML = "<strong style='color:#059669;'>¡Eso mi amor bonito! 98% con el chimpancé. Te ganaste una agarradita de nalgas bien sabrosa 🔥🍑</strong>";
-                myNotes.push("• Homología genómica con el chimpancé: 98% (Ancestro común hace 6M años).");
+            if (selectedIndex === item.correct) {
+                feedback.innerHTML = `<strong style="color:#059669;">${item.correctMsg}</strong><br><br>${item.exp}`;
             } else {
-                feedback.innerHTML = "<strong style='color:#e11d48;'>¡Uy esa no era mi cielo! Es 98%, póngale mente que tú puedes 💕</strong>";
+                feedback.innerHTML = `<strong style="color:#e11d48;">${item.incorrectMsg}</strong><br><br>${item.exp}`;
+            }
+
+            // Guardar automáticamente en el cuaderno
+            if (!userNotesList[p2Index]) {
+                userNotesList[p2Index] = {
+                    num: p2Index + 1,
+                    question: item.q,
+                    note: item.options[item.correct],
+                    exp: item.exp
+                };
+            }
+
+            document.getElementById('p2-next-btn').style.display = 'block';
+        }
+
+        function nextQuestionP2() {
+            if (p2Index < 29) {
+                p2Index++;
+                renderP2();
+            } else {
+                alert("¡Completaste las 30 preguntas del quiz mi reina! 🎉🍑 Avanza a la siguiente página.");
             }
         }
 
-        /* Lógica Página 3 */
+        /* --- PÁGINA 3: Completa la Palabra (30 ejercicios) --- */
+        function renderP3() {
+            const item = database[p3Index];
+            document.getElementById('p3-progress').textContent = `Ejercicio ${p3Index + 1} de 30`;
+            document.getElementById('p3-title').textContent = item.q;
+            document.getElementById('p3-sentence').innerHTML = `Escribe la palabra o concepto clave: <br><br>
+            <input type="text" id="p3-blank" placeholder="Respuesta clave..." style="width: 100%; padding: 10px; border-radius: 12px; border: 2px solid #fbcfe8;">`;
+            document.getElementById('p3-feedback').style.display = 'none';
+        }
+
         function checkP3() {
             const val = document.getElementById('p3-blank').value.trim().toLowerCase();
+            const item = database[p3Index];
             const feedback = document.getElementById('p3-feedback');
             feedback.style.display = 'block';
 
-            if (val.includes("centromero") || val.includes("centrómero")) {
-                feedback.innerHTML = "<strong style='color:#059669;'>¡Correcto mi reina! Es el Centrómero (171 pb). ¡Qué inteligente eres! 😍✨</strong>";
-                myNotes.push("• ADN centromérico: Repeticiones en tándem de 171 pb clave en el centrómero.");
+            if (val.includes(item.keyword.toLowerCase())) {
+                feedback.innerHTML = `<strong style="color:#059669;">¡Exacto mi vida! La clave es "${item.keyword}". Ven acá pa manosearte esas nalgas por sabia 😍🔥</strong><br><br>${item.exp}`;
             } else {
-                feedback.innerHTML = "<strong style='color:#e11d48;'>Pista: Empieza por 'Centro...' ¡Inténtalo de nuevo mi amor! 🌸</strong>";
+                feedback.innerHTML = `<strong style="color:#e11d48;">Pista: La palabra clave que buscamos contiene "${item.keyword}". ¡Inténtalo de nuevo mi reina! 💕</strong>`;
             }
         }
 
-        /* Renderizar Cuaderno Final */
-        function renderNotebook() {
+        function prevItemP3() { if (p3Index > 0) { p3Index--; renderP3(); } }
+        function nextItemP3() { if (p3Index < 29) { p3Index++; renderP3(); } }
+
+        /* --- PÁGINA 4: Cuaderno de Apuntes --- */
+        function renderP4() {
             const container = document.getElementById('accumulated-list');
-            if (myNotes.length === 0) {
-                container.innerHTML = "<p style='color: #be185d;'>Aún no has añadido apuntes. ¡Regresa con las flechas y escribe en las páginas!</p>";
+            if (userNotesList.length === 0) {
+                container.innerHTML = "<p style='color: #be185d;'>Aún no hay apuntes guardados. ¡Escribe o responde las preguntas en las páginas 1, 2 y 3 para llenar tu cuaderno!</p>";
             } else {
-                container.innerHTML = myNotes.map(n => `<div class="notes-item">${n}</div>`).join('');
+                let html = "";
+                database.forEach((item, idx) => {
+                    const noteObj = userNotesList[idx];
+                    const noteText = noteObj ? noteObj.note : "<em>(Aún no registrado)</em>";
+                    html += `<div class="notes-item">
+                        <strong>${idx + 1}. ${item.q}</strong><br>
+                        ✍️ <em>Tu apunte/Respuesta:</em> ${noteText}<br>
+                        💡 <em>Concepto clave:</em> ${item.exp}
+                    </div>`;
+                });
+                container.innerHTML = html;
             }
         }
 
         function copyAllNotes() {
-            if (myNotes.length === 0) {
-                alert("Primero escribe algún apunte mi cielo 💕");
-                return;
-            }
-            const text = "📝 MIS APUNTES DE ESTUDIO (GENÓMICA Y ADN) 💖\n\n" + myNotes.join('\n');
+            let text = "📖 MIS 30 APUNTES DE ESTUDIO DE GENÓMICA Y ADN 💖\n\n";
+            database.forEach((item, idx) => {
+                const noteObj = userNotesList[idx];
+                const noteText = noteObj ? noteObj.note : item.options[item.correct];
+                text += `${idx + 1}. ${item.q}\n- Respuesta/Apunte: ${noteText}\n- Explicación: ${item.exp}\n\n`;
+            });
             navigator.clipboard.writeText(text);
-            alert("¡Todos tus apuntes guardados han sido copiados! 💕");
+            alert("¡Todos tus 30 apuntes han sido copiados con éxito! 💕");
         }
+
+        // Inicializar
+        updatePageDisplay();
     </script>
 </body>
 </html>
