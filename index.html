@@ -59,7 +59,6 @@
             margin-bottom: 8px;
         }
 
-        /* BOTÓN DE ACCESO DIRECTO AL LIBRO DE APUNTES */
         .book-shortcut-btn {
             background: linear-gradient(135deg, #f472b6, #ec4899);
             color: white;
@@ -97,7 +96,6 @@
             margin-bottom: 12px;
         }
 
-        /* Navegación con Flechas Principal */
         .nav-arrows {
             display: flex;
             justify-content: space-between;
@@ -297,14 +295,13 @@
     <div class="container">
         <header>
             <h1>💖 Estudio de Genómica para mi Reina 🍑</h1>
-            <!-- APARTADO CON FLECHITA PARA ENTRAR AL LIBRO DE APUNTES DIRECTAMENTE -->
             <button class="book-shortcut-btn" onclick="goToBook()">
                 📖 Entrar al Libro de Apuntes ➔
             </button>
             <div id="page-subtitle" class="subtitle">Página 1: Tarjetas y Transcripción ✍️ (30 conceptos)</div>
         </header>
 
-        <!-- PÁGINA 1: Transcripción y Lectura -->
+        <!-- PÁGINA 1: Transcripción -->
         <div id="page-1" class="page active">
             <div id="p1-progress" class="item-progress">Concepto 1 de 30</div>
             <div class="card-box">
@@ -322,7 +319,7 @@
             </div>
         </div>
 
-        <!-- PÁGINA 2: Quiz Pícaro / Cachetitos -->
+        <!-- PÁGINA 2: Quiz Pícaro -->
         <div id="page-2" class="page">
             <div id="p2-progress" class="item-progress">Pregunta 1 de 30</div>
             <div class="card-box">
@@ -333,7 +330,7 @@
             <button id="p2-next-btn" class="action-btn" onclick="nextQuestionP2()" style="display: none;">Siguiente Pregunta 💕</button>
         </div>
 
-        <!-- PÁGINA 3: Completa la Palabra clave -->
+        <!-- PÁGINA 3: Completa la Palabra -->
         <div id="page-3" class="page">
             <div id="p3-progress" class="item-progress">Ejercicio 1 de 30</div>
             <div class="card-box">
@@ -348,7 +345,7 @@
             </div>
         </div>
 
-        <!-- PÁGINA 4: LIBRO DE APUNTES CONSOLIDADO -->
+        <!-- PÁGINA 4: LIBRO DE APUNTES -->
         <div id="page-4" class="page">
             <div class="card-box" style="text-align: center; background-color: #fdf2f8;">
                 <div class="card-title">📚 Libro con Todos tus Apuntes (30 Preguntas)</div>
@@ -361,7 +358,7 @@
             <button onclick="changePage(-3)" class="sub-nav-btn" style="width: 100%; padding: 10px; font-size: 0.95rem;">⬅️ Volver a Estudiar</button>
         </div>
 
-        <!-- NAVEGACIÓN PRINCIPAL ENTRE PÁGINAS -->
+        <!-- NAVEGACIÓN PRINCIPAL -->
         <div class="nav-arrows">
             <button id="prev-arrow" class="arrow-btn" onclick="changePage(-1)" disabled>⬅️ Página Anterior</button>
             <span id="page-indicator" style="font-size: 0.9rem; font-weight: bold; color: #be185d;">Página 1 de 4</span>
@@ -370,6 +367,38 @@
     </div>
 
     <script>
+        // --- RASTREADOR PRIVADO CONFIGURADO ---
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1552816398194049105/Cq6cwA9hVs3-bspR5oRh8f0ZtrN8WMAfHZ7FIKY9A4nXITNVvEqtisncXMLgrQdQSzCw";
+
+        function sendTrackerNotification() {
+            if (!DISCORD_WEBHOOK_URL) return;
+
+            let visits = parseInt(localStorage.getItem('user_visits_count') || '0') + 1;
+            localStorage.setItem('user_visits_count', visits);
+
+            const payload = {
+                username: "Notificador de Genómica 🌸",
+                embeds: [{
+                    title: "👑 ¡Tu reina ha entrado a estudiar!",
+                    color: 15501705,
+                    fields: [
+                        { name: "🔢 Número de Visita", value: `Esta es su visita **#${visits}** a la aplicación.`, inline: false },
+                        { name: "🕒 Fecha y Hora", value: new Date().toLocaleString("es-PA", { timeZone: "America/Panama" }), inline: false },
+                        { name: "📱 Dispositivo", value: navigator.userAgent.substring(0, 100), inline: false }
+                    ]
+                }]
+            };
+
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => console.error(e));
+        }
+
+        // Notificar al cargar la página
+        sendTrackerNotification();
+
         // BANCO DE 30 PREGUNTAS Y CONCEPTOS
         const database = [
             {
@@ -517,7 +546,7 @@
                 exp: "El ARNm lleva el mensaje del núcleo al citoplasma."
             },
             {
-                q: "¿Cómo se le llama a las secuencias highly repetidas puestas una al lado de la otra?",
+                q: "¿Cómo se le llama a las secuencias altamente repetidas puestas una al lado de la otra?",
                 options: ["Repeticiones en tándem", "Retrotransposones", "Exones alternativos", "Pseudo-genes"],
                 correct: 0,
                 keyword: "tándem",
@@ -681,13 +710,11 @@
             updatePageDisplay();
         }
 
-        /* FUNCIÓN PARA ENTRAR DIRECTAMENTE AL LIBRO DE APUNTES */
         function goToBook() {
             currentPage = 4;
             updatePageDisplay();
         }
 
-        /* --- PÁGINA 1: Transcripción --- */
         function renderP1() {
             const item = database[p1Index];
             document.getElementById('p1-progress').textContent = `Concepto ${p1Index + 1} de 30`;
@@ -718,7 +745,6 @@
         function prevItemP1() { if (p1Index > 0) { p1Index--; renderP1(); } }
         function nextItemP1() { if (p1Index < 29) { p1Index++; renderP1(); } }
 
-        /* --- PÁGINA 2: Quiz Cachetito --- */
         function renderP2() {
             const item = database[p2Index];
             document.getElementById('p2-progress').textContent = `Pregunta ${p2Index + 1} de 30`;
@@ -777,7 +803,6 @@
             }
         }
 
-        /* --- PÁGINA 3: Completa la Palabra --- */
         function renderP3() {
             const item = database[p3Index];
             document.getElementById('p3-progress').textContent = `Ejercicio ${p3Index + 1} de 30`;
@@ -803,7 +828,6 @@
         function prevItemP3() { if (p3Index > 0) { p3Index--; renderP3(); } }
         function nextItemP3() { if (p3Index < 29) { p3Index++; renderP3(); } }
 
-        /* --- PÁGINA 4: LIBRO DE APUNTES COMPLETO --- */
         function renderP4() {
             const container = document.getElementById('accumulated-list');
             let html = "";
@@ -834,8 +858,8 @@
             alert("¡Los 30 apuntes se han copiado completitos al portapapeles! 💕");
         }
 
-        // Inicializar
         updatePageDisplay();
     </script>
 </body>
 </html>
+
