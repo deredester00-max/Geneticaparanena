@@ -56,7 +56,31 @@
         h1 {
             font-size: 1.5rem;
             color: var(--accent-color);
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+        }
+
+        /* BOTÓN DE ACCESO DIRECTO AL LIBRO DE APUNTES */
+        .book-shortcut-btn {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(236, 72, 153, 0.35);
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-shortcut-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(236, 72, 153, 0.45);
+            background: linear-gradient(135deg, #ec4899, #db2777);
         }
 
         .subtitle {
@@ -254,7 +278,7 @@
             padding: 18px;
             border-radius: 20px;
             border: 2px solid #fbcfe8;
-            max-height: 350px;
+            max-height: 380px;
             overflow-y: auto;
             margin-bottom: 15px;
             font-size: 0.9rem;
@@ -262,8 +286,8 @@
         }
 
         .notes-item {
-            margin-bottom: 10px;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 1px dashed #fbcfe8;
         }
     </style>
@@ -273,10 +297,14 @@
     <div class="container">
         <header>
             <h1>💖 Estudio de Genómica para mi Reina 🍑</h1>
+            <!-- APARTADO CON FLECHITA PARA ENTRAR AL LIBRO DE APUNTES DIRECTAMENTE -->
+            <button class="book-shortcut-btn" onclick="goToBook()">
+                📖 Entrar al Libro de Apuntes ➔
+            </button>
             <div id="page-subtitle" class="subtitle">Página 1: Tarjetas y Transcripción ✍️ (30 conceptos)</div>
         </header>
 
-        <!-- PÁGINA 1: Transcripción y Lectura (30 ítems) -->
+        <!-- PÁGINA 1: Transcripción y Lectura -->
         <div id="page-1" class="page active">
             <div id="p1-progress" class="item-progress">Concepto 1 de 30</div>
             <div class="card-box">
@@ -294,7 +322,7 @@
             </div>
         </div>
 
-        <!-- PÁGINA 2: Quiz Pícaro / Cachetitos (30 preguntas) -->
+        <!-- PÁGINA 2: Quiz Pícaro / Cachetitos -->
         <div id="page-2" class="page">
             <div id="p2-progress" class="item-progress">Pregunta 1 de 30</div>
             <div class="card-box">
@@ -305,7 +333,7 @@
             <button id="p2-next-btn" class="action-btn" onclick="nextQuestionP2()" style="display: none;">Siguiente Pregunta 💕</button>
         </div>
 
-        <!-- PÁGINA 3: Completa la Palabra clave (30 ejercicios) -->
+        <!-- PÁGINA 3: Completa la Palabra clave -->
         <div id="page-3" class="page">
             <div id="p3-progress" class="item-progress">Ejercicio 1 de 30</div>
             <div class="card-box">
@@ -320,19 +348,20 @@
             </div>
         </div>
 
-        <!-- PÁGINA 4: Cuaderno de Apuntes Acumulado (Consolidado de las 30 preguntas) -->
+        <!-- PÁGINA 4: LIBRO DE APUNTES CONSOLIDADO -->
         <div id="page-4" class="page">
-            <div class="card-box" style="text-align: center;">
-                <div class="card-title">📚 ¡Tu Cuaderno de Apuntes Completo (30 Conceptos)!</div>
-                <p>Aquí tienes el resumen acumulado listo para repasar antes del examen:</p>
+            <div class="card-box" style="text-align: center; background-color: #fdf2f8;">
+                <div class="card-title">📚 Libro con Todos tus Apuntes (30 Preguntas)</div>
+                <p style="font-size: 0.9rem;">Consulta aquí todo el temario resuelto en un solo lugar:</p>
             </div>
             <div class="notes-summary">
                 <div id="accumulated-list"></div>
             </div>
-            <button onclick="copyAllNotes()" class="action-btn" style="background-color: #059669; box-shadow: 0 5px 0px #047857;">📋 Copiar todos mis 30 apuntes al portapapeles</button>
+            <button onclick="copyAllNotes()" class="action-btn" style="background-color: #059669; box-shadow: 0 5px 0px #047857; margin-bottom: 10px;">📋 Copiar los 30 apuntes al portapapeles</button>
+            <button onclick="changePage(-3)" class="sub-nav-btn" style="width: 100%; padding: 10px; font-size: 0.95rem;">⬅️ Volver a Estudiar</button>
         </div>
 
-        <!-- NAVEGACIÓN PRINCIPAL CON FLECHAS ENTRE LAS 4 PÁGINAS -->
+        <!-- NAVEGACIÓN PRINCIPAL ENTRE PÁGINAS -->
         <div class="nav-arrows">
             <button id="prev-arrow" class="arrow-btn" onclick="changePage(-1)" disabled>⬅️ Página Anterior</button>
             <span id="page-indicator" style="font-size: 0.9rem; font-weight: bold; color: #be185d;">Página 1 de 4</span>
@@ -341,7 +370,7 @@
     </div>
 
     <script>
-        // BANCO BASE DE LAS 30 PREGUNTAS Y CONCEPTOS
+        // BANCO DE 30 PREGUNTAS Y CONCEPTOS
         const database = [
             {
                 q: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?",
@@ -488,7 +517,7 @@
                 exp: "El ARNm lleva el mensaje del núcleo al citoplasma."
             },
             {
-                q: "¿Cómo se le llama a las secuencias altamente repetidas puestas una al lado de la otra?",
+                q: "¿Cómo se le llama a las secuencias highly repetidas puestas una al lado de la otra?",
                 options: ["Repeticiones en tándem", "Retrotransposones", "Exones alternativos", "Pseudo-genes"],
                 correct: 0,
                 keyword: "tándem",
@@ -626,7 +655,7 @@
             "Página 1: Tarjetas y Transcripción ✍️ (30 conceptos)",
             "Página 2: Quiz Pícaro / Botones Cachetito 🍑 (30 preguntas)",
             "Página 3: Completa la Palabra Clave 🧩 (30 ejercicios)",
-            "Página 4: Mi Cuaderno de Apuntes Completo 📖"
+            "Página 4: 📖 Libro con Todos tus Apuntes"
         ];
 
         function updatePageDisplay() {
@@ -652,7 +681,13 @@
             updatePageDisplay();
         }
 
-        /* --- PÁGINA 1: Transcripción (30 ítems) --- */
+        /* FUNCIÓN PARA ENTRAR DIRECTAMENTE AL LIBRO DE APUNTES */
+        function goToBook() {
+            currentPage = 4;
+            updatePageDisplay();
+        }
+
+        /* --- PÁGINA 1: Transcripción --- */
         function renderP1() {
             const item = database[p1Index];
             document.getElementById('p1-progress').textContent = `Concepto ${p1Index + 1} de 30`;
@@ -683,7 +718,7 @@
         function prevItemP1() { if (p1Index > 0) { p1Index--; renderP1(); } }
         function nextItemP1() { if (p1Index < 29) { p1Index++; renderP1(); } }
 
-        /* --- PÁGINA 2: Quiz Cachetito (30 preguntas) --- */
+        /* --- PÁGINA 2: Quiz Cachetito --- */
         function renderP2() {
             const item = database[p2Index];
             document.getElementById('p2-progress').textContent = `Pregunta ${p2Index + 1} de 30`;
@@ -721,7 +756,6 @@
                 feedback.innerHTML = `<strong style="color:#e11d48;">${item.incorrectMsg}</strong><br><br>${item.exp}`;
             }
 
-            // Guardar automáticamente en el cuaderno
             if (!userNotesList[p2Index]) {
                 userNotesList[p2Index] = {
                     num: p2Index + 1,
@@ -739,11 +773,11 @@
                 p2Index++;
                 renderP2();
             } else {
-                alert("¡Completaste las 30 preguntas del quiz mi reina! 🎉🍑 Avanza a la siguiente página.");
+                alert("¡Completaste las 30 preguntas del quiz mi reina! 🎉🍑 Avanza a la siguiente página o entra al Libro.");
             }
         }
 
-        /* --- PÁGINA 3: Completa la Palabra (30 ejercicios) --- */
+        /* --- PÁGINA 3: Completa la Palabra --- */
         function renderP3() {
             const item = database[p3Index];
             document.getElementById('p3-progress').textContent = `Ejercicio ${p3Index + 1} de 30`;
@@ -769,35 +803,35 @@
         function prevItemP3() { if (p3Index > 0) { p3Index--; renderP3(); } }
         function nextItemP3() { if (p3Index < 29) { p3Index++; renderP3(); } }
 
-        /* --- PÁGINA 4: Cuaderno de Apuntes --- */
+        /* --- PÁGINA 4: LIBRO DE APUNTES COMPLETO --- */
         function renderP4() {
             const container = document.getElementById('accumulated-list');
-            if (userNotesList.length === 0) {
-                container.innerHTML = "<p style='color: #be185d;'>Aún no hay apuntes guardados. ¡Escribe o responde las preguntas en las páginas 1, 2 y 3 para llenar tu cuaderno!</p>";
-            } else {
-                let html = "";
-                database.forEach((item, idx) => {
-                    const noteObj = userNotesList[idx];
-                    const noteText = noteObj ? noteObj.note : "<em>(Aún no registrado)</em>";
-                    html += `<div class="notes-item">
-                        <strong>${idx + 1}. ${item.q}</strong><br>
-                        ✍️ <em>Tu apunte/Respuesta:</em> ${noteText}<br>
-                        💡 <em>Concepto clave:</em> ${item.exp}
-                    </div>`;
-                });
-                container.innerHTML = html;
-            }
+            let html = "";
+            
+            database.forEach((item, idx) => {
+                const noteObj = userNotesList[idx];
+                const customNote = noteObj ? noteObj.note : item.options[item.correct];
+                
+                html += `<div class="notes-item">
+                    <strong style="color: #be185d;">${idx + 1}. ${item.q}</strong><br>
+                    <span style="color: #059669; font-weight: bold;">✔️ Respuesta Correcta:</span> ${item.options[item.correct]}<br>
+                    ✍️ <em>Tu apunte registrado:</em> ${customNote}<br>
+                    💡 <em>Explicación breve:</em> ${item.exp}
+                </div>`;
+            });
+            
+            container.innerHTML = html;
         }
 
         function copyAllNotes() {
-            let text = "📖 MIS 30 APUNTES DE ESTUDIO DE GENÓMICA Y ADN 💖\n\n";
+            let text = "📖 MIS 30 APUNTES COMPLETO DE ESTUDIO DE GENÓMICA Y ADN 💖\n\n";
             database.forEach((item, idx) => {
                 const noteObj = userNotesList[idx];
-                const noteText = noteObj ? noteObj.note : item.options[item.correct];
-                text += `${idx + 1}. ${item.q}\n- Respuesta/Apunte: ${noteText}\n- Explicación: ${item.exp}\n\n`;
+                const customNote = noteObj ? noteObj.note : item.options[item.correct];
+                text += `${idx + 1}. ${item.q}\n- Respuesta Correcta: ${item.options[item.correct]}\n- Mi Apunte: ${customNote}\n- Explicación: ${item.exp}\n\n`;
             });
             navigator.clipboard.writeText(text);
-            alert("¡Todos tus 30 apuntes han sido copiados con éxito! 💕");
+            alert("¡Los 30 apuntes se han copiado completitos al portapapeles! 💕");
         }
 
         // Inicializar
