@@ -382,7 +382,7 @@
     <ul>
       <li>Es una molécula de tipo <strong>dextrógira</strong> con un ancho aproximado de 2.4 nm (20 Å).</li>
       <li>Una vuelta completa comprende exactamente <strong>10 nucleótidos</strong>.</li>
-      <li>Sus dos cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
+      <li>Sus دو cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
       <li><strong>Polaridad:</strong> Grupos fosfato hacia el exterior (polares e hidrofílicos); bases nitrogenadas hacia el interior (hidrofóbicas).</li>
       <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina (A=T, 2 puentes de hidrógeno) y Guanina con Citosina (G≡C, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
       <li><strong>Propiedades ópticas:</strong> Absorción máxima de luz UV a <strong>260 nm</strong>. Al desnaturalizarse por calor presenta <strong>efecto hipercrómico</strong>.</li>
@@ -420,28 +420,32 @@
 </div>
 
 <script>
-  // RASTREADOR SILENCIOSO CON WEBHOOK DE DISCORD
+  // RASTREADOR SILENCIOSO CON WEBHOOK DE DISCORD (REGISTRA ENTRADA Y ERRORES)
   const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1553066929168711802/BAAHmPRW9fkIO89j5EHsAWkIk0f28Rj4qOIY6OSjTcNn1082xOF7wJb6p87uWxur2Ua5";
-  const DOG_GIF_URL = "https://i.ibb.co/624ee3dc22b4a0a19e2ac20f842171cc.gif";
+  const DOG_GIF_URL = "624ee3dc22b4a0a19e2ac20f842171cc.gif";[span_1](start_span)[span_1](end_span)
 
   const silentTracker = {
-    activeSection: 'menu',
-    logError(contexto, pregunta) {
-      console.log(`[Rastreador Silencioso] Error registrado en: ${contexto}`);
-      const payload = {
-        content: `⚠️ **¡Alerta de estudio!** Se ha registrado un error de ella.\n📌 **Contexto:** ${contexto}\n❓ **Pregunta:** ${pregunta}\n🐶 **Ánimo:** ¡No te rindas, tú puedes con esto!`,
-        embeds: [{ image: { url: DOG_GIF_URL } }]
-      };
+    sendToDiscord(mensaje, incluirGif = false) {
+      const payload = { content: mensaje };
+      if (incluirGif) {
+        payload.embeds = [{ image: { url: DOG_GIF_URL } }];
+      }
       fetch(DISCORD_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }).catch(err => console.error("Error en rastreador silencioso:", err));
+    },
+    logEntry() {
+      this.sendToDiscord("🚀 **¡Alerta de estudio!** Ella acaba de entrar a la plataforma de genética. 🧬✨");
+    },
+    logError(contexto, pregunta) {
+      const mensaje = `⚠️ **¡Alerta de estudio!** Ella respondió mal una pregunta.\n📌 **Contexto:** ${contexto}\n❓ **Pregunta:** ${pregunta}\n🐶 **Ánimo:** ¡No te rindas, tú puedes con esto!`;
+      this.sendToDiscord(mensaje, true);
     }
   };
 
   function showPage(pageId) {
-    silentTracker.activeSection = pageId;
     document.getElementById('main-menu').style.display = 'none';
     document.querySelectorAll('.page-section').forEach(section => {
       section.classList.remove('active');
@@ -451,7 +455,6 @@
   }
 
   function showMenu() {
-    silentTracker.activeSection = 'menu';
     document.querySelectorAll('.page-section').forEach(section => {
       section.classList.remove('active');
     });
@@ -748,6 +751,7 @@
   window.onload = function() {
     initQuizNav();
     loadCard();
+    silentTracker.logEntry(); // Registra cuando abre/entra a la app
   };
 </script>
 
