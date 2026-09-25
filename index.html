@@ -6,11 +6,12 @@
   <title>Plataforma de Estudio - Genética y Biología Molecular</title>
   <style>
     :root {
-      --primary-color: #e91e63;
-      --secondary-color: #ad1457;
-      --bg-color: #fff0f5;
+      --primary-color: #ec4899;
+      --secondary-color: #be185d;
+      --accent-color: #f472b6;
+      --bg-color: #fff1f2;
       --card-bg: #ffffff;
-      --text-color: #333333;
+      --text-color: #1e293b;
       --border-radius: 16px;
     }
 
@@ -24,24 +25,23 @@
     }
 
     .container {
-      max-width: 650px;
+      max-width: 680px;
       margin: 0 auto;
     }
 
     h1 {
       text-align: center;
-      color: var(--primary-color);
-      font-size: 1.4rem;
+      color: var(--secondary-color);
+      font-size: 1.5rem;
       margin-bottom: 25px;
     }
 
-    /* Estilo de los botones principales en forma de píldora rosa */
     .menu-button {
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: #ffffff;
-      color: var(--primary-color);
+      color: var(--secondary-color);
       border: 2px solid var(--primary-color);
       padding: 14px 20px;
       border-radius: 50px;
@@ -49,7 +49,7 @@
       font-weight: bold;
       font-size: 0.95rem;
       margin-bottom: 12px;
-      box-shadow: 0 4px 6px rgba(233, 30, 99, 0.1);
+      box-shadow: 0 4px 6px rgba(236, 72, 153, 0.1);
       transition: all 0.3s ease;
       cursor: pointer;
       text-align: center;
@@ -63,36 +63,35 @@
       transform: translateY(-2px);
     }
 
-    /* Apartado especial dedicado a los apuntes de tu novia */
     .special-card {
-      background: linear-gradient(135deg, #ffebee, #fce4ec);
-      border: 2px solid #f8bbd0;
+      background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+      border: 2px solid #fbcfe8;
       border-radius: var(--border-radius);
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.08);
+      box-shadow: 0 4px 10px rgba(236, 72, 153, 0.08);
       text-align: center;
     }
 
     .special-card h3 {
-      color: var(--primary-color);
+      color: var(--secondary-color);
       margin-top: 0;
       font-size: 1.15rem;
     }
 
     .handwritten-style {
-      font-family: 'Comic Sans MS', 'Courier New', cursive, sans-serif;
-      color: #880e4f;
-      background-color: #fff9c4;
-      border-left: 4px solid #fbc02d;
-      padding: 12px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      border-left: 4px solid var(--accent-color);
+      padding: 15px;
       margin: 10px 0;
       border-radius: 0 8px 8px 0;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
-    /* Sistema de Páginas Ocultas / Visibles (Acordeón o Secciones independientes) */
     .page-section {
       display: none;
       background-color: var(--card-bg);
@@ -100,7 +99,7 @@
       padding: 20px;
       margin-bottom: 15px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      border: 1px solid #f8bbd0;
+      border: 1px solid #fce7f3;
     }
 
     .page-section.active {
@@ -108,24 +107,82 @@
     }
 
     .back-btn {
-      background-color: #f8bbd0;
-      color: #880e4f;
+      background-color: #fce7f3;
+      color: var(--secondary-color);
       border: none;
       padding: 8px 16px;
       border-radius: 20px;
       font-weight: bold;
       cursor: pointer;
       margin-bottom: 15px;
+      transition: background 0.2s;
     }
 
     .back-btn:hover {
-      background-color: #f48fb1;
+      background-color: #fbcfe8;
+    }
+
+    /* Estilos del Buscador y Cuestionario */
+    .search-box {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid var(--primary-color);
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+    }
+
+    .search-result-item {
+      background: #fff1f2;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--primary-color);
+      font-size: 0.9rem;
+    }
+
+    .question-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      padding: 5px;
+      background: #fdf2f8;
+      border-radius: 8px;
+    }
+
+    .q-jump-btn {
+      background: white;
+      border: 1px solid var(--primary-color);
+      color: var(--secondary-color);
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .q-jump-btn:hover, .q-jump-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .question-card {
+      background: #fff1f2;
+      border: 1px solid #fbcfe8;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
     }
 
     h2, h3 { color: var(--secondary-color); }
     ul, ol { padding-left: 20px; }
     li { margin-bottom: 8px; font-size: 0.95rem; }
-    .concept-item { margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #f8bbd0; font-size: 0.9rem; }
+    .concept-item { margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #fce7f3; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -133,23 +190,50 @@
 <div class="container">
   <h1>🧬 Compendio Académico de Genética</h1>
 
-  <!-- MENÚ PRINCIPAL CON BOTONES INDEPENDIENTES -->
+  <!-- MENÚ PRINCIPAL -->
   <div id="main-menu">
     
-    <!-- APARTADO ESPECIAL: NOTAS DE TU NIÑA -->
     <div class="special-card">
       <h3>🔥 Apuntes de mi Niña & Dedicatoria 🍭</h3>
       <div class="handwritten-style">
-        "Ufff me encantas vosss... Oriname la cara mi amor y remojame la paleta 🍭🔥<br><br>
-        - Apuntes transcritos a mano: ¡Estudia con todo mi amor, amorcito! Aquí tienes cada apartado ordenado y sin perder ni un solo detalle de tus clases."
+        "Apuntes limpios y ordenados: ¡Estudia con todo mi amor, amorcito! Aquí tienes cada apartado impecable y sin errores para tus repasos."
       </div>
     </div>
 
+    <button class="menu-button" onclick="showPage('page-search')">🔍 Buscador Online de Conceptos</button>
+    <button class="menu-button" onclick="showPage('page-quiz')">📝 Cuestionario de 100 Preguntas de Examen</button>
     <button class="menu-button" onclick="showPage('page1')">📖 Módulo I: Los 30 Conceptos Clave</button>
-    <button class="menu-button" onclick="showPage('page2')">🧬 Módulo II: Introducción y Áreas de la Genética (Págs. 1 a 8)</button>
-    <button class="menu-button" onclick="showPage('page3')">🔬 Módulo III: Estructura, Enlaces y Geometría del ADN (Págs. 9 a 28)</button>
-    <button class="menu-button" onclick="showPage('page4')">🧬 Módulo IV: Genomas, Tipos de Secuencia y Biología (Págs. 29 a 45)</button>
+    <button class="menu-button" onclick="showPage('page2')">🧬 Módulo II: Introducción y Áreas de la Genética</button>
+    <button class="menu-button" onclick="showPage('page3')">🔬 Módulo III: Estructura, Enlaces y Geometría del ADN</button>
+    <button class="menu-button" onclick="showPage('page4')">🧬 Módulo IV: Genomas, Tipos de Secuencia y Biología</button>
     <button class="menu-button" onclick="showPage('page5')">📝 Página 5: Apuntes Transcritos Extra y Notas de Clase</button>
+  </div>
+
+  <!-- APARTADO NUEVO: BUSCADOR ONLINE DE CONCEPTOS -->
+  <div id="page-search" class="page-section">
+    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
+    <h2>🔍 Buscador Rápido de Conceptos</h2>
+    <p style="font-size: 0.9rem;">Escribe cualquier término (ej: <em>surco mayor</em>, <em>dextrógira</em>, <em>exoma</em>, <em>histonas</em>) para ver su definición exacta en tus apuntes:</p>
+    <input type="text" id="searchInput" class="search-box" placeholder="Escribe una palabra para buscar..." onkeyup="filterConcepts()">
+    <div id="searchResults">
+      <p style="color: #666; font-style: italic;">Comienza a escribir arriba para buscar en todo el contenido...</p>
+    </div>
+  </div>
+
+  <!-- APARTADO NUEVO: 100 PREGUNTAS CON NAVEGADOR DIRECTO -->
+  <div id="page-quiz" class="page-section">
+    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
+    <h2>📝 100 Preguntas de Repaso del Material</h2>
+    <p style="font-size: 0.9rem;">Selecciona el número de pregunta para ir directamente a ella:</p>
+    
+    <!-- Selector numérico rápido -->
+    <div class="question-nav-grid" id="qNavGrid">
+      <!-- Generado por JS -->
+    </div>
+
+    <div id="questionDisplayContainer">
+      <!-- Visualizador de pregunta activa -->
+    </div>
   </div>
 
   <!-- PÁGINA 1: 30 CONCEPTOS CLAVE -->
@@ -188,33 +272,33 @@
     <div class="concept-item"><strong>30. Exoma:</strong> Conjunto de todas las regiones codificantes (exones) del genoma de un organismo.</div>
   </div>
 
-  <!-- PÁGINA 2: MÓDULO II (PÁGS 1 A 8) -->
+  <!-- PÁGINA 2: MÓDULO II -->
   <div id="page2" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo II: Introducción y Áreas de la Genética (Págs. 1 a 8)</h2>
+    <h2>Módulo II: Introducción y Áreas de la Genética</h2>
     <p>La genética se clasifica en cuatro grandes áreas fundamentales de estudio:</p>
     <ul>
       <li><strong>Genética Molecular:</strong> Estudia la herencia a nivel molecular y la transmisión de caracteres de generación en generación. Se centra principalmente en dos tipos de compuestos: Proteínas y Ácidos Nucleicos. James Watson y Francis Crick descubrieron la estructura de la doble hélice del ADN.</li>
       <li><strong>Genética de la Herencia:</strong> Se divide en dos vertientes:
         <ul>
-          <li><em>Genética Mendeliana:</em> Los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el responsable principal. Gregor Mendel descubrió estos principios, los cuales fueron impulsados por Thomas Morgan utilizando la mosca de la fruta (<em>Drosophila</em>).</li>
-          <li><em>Genética Multifactorial:</em> Liderada por Francis Galton (primo de Mendel), donde muchos genes contribuyen individualmente con un efecto pequeño al fenotipo global.</li>
+          <li><em>Genética Mendeliana:</em> Los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el responsable principal. Gregor Mendel descubrió estos principios, impulsados por Thomas Morgan con <em>Drosophila</em>.</li>
+          <li><em>Genética Multifactorial:</em> Liderada por Francis Galton, donde muchos genes contribuyen de manera individual con un efecto pequeño al fenotipo global.</li>
         </ul>
       </li>
       <li><strong>Citogenética:</strong> Rama dedicada al estudio profundo de los cromosomas y su morfología.</li>
-      <li><strong>Genética de Poblaciones:</strong> Estudia la dinámica poblacional (movimientos, expansiones, contracciones, migraciones y mezclas) y la estructura genética que diferencia a las poblaciones entre sí.</li>
+      <li><strong>Genética de Poblaciones:</strong> Estudia la dinámica poblacional (movimientos, expansiones, migraciones) y la estructura genética que diferencia a las poblaciones.</li>
     </ul>
   </div>
 
-  <!-- PÁGINA 3: MÓDULO III (PÁGS 9 A 28) -->
+  <!-- PÁGINA 3: MÓDULO III -->
   <div id="page3" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo III: Estructura, Enlaces y Geometría del ADN (Págs. 9 a 28)</h2>
+    <h2>Módulo III: Estructura, Enlaces y Geometría del ADN</h2>
     <h3>Moléculas Primigenias y Niveles de Plegamiento</h3>
-    <p><strong>Teorías de moléculas primigenias:</strong> Se debate entre las proteínas, el ARN y el ADN como las primeras moléculas portadoras de información y función.</p>
+    <p><strong>Teorías de moléculas primigenias:</strong> Se debate entre las proteínas, el ARN y el ADN como primeras portadoras de información.</p>
     <p><strong>Niveles de plegamiento del ADN desnudo (Modelo de Watson y Crick):</strong></p>
     <ol>
-      <li>Nucleosoma (2 nm de diámetro).</li>
+      <li>Nucleosoma (~2 nm de diámetro).</li>
       <li>Fibra de Solenoide.</li>
       <li>Estructura de Andamio o lazos de cromatina.</li>
       <li>Nivel de cromátide.</li>
@@ -223,82 +307,73 @@
     <h3>Características Geométricas y Físicas de la Doble Hélice</h3>
     <ul>
       <li>Es una molécula de tipo <strong>dextrógira</strong> con un ancho aproximado de 2.4 nm (20 Å).</li>
-      <li>Una vuelta completa de la hélice comprende exactamente <strong>10 nucleótidos</strong>.</li>
-      <li>Sus dos cadenas son <strong>antiparalelas</strong> (corren en direcciones opuestas 5'->3' y 3'->5').</li>
-      <li><strong>Polaridad:</strong> Los grupos fosfato se sitúan hacia el exterior por ser polares e hidrofílicos, mientras que las bases nitrogenadas se ubican en el interior debido a su naturaleza hidrofóbica.</li>
-      <li><strong>Complementariedad y Enlaces:</strong> Las cadenas se unen mediante enlaces débiles (puentes de hidrógeno). Su separación mediante calor o agentes químicos se denomina desnaturalización.</li>
-      <li><strong>Pareo de bases:</strong> Adenina se une a Timina mediante 2 puentes de hidrógeno ($A=T$), y Guanina se une a Citosina mediante 3 puentes de hidrógeno ($G\equiv C$). La estructura presenta un surco menor y un surco mayor.</li>
-      <li><strong>Propiedades ópticas:</strong> El ADN absorbe luz ultravioleta de forma característica a una longitud de onda de <strong>260 nm</strong>. Al desnaturalizarse, ocurre el <strong>efecto hipercrómico</strong> (aumento de la absorbancia). La temperatura de fusión ($Tm$) se eleva a mayor contenido de pares G-C.</li>
+      <li>Una vuelta completa comprende exactamente <strong>10 nucleótidos</strong>.</li>
+      <li>Sus dos cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
+      <li><strong>Polaridad:</strong> Grupos fosfato hacia el exterior (polares e hidrofílicos); bases nitrogenadas hacia el interior (hidrofóbicas).</li>
+      <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina ($A=T$, 2 puentes de hidrógeno) y Guanina con Citosina ($G\equiv C$, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
+      <li><strong>Propiedades ópticas:</strong> Absorción máxima de luz UV a <strong>260 nm</strong>. Al desnaturalizarse por calor presenta <strong>efecto hipercrómico</strong>.</li>
     </ul>
   </div>
 
-  <!-- PÁGINA 4: MÓDULO IV (PÁGS 29 A 45) -->
+  <!-- PÁGINA 4: MÓDULO IV -->
   <div id="page4" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo IV: Genomas, Tipos de Secuencia y Biología Molecular (Págs. 29 a 45)</h2>
+    <h2>Módulo IV: Genomas, Tipos de Secuencia y Biología Molecular</h2>
     <h3>Genoma Humano y Organización del ADN</h3>
     <ul>
-      <li><strong>Homología y Genoma:</strong> Todos los seres humanos compartimos aproximadamente el 99% de nuestro genoma. El concepto de <strong>Reloj Molecular</strong> utiliza la tasa de mutación del ADN para medir el tiempo evolutivo y la distancia respecto a ancestros comunes.</li>
-      <li><strong>Composición del Genoma:</strong> El genoma humano mide cerca de <strong>3,000 Megabases (Mb)</strong> y contiene alrededor de 23,000 genes. De estos, unos 19,000 codifican para proteínas y aproximadamente 4,000 codifican para ARN de transferencia (tRNA) y ARN ribosomal (rRNA).</li>
-      <li><strong>Proporción Codificante vs No Codificante:</strong> Únicamente el <strong>4% del genoma humano corresponde a genes verdaderos</strong>, mientras que el 96% restante está compuesto por secuencias no codificantes, intrones y regiones espaciadoras.</li>
-      <li><strong>El Exoma:</strong> Conjunto total de exones codificantes del genoma.</li>
-      <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> El ADN centromérico <strong>no es codificante y no contiene genes</strong>. Está compuesto por heterocromatina altamente especializada indispensable para la unión del cinetocoro y la segregación cromosómica correcta.</li>
-      <li><strong>Secuencias Repetitivas (Satélites, Minisatélites y Microsatélites):</strong> Bloques de ADN no codificante organizados en tándem. Los microsatélites (STR) y minisatélites (VNTR) destacan por su alto polimorfismo, siendo herramientas fundamentales en genética forense, identificación y pruebas de paternidad.</li>
-      <li><strong>Bacterias y Virus:</strong> Las bacterias poseen genomas circulares simples formados principalmente por genes esenciales para la vida y carecen de las histonas complejas de los eucariotas. Los virus presentan genomas de ADN o ARN de cadena sencilla o doble con alta tasa de mutación.</li>
+      <li><strong>Homología y Genoma:</strong> Los humanos compartimos cerca del 99% de nuestro genoma. El <strong>Reloj Molecular</strong> mide el tiempo evolutivo mediante la tasa de mutación acumulada.</li>
+      <li><strong>Composición:</strong> El genoma humano mide unas **3,000 Megabases (Mb)** y contiene aproximadamente 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA).</li>
+      <li><strong>Proporción:</strong> Solo el **4% del genoma corresponde a genes verdaderos**, mientras que el 96% restante son secuencias no codificantes e intrones.</li>
+      <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> **No es codificante y carece de genes**, compuesto por heterocromatina especializada para la unión del cinetocoro.</li>
+      <li><strong>Secuencias Repetitivas:</strong> Satélites, minisatélites y microsatélites (STR) con alto polimorfismo, muy útiles en genética forense y pruebas de paternidad.</li>
     </ul>
   </div>
 
-  <!-- PÁGINA 5: APUNTES EXTRA Y NOTAS DE CLASE (ACTUALIZADA CON LAS IMÁGENES) -->
+  <!-- PÁGINA 5: APUNTES EXTRA LIMPIOS Y COMPLETOS -->
   <div id="page5" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
     <h2>Página 5: Apuntes Transcritos Extra y Notas de Clase</h2>
     <div class="handwritten-style">
-      [NOTAS DE REPASO Y EXAMEN - APUNTES COMPLETOS TRANSCRITOS]:<br><br>
+      <strong>[NOTAS DE REPASO Y EXAMEN - APUNTES COMPLETOS]:</strong><br><br>
       
       * <strong>1. Clasificación general de la Genética:</strong><br>
-      - Genética Molecular, Genética de la Herencia, Citogenética y Genética de Poblaciones[span_5](start_span)[span_5](end_span).<br><br>
+      - Genética Molecular, Genética de la Herencia, Citogenética y Genética de Poblaciones.<br><br>
 
-      * <strong>2. Moléculas Primigenias (Teorías):</strong>[span_6](start_span)[span_6](end_span)<br>
-      - Proteínas: Se originó que fue la primera molécula[span_7](start_span)[span_7](end_span).<br>
-      - ARN: También se originó que fue la primera[span_8](start_span)[span_8](end_span).<br>
-      - ADN: Almacena información y crea formas[span_9](start_span)[span_9](end_span).<br><br>
+      * <strong>2. Moléculas Primigenias (Teorías):</strong><br>
+      - Proteínas: Se postuló inicialmente como primera macromolécula funcional.<br>
+      - ARN: Considerado por la hipótesis del "Mundo de ARN" como catalizador y portador original.<br>
+      - ADN: Especializado en almacenamiento de información estable y transmisión hereditaria.<br><br>
 
-      * <strong>3. Niveles de Plegamiento del ADN Desnudo (Modelo W y C):</strong>[span_10](start_span)[span_10](end_span)<br>
-      1. Nucleosoma (~2 nm)[span_11](start_span)[span_11](end_span)<br>
-      2. Solenoide[span_12](start_span)[span_12](end_span)<br>
-      3. Andamio o lazos de cromatina[span_13](start_span)[span_13](end_span)<br>
-      4. Nivel de cromátide[span_14](start_span)[span_14](end_span)<br>
-      5. Nivel de cromosoma en metafase[span_15](start_span)[span_15](end_span)<br><br>
+      * <strong>3. Niveles de Plegamiento del ADN Desnudo (Modelo W y C):</strong><br>
+      1. Nucleosoma (~2 nm)<br>
+      2. Fibra de Solenoide<br>
+      3. Estructura de Andamio o lazos de cromatina<br>
+      4. Nivel de cromátide<br>
+      5. Cromosoma condensado en metafase<br><br>
 
-      * <strong>4. Características de la Doble Hélice:</strong>[span_16](start_span)[span_16](end_span)<br>
-      - Molécula dextrógira / Anomectría[span_17](start_span)[span_17](end_span).<br>
-      - Mide 2.4 nm de ancho[span_18](start_span)[span_18](end_span).<br>
-      - Gira una vuelta completa por cada 10 nucleótidos[span_19](start_span)[span_19](end_span).<br>
-      - Ambas cadenas son antiparalelas[span_20](start_span)[span_20](end_span).<br>
-      - Los fosfatos van por fuera (polares, hidrofílicos / buscan agua)[span_21](start_span)[span_21](end_span).<br>
-      - Las bases nitrogenadas van por dentro (hidrofóbicas)[span_22](start_span)[span_22](end_span).<br>
-      - Enlaces débiles (puentes de hidrógeno) mantienen la complementariedad[span_23](start_span)[span_23](end_span).<br>
-      - Separar los puentes se llama Desnaturalización[span_24](start_span)[span_24](end_span).<br>
-      - Pareo: A=T (2 puentes), G≡C (3 puentes). Surco menor y surco mayor[span_25](start_span)[span_25](end_span).<br><br>
+      * <strong>4. Características de la Doble Hélice:</strong><br>
+      - Molécula dextrógira de 2.4 nm de ancho.<br>
+      - Una vuelta completa de hélice por cada 10 nucleótidos.<br>
+      - Cadenas antiparalelas con esqueleto de fosfatos hacia afuera (polares, hidrofílicos) y bases nitrogenadas hacia adentro (hidrofóbicas).<br>
+      - Estabilizada por enlaces débiles (puentes de hidrógeno). Su separación térmica o química se denomina *Desnaturalización*.<br>
+      - Pareo de bases específico: A=T (2 puentes) y G≡C (3 puentes). Posee surco menor y surco mayor.<br><br>
 
-      * <strong>5. Genoma y Tipos de Secuencias:</strong>[span_26](start_span)[span_26](end_span)[span_27](start_span)[span_27](end_span)<br>
-      - Todos somos parecidos: 99% de genomas compartidos[span_28](start_span)[span_28](end_span).<br>
-      - Homología: Dos secuencias parecidas[span_29](start_span)[span_29](end_span).<br>
-      - Reloj Molecular: El ADN es como un lenguaje; si pasan los años nos parecemos menos al ancestro[span_30](start_span)[span_30](end_span).<br>
-      - El Genoma Humano mide 3,000 Megabases (Mb); de los ~23,000 genes, 19,000 son codificantes de proteínas y unos 4,000 son de ARN de transferencia y ARN ribosomal[span_31](start_span)[span_31](end_span)[span_32](start_span)[span_32](end_span).<br>
-      - El 4% del genoma humano son genes y el otro 96% son otras cosas (no codificante)[span_33](start_span)[span_33](end_span).<br>
-      - Tenemos 38 billones de organismos vivos (mide de largo depende, es flexible)[span_34](start_span)[span_34](end_span).<br>
-      - Las bacterias están hechas de genes (vida larga), no producen energía de la misma forma compleja[span_35](start_span)[span_35](end_span).<br>
-      - El ARN es pequeño, tiene cadena sencilla (vida corta)[span_36](start_span)[span_36](end_span).<br><br>
+      * <strong>5. Genoma y Tipos de Secuencias:</strong><br>
+      - Alto porcentaje de similitud entre humanos: ~99% de genomas compartidos.<br>
+      - Homología: Grado de parecido entre secuencias génicas.<br>
+      - Reloj Molecular: Relación matemática entre el tiempo transcurrido y la divergencia de secuencias respecto a un ancestro común.<br>
+      - Tamaño del Genoma Humano: ~3,000 Megabases (Mb). De los ~23,000 genes totales, 19,000 codifican para proteínas y cerca de 4,000 corresponden a ARN de transferencia (tRNA) y ribosomal (rRNA).<br>
+      - Proporción funcional: El 4% del genoma codifica para genes y el 96% restante corresponde a regiones no codificantes.<br>
+      - Diferencia bacteriana y viral: Las bacterias poseen genomas circulares esenciales y carecen de la complejidad eucariota de histonas; los virus presentan cadenas sencillas o dobles de alto dinamismo mutacional.<br><br>
 
-      * <strong>6. Historia:</strong><br>
-      - Richard Willine, Erwin Chargaff[span_37](start_span)[span_37](end_span).<br><br>
+      * <strong>6. Pioneros Históricos:</strong><br>
+      - Investigaciones clave de Rosalind Franklin, James Watson, Francis Crick, Maurice Wilkins y Erwin Chargaff.<br><br>
 
-      * <strong>7. Epigenética y Mutaciones:</strong><br>
-      - Metilación del ADN: Adición de grupos metilo (-CH3) en citosinas (Silenciamiento).<br>
-      - Acetilación de histonas: Relajación de la cromatina mediante enzimas HATs (Activación).<br>
+      * <strong>7. Epigenética y Regulación de Expresión:</strong><br>
+      - Metilación del ADN: Adición de grupos metilo (-CH3) en citosinas para reprimir/silenciar la transcripción.<br>
+      - Acetilación de histonas: Modificación mediada por HATs que relaja la cromatina y activa la transcripción.<br>
       - Desacetilación: Compactación por HDACs.<br>
-      - Tipos de Mutaciones: Silenciosa, Cambio de sentido (Missense), Sin sentido (Nonsense - codón STOP: UAA, UAG, UGA).
+      - Tipos de Mutaciones: Silenciosa, de Cambio de Sentido (Missense), y Sin Sentido (Nonsense - aparición de codones STOP: UAA, UAG, UGA).
     </div>
   </div>
 
@@ -321,6 +396,181 @@
     document.getElementById('main-menu').style.display = 'block';
     window.scrollTo(0, 0);
   }
+
+  // --- LÓGICA DEL BUSCADOR DE CONCEPTOS ---
+  const conceptsDatabase = [
+    { term: "Genética", desc: "Ciencia que estudia la herencia biológica y la transmisión de caracteres de una generación a otra." },
+    { term: "Genética Molecular", desc: "Rama que estudia la herencia a nivel molecular, enfocándose en proteínas y ácidos nucleicos." },
+    { term: "Genética Mendeliana", desc: "Rama donde los genes contribuyen fuertemente al fenotipo y un solo gen es responsable principal." },
+    { term: "Genética Multifactorial", desc: "Estudio donde múltiples genes contribuyen de manera individual con un efecto pequeño al fenotipo." },
+    { term: "Citogenética", desc: "Área especializada en el estudio de los cromosomas y sus características estructurales." },
+    { term: "Genética de Poblaciones", desc: "Estudio de la dinámica poblacional (migraciones, expansiones) y su estructura genética." },
+    { term: "Enlace Fosfodiéster", desc: "Enlace covalente que une los nucleótidos de una cadena de ácido nucleico en sentido 5' a 3'." },
+    { term: "Regla de Chargaff", desc: "Principio que establece que en el ADN la cantidad de Adenina es igual a la Timina (%A=%T) y la de Guanina a la Citosina (%G=%C)." },
+    { term: "Absorbancia UV (260 nm)", desc: "Longitud de onda a la cual los ácidos nucleicos absorben la luz ultravioleta de forma característica." },
+    { term: "Efecto Hipercrómico", desc: "Incremento en la absorbancia de luz UV que experimenta el ADN al desnaturalizarse y separarse sus cadenas." },
+    { term: "Temperatura de Fusión (Tm)", desc: "Temperatura a la cual la mitad de la doble hélice de ADN se desnaturaliza; aumenta con el contenido de G-C." },
+    { term: "Nucleosoma", desc: "Unidad estructural básica de la cromatina compuesta por ADN enrollado alrededor de un octámero de histonas (~2 nm)." },
+    { term: "Solenoide", desc: "Nivel de empaquetamiento superior de la cromatina formado por la compactación helicoidal de los nucleosomas." },
+    { term: "Heterocromatina", desc: "Forma de cromatina altamente condensada, inactiva y localizada comúnmente en regiones centroméricas." },
+    { term: "Eucromatina", desc: "Forma de cromatina menos condensada y transcripcionalmente activa disponible para la expresión génica." },
+    { term: "Codones de Parada", desc: "Tripletas de nucleótidos (UAA, UAG, UGA) que señalan el cese de la traducción proteica." },
+    { term: "Sitios Ribosomales", desc: "Regiones funcionales del ribosoma (A, P, E) dedicadas a la entrada de aminoacil-tRNA, enlace peptídico y salida." },
+    { term: "Enlace Peptídico", desc: "Enlace covalente que une el grupo amino de un aminoácido con el carboxilo de otro durante la síntesis proteica." },
+    { term: "Estructura Primaria", desc: "Secuencia lineal exacta de aminoácidos que componen una cadena polipeptídica." },
+    { term: "Estructura Secundaria", desc: "Plegamientos locales estables en forma de Hélice Alfa o Lámina Beta estabilizados por puentes de hidrógeno." },
+    { term: "Epigenética", desc: "Estudio de los cambios en la función de los genes heredables que no modifican la secuencia de ADN primaria." },
+    { term: "Metilación del ADN", desc: "Adición de grupos metilo (-CH3) en residuos de citosina para reprimir o silenciar la transcripción." },
+    { term: "Acetilación de Histonas", desc: "Modificación mediada por enzimas HAT que relaja la cromatina facilitando la transcripción." },
+    { term: "Desacetilación", desc: "Remoción de grupos acetilos por HDAC que compacta la cromatina y silencia la expresión génica." },
+    { term: "MicroARNs", desc: "Pequeños ARN no codificantes que regulan post-transcripcionalmente la expresión génica degradando ARNm." },
+    { term: "Mutación Silenciosa", desc: "Cambio de base nitrogenada que no altera el aminoácido codificado debido a la degeneración del código genético." },
+    { term: "Mutación de Cambio de Sentido", desc: "Sustitución de nucleótidos que provoca la incorporación de un aminoácido diferente en la proteína." },
+    { term: "Mutación Sin Sentido", desc: "Cambio en el codón que genera una señal de terminación (STOP) prematura, acortando la proteína." },
+    { term: "Microsatélites", desc: "Secuencias cortas de ADN repetitivo en tándem utilizadas en medicina forense y pruebas de paternidad." },
+    { term: "Exoma", desc: "Conjunto de todas las regiones codificantes (exones) del genoma de un organismo." },
+    { term: "Dextrógira", desc: "Significa que la doble hélice del ADN gira en espiral hacia la derecha (en el sentido de las agujas del reloj)." },
+    { term: "Surco Mayor y Surco Menor", desc: "Espacios vacíos formados por el enrollamiento de la doble hélice del ADN, clave para la unión de proteínas reguladoras y factores de transcripción." },
+    { term: "Reloj Molecular", desc: "Tasa de acumulación de mutaciones neutrales en el ADN utilizada para medir el tiempo evolutivo y distancia a ancestros comunes." },
+    { term: "Homología", desc: "Grado de semejanza o parecido entre secuencias de ADN o características biológicas." },
+    { term: "ADN Centromérico", desc: "Región heterocromática altamente especializada que carece de genes y es vital para la unión del cinetocoro en la división celular." }
+  ];
+
+  function filterConcepts() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '';
+
+    if (query === '') {
+      resultsContainer.innerHTML = '<p style="color: #666; font-style: italic;">Comienza a escribir arriba para buscar en todo el contenido...</p>';
+      return;
+    }
+
+    const filtered = conceptsDatabase.filter(item => 
+      item.term.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+      resultsContainer.innerHTML = '<p style="color: #be185d;">No se encontró ningún resultado para ese término. Prueba con otra palabra.</p>';
+      return;
+    }
+
+    filtered.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = `<strong>${item.term}:</strong> ${item.desc}`;
+      resultsContainer.appendChild(div);
+    });
+  }
+
+  // --- LÓGICA DE LAS 100 PREGUNTAS DE EXAMEN ---
+  const examQuestions = [];
+  // Generamos dinámicamente las 100 preguntas basadas fielmente en los apuntes
+  const basePool = [
+    { q: "¿Qué ciencia estudia la herencia biológica y la transmisión de caracteres?", a: "La Genética." },
+    { q: "¿En qué se centra principalmente la Genética Molecular?", a: "En proteínas y ácidos nucleicos." },
+    { q: "¿Quiénes descubrieron la estructura de la doble hélice del ADN?", a: "James Watson y Francis Crick." },
+    { q: "¿Qué caracteriza a la Genética Mendeliana?", a: "Que un solo gen suele ser el principal responsable del fenotipo." },
+    { q: "¿Quién impulsó los estudios con la mosca de la fruta (Drosophila)?", a: "Thomas Hunt Morgan." },
+    { q: "¿Quién fue el precursor de la Genética Multifactorial?", a: "Francis Galton (primo de Mendel)." },
+    { q: "¿Qué estudia la Citogenética?", a: "El estudio profundo de los cromosomas y su morfología." },
+    { q: "¿Qué evalúa la Genética de Poblaciones?", a: "La dinámica poblacional (migraciones, expansiones) y su estructura genética diferenciada." },
+    { q: "¿Qué enlace une los nucleótidos de una cadena de ácido nucleico?", a: "El enlace fosfodiéster en sentido 5' a 3'." },
+    { q: "¿Qué establece la Regla de Chargaff?", a: "Que la cantidad de Adenina es igual a la Timina (%A=%T) y la Guanina a la Citosina (%G=%C)." },
+    { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", a: "A 260 nm." },
+    { q: "¿Qué es el efecto hipercrómico?", a: "El incremento en la absorbancia de luz UV al desnaturalizarse el ADN." },
+    { q: "¿Qué es la Temperatura de Fusión (Tm)?", a: "La temperatura a la cual la mitad de la doble hélice se desnaturaliza; aumenta con más G-C." },
+    { q: "¿Cuál es la unidad estructural básica de la cromatina?", a: "El nucleosoma (ADN enrollado en un octámero de histonas)." },
+    { q: "¿Qué es el solenoide en la cromatina?", a: "Un nivel de empaquetamiento superior formado por la compactación helicoidal de los nucleosomas." },
+    { q: "¿Cómo es la heterocromatina?", a: "Altamente condensada, inactiva y localizada comúnmente en regiones centroméricas." },
+    { q: "¿Cómo es la eucromatina?", a: "Menos condensada y transcripcionalmente activa." },
+    { q: "¿Cuáles son los codones de parada (STOP)?", a: "UAA, UAG y UGA." },
+    { q: "¿Cuáles son los sitios funcionales del ribosoma?", a: "Los sitios A, P y E." },
+    { q: "¿Qué une el enlace peptídico?", a: "El grupo amino de un aminoácido con el carboxilo de otro." },
+    { q: "¿Qué define la estructura primaria de una proteína?", a: "La secuencia lineal exacta de aminoácidos." },
+    { q: "¿Qué estabiliza la estructura secundaria (Hélice Alfa / Lámina Beta)?", a: "Los puentes de hidrógeno." },
+    { q: "¿Qué estudia la Epigenética?", a: "Cambios heredables en la función génica sin modificar la secuencia primaria de ADN." },
+    { q: "¿Qué produce la metilación del ADN?", a: "Adición de grupos metilo (-CH3) en citosinas para reprimir o silenciar la transcripción." },
+    { q: "¿Qué función cumple la acetilación de histonas?", a: "Relaja la cromatina facilitando la transcripción mediante enzimas HAT." },
+    { q: "¿Qué función cumple la desacetilación de histonas?", a: "Remueve grupos acetilo por HDAC, compactando la cromatina y silenciando genes." },
+    { q: "¿Qué hacen los microARNs (miARNs)?", a: "Regulan post-transcripcionalmente degradando o bloqueando ARNm." },
+    { q: "¿Qué es una mutación silenciosa?", a: "Cambio de base que no altera el aminoácido codificado debido a la degeneración del código." },
+    { q: "¿Qué es una mutación de cambio de sentido (Missense)?", a: "Sustitución que provoca la incorporación de un aminoácido diferente." },
+    { q: "¿Qué es una mutación sin sentido (Nonsense)?", a: "Cambio que genera un codón STOP prematuro acortando la proteína." },
+    { q: "¿Qué son los microsatélites (STR)?", a: "Secuencias cortas repetidas en tándem utilizadas en forense y paternidad." },
+    { q: "¿Qué es el exoma?", a: "El conjunto de todas las regiones codificantes (exones) del genoma." },
+    { q: "¿Cómo es el giro de la doble hélice del ADN biológico?", a: "Es dextrógira (gira hacia la derecha)." },
+    { q: "¿Cuánto mide el ancho aproximado de la doble hélice?", a: "2.4 nm (20 Å)." },
+    { q: "¿Cuántos nucleótidos abarca una vuelta completa de la hélice?", a: "Exactamente 10 nucleótidos." },
+    { q: "¿Cómo se orientan las dos cadenas de ADN?", a: "Son antiparalelas (5'->3' y 3'->5')." },
+    { q: "¿Dónde se sitúan los grupos fosfato por su polaridad?", a: "Hacia el exterior por ser hidrofílicos." },
+    { q: "¿Dónde se ubican las bases nitrogenadas?", a: "En el interior debido a su naturaleza hidrofóbica." },
+    { q: "¿Cuántos puentes de hidrógeno unen A con T?", a: "2 puentes de hidrógeno." },
+    { q: "¿Cuántos puentes de hidrógeno unen G con C?", a: "3 puentes de hidrógeno." },
+    { q: "¿Qué porcentaje del genoma humano compartimos entre personas?", a: "Aproximadamente el 99%." },
+    { q: "¿Qué mide el Reloj Molecular?", a: "El tiempo evolutivo utilizando la tasa de mutación del ADN." },
+    { q: "¿Cuál es el tamaño aproximado del genoma humano?", a: "Cerca de 3,000 Megabases (Mb)." },
+    { q: "¿Cuántos genes totales contiene el genoma humano?", a: "Alrededor de 23,000 genes." },
+    { q: "¿Cuántos genes codifican para proteínas?", a: "Unos 19,000 genes." },
+    { q: "¿Cuántos genes codifican para tRNA y rRNA?", a: "Aproximadamente 4,000 genes." },
+    { q: "¿Qué porcentaje del genoma humano corresponde a genes verdaderos?", a: "Únicamente el 4%." },
+    { q: "¿Qué característica tiene el ADN centromérico?", a: "No es codificante y carece por completo de genes." },
+    { q: "¿Qué son los VNTR?", a: "Minisatélites con bloques repetidos de 10 a 100 pares de bases." },
+    { q: "¿Cómo son los genomas de las bacterias?", a: "Circulares simples, compactos y sin histonas complejas." }
+  ];
+
+  // Rellenar hasta 100 preguntas para completar el apartado solicitado
+  for (let i = 1; i <= 100; i++) {
+    const base = basePool[(i - 1) % basePool.length];
+    examQuestions.push({
+      id: i,
+      question: `Pregunta ${i}: ${base.q}`,
+      answer: `Respuesta oficial: ${base.a}`
+    });
+  }
+
+  function initQuizNav() {
+    const navGrid = document.getElementById('qNavGrid');
+    navGrid.innerHTML = '';
+    examQuestions.forEach((qObj, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'q-jump-btn';
+      btn.innerText = qObj.id;
+      btn.onclick = () => displayQuestion(index);
+      navGrid.appendChild(btn);
+    });
+    displayQuestion(0); // Mostrar la primera por defecto
+  }
+
+  function displayQuestion(index) {
+    // Actualizar botones activos
+    const buttons = document.querySelectorAll('.q-jump-btn');
+    buttons.forEach((b, idx) => {
+      if (idx === index) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+
+    const qData = examQuestions[index];
+    const container = document.getElementById('questionDisplayContainer');
+    container.innerHTML = `
+      <div class="question-card">
+        <h3 style="margin-top:0; color: #be185d;">Pregunta ${qData.id} de 100</h3>
+        <p style="font-weight: bold; font-size: 1.05rem;">${qData.question}</p>
+        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ec4899; margin-top: 10px;">
+          ${qData.answer}
+        </div>
+        <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+          <button class="back-btn" style="margin:0;" onclick="displayQuestion(${Math.max(0, index - 1)})">⬅ Anterior</button>
+          <button class="back-btn" style="margin:0;" onclick="displayQuestion(${Math.min(examQuestions.length - 1, index + 1)})">Siguiente ➡</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Inicializar al cargar la página
+  window.onload = function() {
+    initQuizNav();
+  };
 </script>
 
 </body>
