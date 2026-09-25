@@ -3,260 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudio Interactivo de Genómica - Para mi Reina 💖</title>
+    <title>Estudio Completo de Genómica y Transcripción - Para mi Reina 💖</title>
     <style>
         :root {
-            --rosa-principal: #ffb6c1;
-            --rosa-claro: #fff0f5;
-            --rosa-hover: #ff69b4;
-            --rosa-oscuro: #d63384;
-            --texto-color: #4a4a4a;
-            --blanco: #ffffff;
-            --sombre-suave: 0 4px 15px rgba(255, 182, 193, 0.4);
-            --border-radius: 16px;
+            --primary: #ff69b4;
+            --primary-dark: #d63384;
+            --bg-soft: #fff0f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #ffb6c1;
+            --success-bg: #e6fffa;
+            --success-text: #234e52;
+            --error-bg: #fff5f5;
+            --error-text: #9b2c2c;
+            --radius: 14px;
+            --shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fff9fb;
-            color: var(--texto-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        /* NAVEGACIÓN POR PÁGINAS / PESTAÑAS */
+        /* NAVEGACIÓN PRINCIPAL */
         .nav-tabs {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            background: rgba(255, 249, 251, 0.95);
+            padding: 10px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(5px);
         }
 
         .tab-btn {
-            background-color: var(--blanco);
-            color: var(--rosa-oscuro);
-            border: 2px solid var(--rosa-principal);
-            padding: 12px 20px;
+            background-color: #ffffff;
+            color: var(--primary-dark);
+            border: 2px solid var(--primary);
+            padding: 10px 18px;
             border-radius: 25px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--sombre-suave);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .tab-btn:hover, .tab-btn.active {
-            background-color: var(--rosa-hover);
-            color: var(--blanco);
-            border-color: var(--rosa-hover);
+            background-color: var(--primary);
+            color: #ffffff;
             transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
-        /* PÁGINAS DE CONTENIDO */
+        /* PÁGINAS */
         .page {
             display: none;
-            animation: fadeIn 0.4s ease-in-out;
         }
 
         .page.active {
             display: block;
+            animation: fadeIn 0.3s ease-in;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* BANNER ROMÁNTICO / PÍCANO */
+        /* BANNERS PICANTES */
         .spicy-banner {
             background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
-            border: 2px solid var(--rosa-principal);
-            border-radius: var(--border-radius);
-            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 18px;
             text-align: center;
-            margin-bottom: 25px;
-            box-shadow: var(--sombre-suave);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
 
         .spicy-banner h2 {
-            color: var(--rosa-oscuro);
-            margin: 0 0 10px 0;
-            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 0 0 8px 0;
+            font-size: 1.4rem;
         }
 
         .spicy-banner p {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: bold;
             color: #c71585;
             margin: 0;
         }
 
-        /* TARJETAS Y CONTENEDORES */
+        /* TARJETAS DE CONTENIDO */
         .card {
-            background: var(--blanco);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid #ffe4e6;
-            box-shadow: var(--sombre-suave);
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
 
         h3 {
-            color: var(--rosa-oscuro);
+            color: var(--primary-dark);
             margin-top: 0;
+            border-bottom: 2px solid var(--bg-soft);
+            padding-bottom: 8px;
         }
 
-        /* JUEGO 1: SELECCIÓN MÚLTIPLE */
+        /* JUEGO 1: OPCIÓN MÚLTIPLE */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 10px;
             margin-top: 15px;
         }
 
         .option-btn {
-            background-color: var(--rosa-claro);
-            border: 2px solid #ffb6c1;
-            color: var(--texto-color);
-            padding: 14px 18px;
-            border-radius: 12px;
+            background-color: var(--bg-soft);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 15px;
+            border-radius: 10px;
             text-align: left;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
         }
 
         .option-btn:hover {
-            background-color: var(--rosa-principal);
-            color: var(--blanco);
+            background-color: var(--primary);
+            color: #ffffff;
         }
 
-        .feedback {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            display: none;
-        }
-
-        .feedback.correct {
-            background-color: #e6fffa;
-            color: #234e52;
-            border: 1px solid #b2f5ea;
-            display: block;
-        }
-
-        .feedback.incorrect {
-            background-color: #fff5f5;
-            color: #9b2c2c;
-            border: 1px solid #feb2b2;
-            display: block;
-        }
-
-        /* JUEGO 2: COMPLETAR ESPACIOS */
+        /* JUEGO 2: COMPLETAR */
         .fill-input {
-            border: 2px solid var(--rosa-principal);
+            border: 2px solid var(--primary);
             border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 1rem;
+            padding: 6px 10px;
+            font-size: 0.95rem;
             outline: none;
-            width: 150px;
+            width: 160px;
             text-align: center;
-            background-color: var(--rosa-claro);
+            background-color: var(--bg-soft);
+            font-weight: bold;
+            color: var(--primary-dark);
         }
 
         .check-btn {
-            background-color: var(--rosa-oscuro);
-            color: var(--blanco);
+            background-color: var(--primary-dark);
+            color: #ffffff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 10px;
             transition: background 0.2s;
         }
 
         .check-btn:hover {
-            background-color: var(--rosa-hover);
+            background-color: var(--primary);
         }
 
-        /* PÁGINA 3: RESUMEN LIGERO EN ACORDEÓN */
-        .summary-item {
-            border: 1px solid #ffe4e6;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .summary-header {
-            background-color: var(--rosa-claro);
-            padding: 15px;
-            font-weight: bold;
-            color: var(--rosa-oscuro);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .summary-content {
-            padding: 15px 20px;
-            background-color: var(--blanco);
-            display: none;
-        }
-
-        .summary-item.open .summary-content {
-            display: block;
-        }
-
-        /* JUEGO 3: VERDADERO O FALSO */
+        /* JUEGO 3: V o F */
         .tf-grid {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 15px;
         }
 
         .tf-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid var(--rosa-principal);
-            background-color: var(--rosa-claro);
-            color: var(--rosa-oscuro);
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+            background-color: var(--bg-soft);
+            color: var(--primary-dark);
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             text-align: center;
         }
 
         .tf-btn:hover {
-            background-color: var(--rosa-hover);
-            color: var(--blanco);
+            background-color: var(--primary);
+            color: #ffffff;
         }
 
-        /* BOTÓN SIGUIENTE PREGUNTA */
+        /* RETROALIMENTACIÓN Y NAVEGACIÓN DE PREGUNTAS */
+        .feedback {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .feedback.correct {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid #b2f5ea;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid #feb2b2;
+            display: block;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+
         .next-btn {
-            background-color: var(--rosa-principal);
-            color: var(--blanco);
+            background-color: var(--primary);
+            color: #ffffff;
             border: none;
-            padding: 10px 18px;
+            padding: 8px 16px;
             border-radius: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
-            display: none;
         }
 
         .next-btn:hover {
-            background-color: var(--rosa-hover);
+            background-color: var(--primary-dark);
+        }
+
+        /* PÁGINA 1: TEXTO COMPLETO (ACORDEONES) */
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background-color: var(--bg-soft);
+            padding: 12px 18px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background-color: #ffe4e6;
+        }
+
+        .accordion-content {
+            padding: 18px;
+            background-color: #ffffff;
+            display: none;
+        }
+
+        .accordion-item.open .accordion-content {
+            display: block;
+        }
+
+        .badge-pages {
+            background: var(--primary-dark);
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-soft);
+            color: var(--primary-dark);
         }
     </style>
 </head>
@@ -264,149 +327,316 @@
 
 <div class="container">
 
-    <!-- BARRA DE NAVEGACIÓN -->
+    <!-- NAVEGACIÓN PRINCIPAL -->
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('page1')">🎮 Juego 1: Escoge la Respuesta</button>
-        <button class="tab-btn" onclick="switchTab('page2')">✏️ Juego 2: Completa la Frase</button>
-        <button class="tab-btn" onclick="switchTab('page3')">📖 Resumen Ligero (Para Estudiar)</button>
-        <button class="tab-btn" onclick="switchTab('page4')">🔥 Juego 3: Verdadero o Falso</button>
+        <button class="tab-btn active" onclick="switchTab('page-text')">📚 Texto Completo (Págs 1-36 + 30 Conceptos)</button>
+        <button class="tab-btn" onclick="switchTab('page-game1')">🎮 Juego 1: Opciones Múltiples (66 Preguntas)</button>
+        <button class="tab-btn" onclick="switchTab('page-game2')">✏️ Juego 2: Completa el Espacio</button>
+        <button class="tab-btn" onclick="switchTab('page-game3')">🔥 Juego 3: Verdadero o Falso</button>
     </div>
 
     <!-- ========================================== -->
-    <!-- PÁGINA 1: ESCOGE LA MEJOR RESPUESTA -->
+    <!-- PÁGINA 1: TODA LA INFORMACIÓN JUNTA COMPLETA -->
     <!-- ========================================== -->
-    <div id="page1" class="page active">
+    <div id="page-text" class="page active">
         <div class="spicy-banner">
-            <h2>💖 ¡Hola mi amor! A estudiar un rato 💖</h2>
-            <p>Hoy te mamaré esa pepa bb. ¡Escoge la respuesta correcta! 🔥</p>
+            <h2>💖 ¡Hola mi amor! Aquí está TODA tu información completa 💖</h2>
+            <p>Las 36 páginas del PDF + los 30 conceptos del interactivo ordenaditos para que leas y estudies sin perder nada. ✨</p>
         </div>
 
+        <!-- MÓDULO I: 30 CONCEPTOS DEL INTERACTIVO -->
         <div class="card">
-            <h3 id="q1-title">Pregunta 1 de 3</h3>
-            <p id="q1-text" style="font-size: 1.1rem; font-weight: 500;"></p>
-            <div id="q1-options" class="options-grid"></div>
-            <div id="q1-feedback" class="feedback"></div>
-            <button id="q1-next" class="next-btn" onclick="nextQ1()">Siguiente Pregunta ➔</button>
+            <h3>🌸 Módulo I: Los 30 Conceptos Clave de Genómica y Transcripción (Material Interactivo "Para mi Reina")</h3>
+            <ol>
+                <li><strong>Similitud Genómica Humana:</strong> Todos los seres humanos compartimos más del <strong>99% del genoma</strong> entre sí. Esto se debe a un cuello de botella poblacional ocurrido hace ~200,000 años en África.</li>
+                <li><strong>Variabilidad Humana:</strong> Menos del 1% del ADN es responsable de las diferencias físicas (fenotipo) y la susceptibilidad individual a enfermedades.</li>
+                <li><strong>Comparación Chimpancé - Humano:</strong> Compartimos aproximadamente el <strong>98% al 99% de similitud genómica</strong> con los chimpancés. La diferencia radica en las regiones reguladoras no codificantes.</li>
+                <li><strong>Dogma Central:</strong> El flujo de la información genética va desde el <strong>ADN → ARN (Transcripción) → Proteína (Traducción)</strong>.</li>
+                <li><strong>Transcripción Génica:</strong> Proceso mediante el cual se sintetiza una molécula de ARN utilizando una hebra molde de ADN como patrón.</li>
+                <li><strong>ARN Polimerasa II:</strong> Enzima multiproteica principal encargada de transcribir el ARN mensajero (ARNm) en las células eucariotas.</li>
+                <li><strong>Región Promotora:</strong> Secuencia específica de ADN localizada al inicio de un gen donde se une la ARN polimerasa para comenzar la transcripción.</li>
+                <li><strong>Factores de Transcripción:</strong> Proteínas reguladoras que se unen al ADN para activar o reprimir la transcripción de genes específicos.</li>
+                <li><strong>Exones e Intrones:</strong> Los <strong>exones</strong> contienen código para aminoácidos; los <strong>intrones</strong> son secuencias intermedias removidas durante el procesamiento.</li>
+                <li><strong>Splicing Alternativo:</strong> Proceso de maduración donde diferentes combinaciones de exones generan distintas variantes de proteínas a partir de un único gen.</li>
+                <li><strong>Caperuza 5' (Cap):</strong> Modificación con 7-metilguanosina en el extremo 5' del pre-ARNm que protege de la degradación y ayuda a unir el ribosoma.</li>
+                <li><strong>Cola Poli-A (Extremo 3'):</strong> Añadido de múltiples residuos de adenina en el extremo 3' que otorga estabilidad al ARNm para viajar al citoplasma.</li>
+                <li><strong>Código Genético Universal:</strong> Organizado en tripletes (codones). 64 codones codifican 20 aminoácidos estándar (es degenerado y redundante).</li>
+                <li><strong>Codón de Inicio:</strong> La secuencia <strong>AUG</strong> (codifica Metionina) indica el inicio exacto de la traducción ribosomal.</li>
+                <li><strong>Codones de Parada:</strong> <strong>UAA, UAG y UGA</strong> señalan el término de la síntesis proteica (codones STOP).</li>
+                <li><strong>Traducción Proteica:</strong> Lectura del ARNm en las subunidades del ribosoma para ensamblar cadenas polipeptídicas.</li>
+                <li><strong>ARN de Transferencia (ARNt):</strong> Transporta los aminoácidos correctos mediante su secuencia de anticodón complementaria al ARNm.</li>
+                <li><strong>Sitios A, P y E del Ribosoma:</strong> Sitios funcionales catalíticos para la entrada de ARNt (Aminoacil), formación del enlace peptídico (Peptidil) y salida (Exit).</li>
+                <li><strong>Enlace Peptídico:</strong> Unión covalente entre el grupo amino de un aminoácido y el grupo carboxilo del siguiente.</li>
+                <li><strong>Estructura Primaria de Proteínas:</strong> Secuencia lineal exacta de aminoácidos dictada por el ARNm.</li>
+                <li><strong>Estructura Secundaria:</strong> Plegamientos locales en Hélice Alfa o Lámina Beta estabilizados por puentes de hidrógeno.</li>
+                <li><strong>Estructura Terciaria:</strong> Configuración tridimensional global funcional de una cadena polipeptídica.</li>
+                <li><strong>Estructura Cuaternaria:</strong> Complejo formado por múltiples subunidades proteicas unidas (ej. Hemoglobina).</li>
+                <li><strong>Epigenética:</strong> Modificaciones heredables en la función génica que no alteran la secuencia primaria de bases del ADN.</li>
+                <li><strong>Metilación del ADN:</strong> Adición de grupos metilo (-CH3) en Citosinas de Islas CpG para silenciar la expresión génica.</li>
+                <li><strong>Acetilación de Histonas:</strong> Adición de grupos acetilo por la enzima HAT que relaja la cromatina (Eucromatina) permitiendo la transcripción.</li>
+                <li><strong>Desacetilación de Histonas:</strong> La enzima HDAC remueve acetilos, condensando la cromatina (Heterocromatina) e inactivando los genes.</li>
+                <li><strong>Remodelación de Cromatina:</strong> Complejos multiproteicos dependientes de ATP que desplazan nucleosomas para exponer el ADN.</li>
+                <li><strong>MicroARNs (miARNs):</strong> ARNs cortos no codificantes que se unen a ARNm objetivo para degradarlo o bloquear su traducción.</li>
+                <li><strong>Mutaciones Puntuales:</strong> Cambios en una sola base (Silenciosas, de Cambio de Sentido o Sin Sentido) que pueden alterar el producto proteico.</li>
+            </ol>
         </div>
-    </div>
 
-    <!-- ========================================== -->
-    <!-- PÁGINA 2: COMPLETA LA RESPUESTA -->
-    <!-- ========================================== -->
-    <div id="page2" class="page">
-        <div class="spicy-banner">
-            <h2>🔥 Mmm... me pones mal bb 🔥</h2>
-            <p>Escribe la palabra que falta para completar la idea. Te mamaré las uñas con Nutella 🍫✨</p>
-        </div>
-
+        <!-- MÓDULO II: LIBRO DE TEXTO COMPLETO (36 PÁGINAS) -->
         <div class="card">
-            <h3>Completar el Espacio en Blanco</h3>
-            <p style="font-size: 1.1rem; line-height: 1.8;">
-                La regla de Chargaff establece que en el ADN bicatenario la cantidad de Adenina es siempre igual a la de 
-                <input type="text" id="fill-input-1" class="fill-input" placeholder="¿Palabra?"> 
-                y se unen mediante puentes de hidrógeno.
-            </p>
-            <button class="check-btn" onclick="checkFill(1, 'timina')">Verificar Respuesta</button>
-            <div id="fill-feedback-1" class="feedback"></div>
-        </div>
+            <h3>📖 Módulo II: Compendio Completo del Libro de Texto (Páginas 1 a 36)</h3>
+            <p>Despliega cada bloque para consultar todo el contenido detallado página por página:</p>
 
-        <div class="card">
-            <h3>Completar el Espacio en Blanco</h3>
-            <p style="font-size: 1.1rem; line-height: 1.8;">
-                El flujo central de la información genética en la biología va desde el ADN hacia el 
-                <input type="text" id="fill-input-2" class="fill-input" placeholder="¿Molécula?"> 
-                mediante la transcripción.
-            </p>
-            <button class="check-btn" onclick="checkFill(2, 'arn')">Verificar Respuesta</button>
-            <div id="fill-feedback-2" class="feedback"></div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- PÁGINA 3: TODA LA INFO PARA ESTUDIAR (LIGERO) -->
-    <!-- ========================================== -->
-    <div id="page3" class="page">
-        <div class="spicy-banner">
-            <h2>🌸 Repaso Clave y Ligero (Sin Saturarse) 🌸</h2>
-            <p>Todo resumidito en puntos clave para que lo leas súper rápido, mi reina. ✨</p>
-        </div>
-
-        <div class="card">
-            <p style="text-align: center; color: var(--rosa-oscuro); font-weight: bold;">Haz clic en cada tema para desplegar los puntos más importantes:</p>
-
-            <div class="summary-item">
-                <div class="summary-header" onclick="toggleSummary(this)">
-                    <span>🧬 1. Estructura del ADN y Bases Nitrogenadas</span>
-                    <span>▼</span>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>01. Introducción a los Ácidos Nucleicos y Nucleótidos</span>
+                    <span class="badge-pages">Págs 1-4</span>
                 </div>
-                <div class="summary-content">
+                <div class="accordion-content">
+                    <p>Los ácidos nucleicos (ADN y ARN) son macromoléculas biológicas fundamentales formadas por la polimerización de unidades monomericas llamadas <strong>nucleótidos</strong>. Cada nucleótido posee tres componentes:</p>
                     <ul>
-                        <li><strong>Componentes del Nucleótido:</strong> Grupo fosfato + Azúcar Pentosa + Base nitrogenada.</li>
-                        <li><strong>Purinas (2 anillos):</strong> Adenina (A) y Guanina (G).</li>
-                        <li><strong>Pirimidinas (1 anillo):</strong> Citosina (C), Timina (T) y Uracilo (U en ARN).</li>
-                        <li><strong>Apareamiento:</strong> A se une con T (2 puentes H); G se une con C (3 puentes H).</li>
+                        <li><strong>Grupo Fosfato:</strong> Le confiere naturaleza ácida y carga neta negativa al esqueleto del ácido nucleico.</li>
+                        <li><strong>Azúcar Pentosa:</strong> Ribosa en el ARN (con grupo -OH en el carbono 2') o Desoxirribosa en el ADN (con un átomo de H en el carbono 2').</li>
+                        <li><strong>Base Nitrogenada:</strong> Estructura heterocíclica con nitrógeno donde se almacena la información genética.</li>
+                    </ul>
+                    <p><strong>Diferencia clave:</strong> Un <em>nucleósido</em> está formado únicamente por la base nitrogenada y el azúcar pentosa. Al agregársele de 1 a 3 grupos fosfatos pasa a ser un <em>nucleótido</em>.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>02. Bases Nitrogenadas Purinas y Pirimidinas</span>
+                    <span class="badge-pages">Págs 5-8</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Las bases nitrogenadas se dividen estructuralmente en dos grandes familias:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Familia</th>
+                                <th>Estructura Ring</th>
+                                <th>Bases</th>
+                                <th>Presencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Purinas</strong></td>
+                                <td>Anillo doble (bicíclico)</td>
+                                <td>Adenina (A), Guanina (G)</td>
+                                <td>ADN y ARN</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pirimidinas</strong></td>
+                                <td>Anillo simple (monocíclico)</td>
+                                <td>Citosina (C), Timina (T), Uracilo (U)</td>
+                                <td>C (Ambos), T (Solo ADN), U (Solo ARN)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>Nota importante:</strong> La Timina posee un grupo metilo (-CH3) en el C5 que la distingue del Uracilo. Esto le otorga mayor estabilidad al ADN para evitar mutaciones espontáneas por desaminación de la Citosina.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>03. Enlace Fosfodiéster y Polaridad 5' → 3'</span>
+                    <span class="badge-pages">Págs 9-12</span>
+                </div>
+                <div class="accordion-content">
+                    <p>La polimerización de la cadena de nucleótidos ocurre mediante la formación de enlaces covalentes tipo <strong>fosfodiéster</strong>. Este enlace une el carbono 3' hidroxilo (-OH) de un nucleótido con el grupo fosfato unido al carbono 5' del nucleótido entrante.</p>
+                    <p><strong>Polaridad intrínseca:</strong></p>
+                    <ul>
+                        <li><strong>Extremo 5':</strong> Posee un grupo fosfato libre.</li>
+                        <li><strong>Extremo 3':</strong> Posee un grupo hidroxilo (-OH) libre.</li>
+                        <li>Toda síntesis de ácidos nucleicos por polimerasas avanza exclusivamente en sentido <strong>5' → 3'</strong>.</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="summary-item">
-                <div class="summary-header" onclick="toggleSummary(this)">
-                    <span>🧪 2. Transcripción y Código Genético</span>
-                    <span>▼</span>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>04. Espectrofotometría y Efecto Hipercromático</span>
+                    <span class="badge-pages">Págs 13-16</span>
                 </div>
-                <div class="summary-content">
+                <div class="accordion-content">
+                    <p>Debido a los sistemas de dobles enlaces conjugados en los anillos aromáticos de las bases purínicas y pirimídicas, el ADN y ARN absorben luz ultravioleta con un pico de absorción máximo a <strong>260 nm</strong>.</p>
+                    <p><strong>Efecto Hipercromático:</strong> Cuando la doble hélice de ADN se desnaturaliza (se separan sus hebras), la absorción de luz UV a 260 nm se incrementa sustancialmente. Esto sucede porque las bases nitrogenadas ya no están apiladas en el interior hidrofóbico y quedan expuestas al solvente.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>05. Descubrimiento Estructural y Fotografía 51</span>
+                    <span class="badge-pages">Págs 17-20</span>
+                </div>
+                <div class="accordion-content">
+                    <p>El establecimiento del modelo de la doble hélice en 1953 por Watson y Crick dependió de descubrimientos fundamentales previos:</p>
                     <ul>
-                        <li><strong>Dirección de síntesis:</strong> Siempre en sentido <strong>5' → 3'</strong>.</li>
-                        <li><strong>Enzima Clave:</strong> ARN Polimerasa II transcribe el ARNm.</li>
-                        <li><strong>Codón de Inicio:</strong> <code>AUG</code> (codifica Metionina).</li>
-                        <li><strong>Codones de Parada (STOP):</strong> <code>UAA</code>, <code>UAG</code>, <code>UGA</code>.</li>
-                        <li><strong>Maduración del ARNm:</strong> Se añade la Caperuza 5' (Cap), Cola Poli-A (3') y ocurre el Splicing (elimina intrones).</li>
+                        <li><strong>Rosalind Franklin y Maurice Wilkins:</strong> Patrones de difracción de rayos X (destacando la icónica <em>Fotografía 51</em>) que revelaron la estructura helicoidal periódica.</li>
+                        <li><strong>Erwin Chargaff:</strong> Descubrimiento de proporciones cuantitativas fijas entre las bases nitrogenadas en múltiples especies.</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="summary-item">
-                <div class="summary-header" onclick="toggleSummary(this)">
-                    <span>🌐 3. Genoma Humano y Variabilidad</span>
-                    <span>▼</span>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>06. Geometría de la Doble Hélice y Reglas de Chargaff</span>
+                    <span class="badge-pages">Págs 21-24</span>
                 </div>
-                <div class="summary-content">
+                <div class="accordion-content">
+                    <p>El ADN bicatenario estándar (Forma B) consiste en dos cadenas antiparalelas enrolladas hacia la derecha (dextrógira):</p>
                     <ul>
-                        <li><strong>Similitud Humana:</strong> Compartimos más del <strong>99%</strong> del genoma entre todos los humanos.</li>
-                        <li><strong>Similitud con Chimpancé:</strong> Compartimos ~98%-99% de secuencia genética.</li>
-                        <li><strong>ADN Codificante:</strong> Solo el <strong>1.7%</strong> del genoma codifica proteínas; el resto es regulador/estructural.</li>
-                        <li><strong>Metilación (Islas CpG):</strong> Silencia o apaga la expresión de los genes.</li>
+                        <li><strong>Apareamiento de Bases:</strong> <strong>A = T</strong> unidas por 2 puentes de hidrógeno; <strong>G = C</strong> unidas por 3 puentes de hidrógeno.</li>
+                        <li><strong>Regla de Chargaff:</strong> % de Purinas (A+G) es siempre igual al % de Pirimidinas (T+C).</li>
+                        <li><strong>Geometría:</strong> Diámetro constante de 2.4 nm (24 Å) y 3.4 nm por vuelta completa (~10 pares de bases por vuelta). Exhibe un Surco Mayor y un Surco Menor.</li>
                     </ul>
                 </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>07. Desnaturalización y Temperatura de Fusión (Tm)</span>
+                    <span class="badge-pages">Págs 25-28</span>
+                </div>
+                <div class="accordion-content">
+                    <p>La desnaturalización es la separación reversible de las dos hebras de ADN mediante calor o agentes químicos al romper los puentes de hidrógeno.</p>
+                    <p><strong>Temperatura de Fusión (Tm):</strong> Es la temperatura a la cual el 50% de las moléculas de ADN bicatenario se encuentran desnaturalizadas.</p>
+                    <ul>
+                        <li>Los pares G-C contienen 3 puentes de hidrógeno (frente a 2 en A-T), por lo que proveen mayor estabilidad térmica.</li>
+                        <li>A mayor contenido porcentual de <strong>G + C</strong> en la molécula de ADN, <strong>mayor será su Tm</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>08. Genoma Eucariota vs. Procariota</span>
+                    <span class="badge-pages">Págs 29-32</span>
+                </div>
+                <div class="accordion-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Característica</th>
+                                <th>Eucariotas (Humanos)</th>
+                                <th>Procariotas (Bacterias)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Conformación</strong></td>
+                                <td>Lineal, mútilples cromosomas en núcleo</td>
+                                <td>Circular único en nucleoide + Plásmidos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tamaño Genoma</strong></td>
+                                <td>~3 mil millones de pares de bases (3 Gb)</td>
+                                <td>Pequeño (~4.6 Mb)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ADN Codificante</strong></td>
+                                <td>Solo ~1.7% codifica proteínas</td>
+                                <td>Casi 100% es codificante</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Proteínas Asociadas</strong></td>
+                                <td>Histonas (forman nucleosomas)</td>
+                                <td>Proteínas tipo histona (NAPs)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>ADN Mitocondrial (mtDNA):</strong> Es una molécula de ADN circular de 16.5 kb presente en mitocondrias, que se hereda exclusivamente por línea materna.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>09. Tipos de ARN y Proyecto Genoma Humano</span>
+                    <span class="badge-pages">Págs 33-36</span>
+                </div>
+                <div class="accordion-content">
+                    <p><strong>Tipos de ARN Principales:</strong> ARNm (transporta código genético), ARNr (catalítico en ribosomas) y ARNt (adaptador de aminoácidos).</p>
+                    <p><strong>Proyecto Genoma Humano (PGH):</strong> Completado en 2003, determinó la secuencia completa de 3 Gb. Demostró que todos los humanos compartimos >99% de información genética y que conservamos un ~2% de herencia Neandertal y hasta 6% Denisovana.</p>
+                    <p><strong>Epigenética y ADN No Codificante (95%):</strong> Las <em>Islas CpG</em> en regiones promotoras se metilan para silenciar genes permanentemente. Elementos como <em>Enhancers</em> y <em>Silenciadores</em> regulan la tasa de transcripción desde posiciones lejanas.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PÁGINA 2: JUEGO 1 - OPCIONES MÚLTIPLES (66 PREGUNTAS) -->
+    <!-- ========================================== -->
+    <div id="page-game1" class="page">
+        <div class="spicy-banner">
+            <h2>💖 Hoy te mamaré esa pepa bb. ¡Escoge la respuesta correcta! 💖</h2>
+            <p>66 Preguntas abarcan TODO tu temario. ¡Pon a prueba tu mente brillante! 🔥</p>
+        </div>
+
+        <div class="card">
+            <h3 id="g1-title">Pregunta 1 de 66</h3>
+            <p id="g1-text" style="font-size: 1.1rem; font-weight: 600;"></p>
+            <div id="g1-options" class="options-grid"></div>
+            <div id="g1-feedback" class="feedback"></div>
+            <div class="game-controls">
+                <span id="g1-counter" style="font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">Puntos: 0 / 66</span>
+                <button id="g1-next" class="next-btn" onclick="nextG1()" style="display:none;">Siguiente Pregunta ➔</button>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- PÁGINA 4: JUEGUITO EXTRA CON FRASES -->
+    <!-- PÁGINA 3: JUEGO 2 - COMPLETA EL ESPACIO -->
     <!-- ========================================== -->
-    <div id="page4" class="page">
+    <div id="page-game2" class="page">
         <div class="spicy-banner">
-            <h2>🔥 Ufff me encantas vosss 🔥</h2>
-            <p>Oriname la cara mi amor... y remojame la paleta 🍭. ¡Responde este Verdadero o Falso!</p>
+            <h2>🔥 Escribe la palabra que falta mi amor... Te mamaré las uñas con Nutella 🍫✨ 🔥</h2>
+            <p>Demuestra que te sabes de memoria todos los términos clave completando los espacios vacíos.</p>
         </div>
 
         <div class="card">
-            <h3 id="tf-title">Reto de Genómica</h3>
-            <p id="tf-text" style="font-size: 1.15rem; font-weight: bold; color: #333;"></p>
+            <h3 id="g2-title">Reto de Escritura 1 de 10</h3>
+            <p id="g2-text" style="font-size: 1.1rem; line-height: 1.8;"></p>
+            <div style="margin-top: 15px;">
+                <input type="text" id="g2-input" class="fill-input" placeholder="Escribe tu respuesta">
+                <button class="check-btn" onclick="checkG2()">Verificar</button>
+            </div>
+            <div id="g2-feedback" class="feedback"></div>
+            <div class="game-controls">
+                <span id="g2-counter" style="font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">Completados: 0 / 10</span>
+                <button id="g2-next" class="next-btn" onclick="nextG2()" style="display:none;">Siguiente Reto ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PÁGINA 4: JUEGO 3 - VERDADERO O FALSO -->
+    <!-- ========================================== -->
+    <div id="page-game3" class="page">
+        <div class="spicy-banner">
+            <h2>🔥 Ufff me encantas vosss... Oriname la cara mi amor y remojame la paleta 🍭 🔥</h2>
+            <p>Desafío rápido de Verdadero o Falso con todo el contenido del libro e interactivo.</p>
+        </div>
+
+        <div class="card">
+            <h3 id="g3-title">Desafío Verdadero o Falso 1 de 15</h3>
+            <p id="g3-text" style="font-size: 1.15rem; font-weight: bold; color: #333; margin: 15px 0;"></p>
             <div class="tf-grid">
-                <button class="tf-btn" onclick="checkTF(true)">VERDADERO</button>
-                <button class="tf-btn" onclick="checkTF(false)">FALSO</button>
+                <button class="tf-btn" onclick="checkG3(true)">VERDADERO</button>
+                <button class="tf-btn" onclick="checkG3(false)">FALSO</button>
             </div>
-            <div id="tf-feedback" class="feedback"></div>
-            <button id="tf-next" class="next-btn" onclick="nextTF()">Siguiente Reto ➔</button>
+            <div id="g3-feedback" class="feedback"></div>
+            <div class="game-controls">
+                <span id="g3-counter" style="font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">Aciertos: 0 / 15</span>
+                <button id="g3-next" class="next-btn" onclick="nextG3()" style="display:none;">Siguiente Desafío ➔</button>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script>
-    // CAMBIO DE PESTAÑAS / PÁGINAS
+    // CAMBIO DE PESTAÑAS
     function switchTab(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -415,145 +645,241 @@
         event.currentTarget.classList.add('active');
     }
 
-    // ACORDEÓN PÁGINA 3
-    function toggleSummary(header) {
+    // ACORDEÓN
+    function toggleAccordion(header) {
         const item = header.parentElement;
         item.classList.toggle('open');
     }
 
     // ==========================================
-    // LÓGICA JUEGO 1: ESCOGER RESPUESTA
+    // DATOS DE BANCO DE PREGUNTAS (66 PREGUNTAS JUEGO 1)
     // ==========================================
-    const q1Data = [
-        {
-            text: "¿Cuál es la enzima encargada de transcribir el ARNm en células eucariotas?",
-            options: ["ADN Polimerasa III", "ARN Polimerasa II", "Helicasa", "Ligasa"],
-            correct: 1,
-            msg: "¡Correcto mi vida! La ARN Polimerasa II es la estrella de la transcripción."
-        },
-        {
-            text: "¿Qué porcentaje del genoma humano es responsable de codificar proteínas directamente?",
-            options: ["Aproximadamente 50%", "Alrededor de 25%", "Solo el 1.7%", "Casi el 99%"],
-            correct: 2,
-            msg: "¡Excelente reina! Solo el 1.7% codifica proteínas, el resto es regulador."
-        },
-        {
-            text: "¿Cuál es el codón de inicio universal que marca el comienzo de la traducción?",
-            options: ["UAA", "UGA", "AUG", "CGC"],
-            correct: 2,
-            msg: "¡Eso es amor! AUG codifica para Metionina y marca el inicio."
-        }
+    const allQuestionsG1 = [
+        // 30 CONCEPTOS INTERACTIVOS
+        { text: "¿Qué porcentaje del genoma compartimos todos los seres humanos entre sí?", options: ["90%", "95%", "Más del 99%", "85%"], correct: 2, msg: "¡Correcto mi reina! Compartimos más del 99% por el cuello de botella africano." },
+        { text: "¿A qué se debe principalmente la variación física y enfermedades individuales?", options: ["A más del 50% del ADN", "A menos del 1% del ADN", "Al ADN mitocondrial únicamente", "A los intrones exclusivamente"], correct: 1, msg: "¡Eso es mi amor! Menos del 1% determina nuestra variabilidad." },
+        { text: "¿Qué porcentaje de similitud genómica compartimos con el chimpancé?", options: ["75%", "85%", "~98% a 99%", "100%"], correct: 2, msg: "¡Excelente! Compartimos entre 98% y 99% con los chimpancés." },
+        { text: "El Dogma Central de la Biología Molecular establece la secuencia de flujo:", options: ["Proteína -> ADN -> ARN", "ADN -> ARN -> Proteína", "ARN -> ADN -> Proteína", "ADN -> Proteína -> ARN"], correct: 1, msg: "¡Muy bien! ADN -> ARN -> Proteína." },
+        { text: "¿Cómo se llama la síntesis de ARN utilizando ADN como molde?", options: ["Traducción", "Replicación", "Transcripción", "Splicing"], correct: 2, msg: "¡Exacto bebé! Transcripción." },
+        { text: "¿Enzima principal encargada de transcribir el ARNm eucariota?", options: ["ARN Polimerasa I", "ARN Polimerasa II", "ADN Polimerasa", "Helicasa"], correct: 1, msg: "¡Genial! La ARN Polimerasa II." },
+        { text: "Lugar del ADN donde se une la ARN polimerasa para iniciar transcripción:", options: ["Promotor", "Intrón", "Codón STOP", "Cola Poli-A"], correct: 0, msg: "¡Respuesta correcta! La región promotora." },
+        { text: "Proteínas reguladoras que activan o suprimen la transcripción:", options: ["Histonas", "Factores de Transcripción", "Ribosomas", "Exones"], correct: 1, msg: "¡Perfecto mi vida! Factores de transcripción." },
+        { text: "Las regiones del pre-ARNm que SÍ contienen código para proteínas se llaman:", options: ["Intrones", "Exones", "Promotores", "Islas CpG"], correct: 1, msg: "¡Exacto! Exones (se conservan)." },
+        { text: "Mecanismo que genera distintas proteínas desde un único gen:", options: ["Splicing Alternativo", "Metilación", "Efecto Hipercromático", "Traducción"], correct: 0, msg: "¡Splicing alternativo! Maravilloso." },
+        { text: "La modificación 7-metilguanosina en el extremo 5' del pre-ARNm es la:", options: ["Cola Poli-A", "Caperuza 5' (Cap)", "Isla CpG", "Secuencia AUG"], correct: 1, msg: "¡Caperuza 5'! Protege de la degradación." },
+        { text: "La suma de múltiples residuos de adenina en el extremo 3' forma la:", options: ["Cola Poli-A", "Caperuza 5'", "Secuencia Promotora", "Heterocromatina"], correct: 0, msg: "¡Cola Poli-A! Le da estabilidad para salir del núcleo." },
+        { text: "El código genético está organizado en tripletes denominados:", options: ["Anticodones", "Codones", "Nucleósidos", "Histonas"], correct: 1, msg: "¡Codones! 64 codones en total." },
+        { text: "¿Cuál es el codón de inicio universal?", options: ["UAA", "UAG", "AUG", "UGA"], correct: 2, msg: "¡AUG! Codifica para Metionina." },
+        { text: "Son codones de parada o terminación (STOP):", options: ["AUG, CUG, GAG", "UAA, UAG, UGA", "AAC, GGC, UUC", "TAT, TAC, TAG"], correct: 1, msg: "¡UAA, UAG y UGA! Detienen la traducción." },
+        { text: "¿En qué estructura celular se lleva a cabo la traducción del ARNm?", options: ["Núcleo", "Ribosoma", "Mitocondria", "Aparato de Golgi"], correct: 1, msg: "¡En el ribosoma! Muy bien." },
+        { text: "Molécula encargada de transportar aminoácidos al ribosoma:", options: ["ARNm", "ARNt", "ARNr", "miARN"], correct: 1, msg: "¡ARNt (de Transferencia)!" },
+        { text: "Sitio del ribosoma donde ingresa el nuevo aminoacil-ARNt:", options: ["Sitio P", "Sitio A", "Sitio E", "Promotor"], correct: 1, msg: "¡Sitio A! (Aminoacil)." },
+        { text: "El enlace que une a dos aminoácidos consecutivos es:", options: ["Enlace Fosfodiéster", "Enlace Peptídico", "Puente de Hidrógeno", "Enlace Glucosídico"], correct: 1, msg: "¡Enlace Peptídico!" },
+        { text: "La secuencia lineal primaria de aminoácidos constituye la estructura:", options: ["Primaria", "Secundaria", "Terciaria", "Cuaternaria"], correct: 0, msg: "¡Estructura Primaria!" },
+        { text: "La hélice alfa y lámina beta corresponden a la estructura proteica:", options: ["Primaria", "Secundaria", "Terciaria", "Cuaternaria"], correct: 1, msg: "¡Estructura Secundaria!" },
+        { text: "Plegamiento tridimensional completo de una cadena polipeptídica:", options: ["Primaria", "Secundaria", "Terciaria", "Cuaternaria"], correct: 2, msg: "¡Estructura Terciaria!" },
+        { text: "Modificaciones heredables que no alteran la secuencia de ADN:", options: ["Epigenética", "Mutación puntual", "Splicing", "Replicación"], correct: 0, msg: "¡Epigenética! Excelente." },
+        { text: "La metilación del ADN habitualmente causa:", options: ["Activación del gen", "Silenciamiento/Inactivación del gen", "Splicing", "Mutación STOP"], correct: 1, msg: "¡Silenciamiento génico!" },
+        { text: "La acetilación de histonas por enzimas HAT produce:", options: ["Apertura de la cromatina (Eucromatina)", "Condensación (Heterocromatina)", "Destrucción del ADN", "Metilación"], correct: 0, msg: "¡Eucromatina! Permite la transcripción." },
+        { text: "La desacetilación por enzimas HDAC genera:", options: ["Eucromatina activa", "Heterocromatina inactiva", "Cola Poli-A", "Transcripción veloz"], correct: 1, msg: "¡Heterocromatina inactiva!" },
+        { text: "Los complejos de remodelación de cromatina consumen energía en forma de:", options: ["GTP", "ATP", "CTP", "Luz UV"], correct: 1, msg: "¡ATP!" },
+        { text: "Pequeños ARNs no codificantes que degradan o bloquean ARNm:", options: ["miARNs (microARNs)", "ARNm", "ARNr", "Caperuza 5'"], correct: 0, msg: "¡MicroARNs (miARNs)!" },
+        { text: "Cambio de una sola base en la secuencia del ADN:", options: ["Mutación Puntual", "Splicing", "Caperuza", "Metilación"], correct: 0, msg: "¡Mutación puntual!" },
+        { text: "Mutación que cambia un codón codificante por un codón STOP:", options: ["Mutación Silenciosa", "Mutación Sin Sentido (Nonsense)", "Mutación Conservadora", "Splicing"], correct: 1, msg: "¡Mutación Sin Sentido!" },
+
+        // CONTENIDO DEL LIBRO (PÁGS 1 - 36)
+        { text: "¿Cuáles son los 3 componentes de un nucleótido?", options: ["Fosfato, Pentosa, Base Nitrogenada", "Proteína, Lipido, Glúcido", "Aminoácido, Fosfato, Hexosa", "Purina, Pirimidina, Enzima"], correct: 0, msg: "¡Fosfato, Azúcar Pentosa y Base Nitrogenada!" },
+        { text: "¿Qué le falta a un nucleósido para convertirse en nucleótido?", options: ["Base Nitrogenada", "Grupo Fosfato", "Azúcar", "Anillo aromático"], correct: 1, msg: "¡El grupo fosfato!" },
+        { text: "Azúcar presente en el ADN:", options: ["Ribosa", "Desoxirribosa", "Glucosa", "Fructosa"], correct: 1, msg: "¡Desoxirribosa! Carece del -OH en el C2'." },
+        { text: "Son bases nitrogenadas de tipo PURINA (anillo doble):", options: ["Citosina y Timina", "Adenina y Guanina", "Uracilo y Timina", "Guanina y Citosina"], correct: 1, msg: "¡Adenina y Guanina!" },
+        { text: "Son bases nitrogenadas de tipo PIRIMIDINA (anillo simple):", options: ["Adenina y Guanina", "Citosina, Timina y Uracilo", "Solamente Timina", "Guanina y Uracilo"], correct: 1, msg: "¡Citosina, Timina y Uracilo!" },
+        { text: "Base nitrogenada exclusiva del ADN (reemplazada por Uracilo en ARN):", options: ["Adenina", "Timina", "Guanina", "Citosina"], correct: 1, msg: "¡Timina!" },
+        { text: "¿Qué grupo químico posee la Timina en el C5 que la diferencia del Uracilo?", options: ["Grupo Hidroxilo (-OH)", "Grupo Metilo (-CH3)", "Grupo Amino (-NH2)", "Grupo Fosfato"], correct: 1, msg: "¡Grupo Metilo (-CH3)!" },
+        { text: "Tipo de enlace covalente que une nucleótidos en la cadena:", options: ["Enlace Peptídico", "Enlace Fosfodiéster", "Enlace Glucosídico", "Puente de Hidrógeno"], correct: 1, msg: "¡Enlace Fosfodiéster!" },
+        { text: "El enlace fosfodiéster une el C3' del azúcar con el C5' del siguiente mediante el grupo:", options: ["Fosfato", "Amino", "Metilo", "Nitrato"], correct: 0, msg: "¡Grupo Fosfato!" },
+        { text: "Polaridad y dirección en que sintetizan las polimerasas:", options: ["3' -> 5'", "5' -> 3'", "2' -> 4'", "Aleatorio"], correct: 1, msg: "¡Siempre en sentido 5' -> 3'!" },
+        { text: "Longitud de onda de máxima absorción UV de los ácidos nucleicos:", options: ["500 nm", "260 nm", "100 nm", "340 nm"], correct: 1, msg: "¡A 260 nm!" },
+        { text: "Aumento drástico de absorción UV al desnaturalizarse el ADN:", options: ["Efecto Hipercromático", "Efecto Hipocromático", "Fluorescencia", "Tm"], correct: 0, msg: "¡Efecto Hipercromático!" },
+        { text: "Nombre de la investigadora que obtuvo la famosa Fotografía 51:", options: ["Marie Curie", "Rosalind Franklin", "Barbara McClintock", "Jennifer Doudna"], correct: 1, msg: "¡Rosalind Franklin!" },
+        { text: "Según la Regla de Chargaff, la cantidad de Adenina es igual a:", options: ["Guanina", "Timina", "Citosina", "Uracilo"], correct: 1, msg: "¡Timina (A = T)!" },
+        { text: "Número de puentes de hidrógeno entre Guanina y Citosina:", options: ["1", "2", "3", "4"], correct: 2, msg: "¡3 puentes de hidrógeno! (G = C)." },
+        { text: "Número de puentes de hidrógeno entre Adenina y Timina:", options: ["1", "2", "3", "4"], correct: 1, msg: "¡2 puentes de hidrógeno! (A = T)." },
+        { text: "Diámetro de la hélice de ADN en formato B:", options: ["1.0 nm", "2.4 nm (24 Å)", "5.0 nm", "0.5 nm"], correct: 1, msg: "¡2.4 nm de diámetro!" },
+        { text: "Temperatura donde el 50% del ADN se halla desnaturalizado:", options: ["Temperatura de Fusión (Tm)", "Punto de ebullición", "37 °C", "pH neutro"], correct: 0, msg: "¡Temperatura de Fusión (Tm)!" },
+        { text: "¿Qué hebras de ADN requieren MAYOR temperatura de fusión (Tm)?", options: ["Ricas en A-T", "Ricas en G-C", "Ricas en Uracilo", "Muy cortas"], correct: 1, msg: "¡Ricas en G-C! Tienen 3 puentes de H." },
+        { text: "Conformación del ADN eucariota principal:", options: ["Circular", "Lineal asociado a histonas", "Monocatenario", "Plásmido libre"], correct: 1, msg: "¡Lineal empacado en cromosomas!" },
+        { text: "Conformación del ADN procariota principal:", options: ["Lineal múltiple", "Circular único en nucleoide", "En triple hélice", "Solo ARN"], correct: 1, msg: "¡Circular en el nucleoide!" },
+        { text: "Tamaño aproximado del genoma humano haploide en pares de bases:", options: ["100 Mb", "3 mil millones (3 Gb)", "50 Gb", "10 Kb"], correct: 1, msg: "¡3 mil millones de pares de bases (3 Gb)!" },
+        { text: "¿Qué porcentaje del ADN humano codifica verdaderamente proteínas?", options: ["50%", "Aproximadamente 1.7%", "95%", "100%"], correct: 1, msg: "¡Solo ~1.7%!" },
+        { text: "El ADN mitocondrial se caracteriza por ser:", options: ["Lineal y paterno", "Circular y de herencia materna", "Protegido por histonas", "Sin genes"], correct: 1, msg: "¡Circular y de herencia exclusivamente materna!" },
+        { text: "El ARN más abundante en la célula es el:", options: ["ARNm", "ARNr (Ribosomal)", "ARNt", "miARN"], correct: 1, msg: "¡ARNr (Ribosomal)!" },
+        { text: "Estructura característica del ARNt desplegado en 2D:", options: ["Hoja de trébol / Gancho de pelo", "Doble hélice recta", "Esfera compacta", "Anillo"], correct: 0, msg: "¡Hoja de trébol!" },
+        { text: "Año en que se completó el Proyecto Genoma Humano:", options: ["1980", "1990", "2003", "2020"], correct: 2, msg: "¡Año 2003!" },
+        { text: "Porcentaje de genoma Neandertal conservado en humanos no africanos:", options: ["0%", "~2%", "20%", "50%"], correct: 1, msg: "¡Aproximadamente 2%!" },
+        { text: "Regiones ricas en Citocina y Guanina en los promotores propensas a metilación:", options: ["Islas CpG", "Cola Poli-A", "Exones", "Eucromatina"], correct: 0, msg: "¡Islas CpG!" },
+        { text: "Secuencias reguladoras a distancia que AUMENTAN la transcripción:", options: ["Silenciadores", "Enhancers (Potenciadores)", "Intrones", "Codones STOP"], correct: 1, msg: "¡Enhancers (Potenciadores)!" },
+        { text: "Ejemplo de adaptación evolutiva por duplicación de copias de gen por la dieta:", options: ["Gen de la Hemoglobina", "Gen de la Amilasa pancreática", "Gen de la insulina", "Gen de la queratina"], correct: 1, msg: "¡Gen de la Amilasa!" },
+        { text: "Enzima que deshace los puentes de hidrógeno separando hebras in vivo:", options: ["Helicasa", "Ligasa", "Polimerasa", "Topoisomerasa"], correct: 0, msg: "¡Helicasa!" },
+        { text: "Subunidad de empaquetamiento del ADN formada por 8 histonas y ADN:", options: ["Nucleosomas", "Nucleótidos", "Plásmidos", "Codones"], correct: 0, msg: "¡Nucleosomas!" },
+        { text: "Cromatina descondensada activa transcripcionalmente:", options: ["Heterocromatina", "Eucromatina", "Centrómero", "Telómero"], correct: 1, msg: "¡Eucromatina!" },
+        { text: "Cromatina fuertemente condensada e inactiva:", options: ["Eucromatina", "Heterocromatina", "Promotor", "Exón"], correct: 1, msg: "¡Heterocromatina!" },
+        { text: "Enzima que añade grupos acetilo a las histonas:", options: ["HDAC", "HAT (Histona Acetiltransferasa)", "ARN Polimerasa", "Ligasa"], correct: 1, msg: "¡HAT (Histona Acetiltransferasa)!" }
     ];
 
-    let currentQ1 = 0;
+    let currentG1 = 0;
+    let scoreG1 = 0;
 
-    function loadQ1() {
-        const q = q1Data[currentQ1];
-        document.getElementById("q1-title").innerText = `Pregunta ${currentQ1 + 1} de ${q1Data.length}`;
-        document.getElementById("q1-text").innerText = q.text;
-        document.getElementById("q1-feedback").className = "feedback";
-        document.getElementById("q1-next").style.display = "none";
+    function loadG1() {
+        const q = allQuestionsG1[currentG1];
+        document.getElementById("g1-title").innerText = `Pregunta ${currentG1 + 1} de ${allQuestionsG1.length}`;
+        document.getElementById("g1-text").innerText = q.text;
+        document.getElementById("g1-feedback").className = "feedback";
+        document.getElementById("g1-next").style.display = "none";
 
-        const optionsDiv = document.getElementById("q1-options");
+        const optionsDiv = document.getElementById("g1-options");
         optionsDiv.innerHTML = "";
 
-        q.options.forEach((opt, index) => {
+        q.options.forEach((opt, idx) => {
             const btn = document.createElement("button");
             btn.className = "option-btn";
-            btn.innerText = `${index + 1}. ${opt}`;
-            btn.onclick = () => checkQ1(index);
+            btn.innerText = `${idx + 1}. ${opt}`;
+            btn.onclick = () => checkG1(idx);
             optionsDiv.appendChild(btn);
         });
+
+        document.getElementById("g1-counter").innerText = `Puntos: ${scoreG1} / ${allQuestionsG1.length}`;
     }
 
-    function checkQ1(selectedIndex) {
-        const q = q1Data[currentQ1];
-        const feedback = document.getElementById("q1-feedback");
+    function checkG1(selected) {
+        const q = allQuestionsG1[currentG1];
+        const feedback = document.getElementById("g1-feedback");
 
-        if (selectedIndex === q.correct) {
+        if (selected === q.correct) {
+            scoreG1++;
             feedback.className = "feedback correct";
             feedback.innerText = "✨ " + q.msg;
         } else {
             feedback.className = "feedback incorrect";
-            feedback.innerText = "❌ Ups mi amor, esa no es. Inténtalo de nuevo.";
+            feedback.innerText = "❌ Incorrecto amor. La opción correcta era: " + q.options[q.correct];
         }
-        document.getElementById("q1-next").style.display = "inline-block";
+        document.getElementById("g1-next").style.display = "inline-block";
+        document.getElementById("g1-counter").innerText = `Puntos: ${scoreG1} / ${allQuestionsG1.length}`;
     }
 
-    function nextQ1() {
-        currentQ1 = (currentQ1 + 1) % q1Data.length;
-        loadQ1();
-    }
-
-    // ==========================================
-    // LÓGICA JUEGO 2: COMPLETAR ESPACIOS
-    // ==========================================
-    function checkFill(id, expected) {
-        const val = document.getElementById(`fill-input-${id}`).value.trim().toLowerCase();
-        const feedback = document.getElementById(`fill-feedback-${id}`);
-
-        if (val === expected) {
-            feedback.className = "feedback correct";
-            feedback.innerText = "🔥 ¡Perfecto mi reina! Lo escribiste exactamente bien.";
-        } else {
-            feedback.className = "feedback incorrect";
-            feedback.innerText = `❌ Revisa bien. Pista: La respuesta empieza con "${expected.substring(0,2)}..."`;
-        }
+    function nextG1() {
+        currentG1 = (currentG1 + 1) % allQuestionsG1.length;
+        loadG1();
     }
 
     // ==========================================
-    // LÓGICA JUEGO 4: VERDADERO O FALSO
+    // DATOS JUEGO 2: COMPLETAR EL ESPACIO
     // ==========================================
-    const tfData = [
-        {
-            text: "Los seres humanos compartimos más del 99% de nuestra secuencia de ADN entre nosotros.",
-            answer: true,
-            msg: "¡Verdadero! Las diferencias entre todos nosotros están en menos del 1%."
-        },
-        {
-            text: "El Uracilo es una base nitrogenada exclusiva del ADN.",
-            answer: false,
-            msg: "¡Falso! El Uracilo es exclusivo del ARN; el ADN utiliza Timina."
-        },
-        {
-            text: "Los intrones son secuencias codificantes que se conservan en el ARNm maduro.",
-            answer: false,
-            msg: "¡Falso mi amor! Los intrones se eliminan en el splicing; los que se conservan son los EXONES."
-        }
+    const dataG2 = [
+        { text: "La regla de Chargaff indica que la cantidad de Adenina es siempre igual a la de ________ en el ADN bicatenario.", ans: "timina" },
+        { text: "El proceso de eliminación de intrones y unión de exones se llama ________.", ans: "splicing" },
+        { text: "La unión entre nucleótidos en una hebra de ADN se realiza mediante enlaces ________.", ans: "fosfodiéster" },
+        { text: "El azúcar presente en la molécula de ADN se denomina ________.", ans: "desoxirribosa" },
+        { text: "La región del ADN donde se une la ARN polimerasa para iniciar la transcripción es el ________.", ans: "promotor" },
+        { text: "El codón de inicio universal AUG codifica para el aminoácido ________.", ans: "metionina" },
+        { text: "La desnaturalización del ADN provoca un aumento de la absorción UV denominado efecto ________.", ans: "hipercromático" },
+        { text: "La adición de grupos metilo en las islas CpG produce el ________ de los genes.", ans: "silenciamiento" },
+        { text: "El ADN eucariota se encuentra empacado formando unidades estructurales llamadas ________ junto a las histonas.", ans: "nucleosomas" },
+        { text: "El ADN mitocondrial se hereda exclusivamente por vía ________.", ans: "materna" }
     ];
 
-    let currentTF = 0;
+    let currentG2 = 0;
+    let scoreG2 = 0;
 
-    function loadTF() {
-        const item = tfData[currentTF];
-        document.getElementById("tf-title").innerText = `Reto ${currentTF + 1} de ${tfData.length}`;
-        document.getElementById("tf-text").innerText = item.text;
-        document.getElementById("tf-feedback").className = "feedback";
-        document.getElementById("tf-next").style.display = "none";
+    function loadG2() {
+        const item = dataG2[currentG2];
+        document.getElementById("g2-title").innerText = `Reto de Escritura ${currentG2 + 1} de ${dataG2.length}`;
+        document.getElementById("g2-text").innerText = item.text;
+        document.getElementById("g2-input").value = "";
+        document.getElementById("g2-feedback").className = "feedback";
+        document.getElementById("g2-next").style.display = "none";
+        document.getElementById("g2-counter").innerText = `Completados: ${scoreG2} / ${dataG2.length}`;
     }
 
-    function checkTF(userChoice) {
-        const item = tfData[currentTF];
-        const feedback = document.getElementById("tf-feedback");
+    function checkG2() {
+        const input = document.getElementById("g2-input").value.trim().toLowerCase();
+        const item = dataG2[currentG2];
+        const feedback = document.getElementById("g2-feedback");
 
-        if (userChoice === item.answer) {
+        if (input === item.ans) {
+            scoreG2++;
+            feedback.className = "feedback correct";
+            feedback.innerText = "🔥 ¡Excelente mi vida! Lo escribiste perfecto.";
+        } else {
+            feedback.className = "feedback incorrect";
+            feedback.innerText = `❌ No te preocupes amor. La respuesta exacta era: "${item.ans}"`;
+        }
+        document.getElementById("g2-next").style.display = "inline-block";
+        document.getElementById("g2-counter").innerText = `Completados: ${scoreG2} / ${dataG2.length}`;
+    }
+
+    function nextG2() {
+        currentG2 = (currentG2 + 1) % dataG2.length;
+        loadG2();
+    }
+
+    // ==========================================
+    // DATOS JUEGO 3: VERDADERO O FALSO
+    // ==========================================
+    const dataG3 = [
+        { text: "Los seres humanos compartimos más del 99% del genoma entre nosotros.", ans: true, msg: "¡Verdadero! Debido al cuello de botella en África." },
+        { text: "El Uracilo es una base nitrogenada que forma parte del ADN.", ans: false, msg: "¡Falso! El Uracilo es exclusivo del ARN." },
+        { text: "Los intrones son conservados en el ARNm maduro para traducirse a proteína.", ans: false, msg: "¡Falso! Los intrones son removidos en el splicing." },
+        { text: "La Caperuza 5' se añade al extremo 5' del pre-ARNm para protegerlo de la degradación.", ans: true, msg: "¡Verdadero! 7-metilguanosina en el extremo 5'." },
+        { text: "Los pares de Guanina y Citosina se unen mediante 2 puentes de hidrógeno.", ans: false, msg: "¡Falso! Guanina y Citosina se unen con 3 puentes de H." },
+        { text: "El ARN Polimerasa II es la encargada de sintetizar ARNm en eucariotas.", ans: true, msg: "¡Verdadero!" },
+        { text: "Casi el 95% del genoma humano codifica directamente para proteínas.", ans: false, msg: "¡Falso! Solo ~1.7% es codificante." },
+        { text: "A mayor porcentaje de G-C en la molécula de ADN, MAYOR es su temperatura de fusión (Tm).", ans: true, msg: "¡Verdadero! Requiere más energía romper 3 puentes de H." },
+        { text: "El ADN procariota es lineal y se halla organizado en múltiples cromosomas dentro del núcleo.", ans: false, msg: "¡Falso! Es circular y carece de núcleo verdadero." },
+        { text: "El ADN mitocondrial es circular y se hereda por línea paterna.", ans: false, msg: "¡Falso! Se hereda exclusivamente por vía materna." },
+        { text: "El codón AUG señala el inicio de la traducción proteica.", ans: true, msg: "¡Verdadero! Codifica Metionina." },
+        { text: "La acetilación de histonas por las enzimas HAT condensa la cromatina e inactiva la transcripción.", ans: false, msg: "¡Falso! La acetilación relaja la cromatina (Eucromatina)." },
+        { text: "Las Islas CpG son regiones ricas en Citosina y Guanina propensas a metilación.", ans: true, msg: "¡Verdadero!" },
+        { text: "Todos los humanos modernos conservamos aproximadamente un 2% de genoma Neandertal.", ans: true, msg: "¡Verdadero!" },
+        { text: "La síntesis de nuevas hebras por las polimerasas ocurre en sentido 3' a 5'.", ans: false, msg: "¡Falso! Siempre sintetizan en sentido 5' a 3'." }
+    ];
+
+    let currentG3 = 0;
+    let scoreG3 = 0;
+
+    function loadG3() {
+        const item = dataG3[currentG3];
+        document.getElementById("g3-title").innerText = `Desafío Verdadero o Falso ${currentG3 + 1} de ${dataG3.length}`;
+        document.getElementById("g3-text").innerText = item.text;
+        document.getElementById("g3-feedback").className = "feedback";
+        document.getElementById("g3-next").style.display = "none";
+        document.getElementById("g3-counter").innerText = `Aciertos: ${scoreG3} / ${dataG3.length}`;
+    }
+
+    function checkG3(userVal) {
+        const item = dataG3[currentG3];
+        const feedback = document.getElementById("g3-feedback");
+
+        if (userVal === item.ans) {
+            scoreG3++;
             feedback.className = "feedback correct";
             feedback.innerText = "💖 ¡Acertaste bebé! " + item.msg;
         } else {
             feedback.className = "feedback incorrect";
-            feedback.innerText = "❌ Incorrecto amor. " + item.msg;
+            feedback.innerText = "❌ Incorrecto mi amor. " + item.msg;
         }
-        document.getElementById("tf-next").style.display = "inline-block";
+        document.getElementById("g3-next").style.display = "inline-block";
+        document.getElementById("g3-counter").innerText = `Aciertos: ${scoreG3} / ${dataG3.length}`;
     }
 
-    function nextTF() {
-        currentTF = (currentTF + 1) % tfData.length;
-        loadTF();
+    function nextG3() {
+        currentG3 = (currentG3 + 1) % dataG3.length;
+        loadG3();
     }
 
-    // INICIALIZACIÓN
-    loadQ1();
-    loadTF();
+    // INICIALIZAR JUEGOS
+    loadG1();
+    loadG2();
+    loadG3();
 </script>
 
 </body>
