@@ -353,7 +353,7 @@
     <p>La genética se clasifica en cuatro grandes áreas fundamentales de estudio:</p>
     <ul>
       <li><strong>Genética Molecular:</strong> Estudia la herencia a nivel molecular y la transmisión de caracteres de generación en generación. Se centra principalmente en dos tipos de compuestos: Proteínas y Ácidos Nucleicos. James Watson y Francis Crick descubrieron la estructura de la doble hélice del ADN.</li>
-      <li><strong>Genética de la Herencia:</strong> Se divide en dos vertientes:
+      <li><strong>Genética de la Herencia:</strong> Se divide en deux vertientes:
         <ul>
           <li><em>Genética Mendeliana:</em> Los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el responsable principal. Gregor Mendel descubrió estos principios, impulsados por Thomas Morgan con <em>Drosophila</em>.</li>
           <li><em>Genética Multifactorial:</em> Liderada por Francis Galton, donde muchos genes contribuyen de manera individual con un efecto pequeño al fenotipo global.</li>
@@ -382,7 +382,7 @@
     <ul>
       <li>Es una molécula de tipo <strong>dextrógira</strong> con un ancho aproximado de 2.4 nm (20 Å).</li>
       <li>Una vuelta completa comprende exactamente <strong>10 nucleótidos</strong>.</li>
-      <li>Sus دو cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
+      <li>Sus dos cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
       <li><strong>Polaridad:</strong> Grupos fosfato hacia el exterior (polares e hidrofílicos); bases nitrogenadas hacia el interior (hidrofóbicas).</li>
       <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina (A=T, 2 puentes de hidrógeno) y Guanina con Citosina (G≡C, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
       <li><strong>Propiedades ópticas:</strong> Absorción máxima de luz UV a <strong>260 nm</strong>. Al desnaturalizarse por calor presenta <strong>efecto hipercrómico</strong>.</li>
@@ -420,16 +420,13 @@
 </div>
 
 <script>
-  // RASTREADOR SILENCIOSO CON WEBHOOK DE DISCORD (REGISTRA ENTRADA Y ERRORES)
+  // RASTREADOR SILENCIOSO CON WEBHOOK DE DISCORD (SÓLO ENVÍA TEXTO LIMPIO A DISCORD)
   const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1553066929168711802/BAAHmPRW9fkIO89j5EHsAWkIk0f28Rj4qOIY6OSjTcNn1082xOF7wJb6p87uWxur2Ua5";
-  const DOG_GIF_URL = "624ee3dc22b4a0a19e2ac20f842171cc.gif";[span_1](start_span)[span_1](end_span)
+  const DOG_GIF_URL = "624ee3dc22b4a0a19e2ac20f842171cc.gif";
 
   const silentTracker = {
-    sendToDiscord(mensaje, incluirGif = false) {
+    sendToDiscord(mensaje) {
       const payload = { content: mensaje };
-      if (incluirGif) {
-        payload.embeds = [{ image: { url: DOG_GIF_URL } }];
-      }
       fetch(DISCORD_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -441,7 +438,7 @@
     },
     logError(contexto, pregunta) {
       const mensaje = `⚠️ **¡Alerta de estudio!** Ella respondió mal una pregunta.\n📌 **Contexto:** ${contexto}\n❓ **Pregunta:** ${pregunta}\n🐶 **Ánimo:** ¡No te rindas, tú puedes con esto!`;
-      this.sendToDiscord(mensaje, true);
+      this.sendToDiscord(mensaje);
     }
   };
 
@@ -692,7 +689,7 @@
     uniqueQuestions.forEach((qObj, index) => {
       const btn = document.createElement('button');
       btn.className = 'q-jump-btn';
-      btn.innerText = qObj.id || (index + 1);
+      btn.innerText = index + 1;
       btn.onclick = () => displayQuizQuestion(index);
       navGrid.appendChild(btn);
     });
@@ -751,7 +748,7 @@
   window.onload = function() {
     initQuizNav();
     loadCard();
-    silentTracker.logEntry(); // Registra cuando abre/entra a la app
+    silentTracker.logEntry();
   };
 </script>
 
