@@ -122,7 +122,6 @@
       background-color: #fbcfe8;
     }
 
-    /* Estilos del Buscador y Cuestionario */
     .search-box {
       width: 100%;
       padding: 12px 15px;
@@ -179,6 +178,26 @@
       margin-bottom: 10px;
     }
 
+    /* Estilos interactivos para las 30 tarjetas de clase */
+    .flashcard-box {
+      background: #fff1f2;
+      border: 2px solid #fbcfe8;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .flashcard-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ec4899;
+      border-radius: 8px;
+      margin-top: 10px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
     h2, h3 { color: var(--secondary-color); }
     ul, ol { padding-left: 20px; }
     li { margin-bottom: 8px; font-size: 0.95rem; }
@@ -200,6 +219,7 @@
       </div>
     </div>
 
+    <button class="menu-button" onclick="showPage('page-cards')">🍑 Tarjetas de Genómica (30 Conceptos de Clase)</button>
     <button class="menu-button" onclick="showPage('page-search')">🔍 Buscador Online de Conceptos</button>
     <button class="menu-button" onclick="showPage('page-quiz')">📝 Cuestionario de 100 Preguntas de Examen</button>
     <button class="menu-button" onclick="showPage('page1')">📖 Módulo I: Los 30 Conceptos Clave</button>
@@ -207,6 +227,25 @@
     <button class="menu-button" onclick="showPage('page3')">🔬 Módulo III: Estructura, Enlaces y Geometría del ADN</button>
     <button class="menu-button" onclick="showPage('page4')">🧬 Módulo IV: Genomas, Tipos de Secuencia y Biología</button>
     <button class="menu-button" onclick="showPage('page5')">📝 Página 5: Apuntes Transcritos Extra y Notas de Clase</button>
+  </div>
+
+  <!-- APARTADO NUEVO: 30 TARJETAS DE CLASE (BASADO EN LA CAPTURA) -->
+  <div id="page-cards" class="page-section">
+    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
+    <h2>🍑 Tarjetas de Genómica (30 Conceptos de Clase)</h2>
+    <div class="flashcard-box">
+      <h3 id="card-title" style="color: #be185d; margin-top:0;">Concepto 1 de 30</h3>
+      <p id="card-question" style="font-weight: bold; font-size: 1.05rem;"></p>
+      <p id="card-answer" style="color: #334155; background: white; padding: 10px; border-radius: 8px; margin-top: 10px;"></p>
+      <label style="display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: #be185d;">
+        ✍️ Transcribe la idea clave para guardarla en tu cuaderno físico/virtual[span_1](start_span)[span_1](end_span):
+      </label>
+      <input type="text" class="flashcard-input" placeholder="Escribe aquí el apunte...[span_2](start_span)"[span_2](end_span)>
+      <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+        <button class="back-btn" style="margin:0;" onclick="prevCard()">⬅ Anterior</button>
+        <button class="back-btn" style="margin:0;" onclick="nextCard()">Siguiente ➡</button>
+      </div>
+    </div>
   </div>
 
   <!-- APARTADO NUEVO: BUSCADOR ONLINE DE CONCEPTOS -->
@@ -226,7 +265,6 @@
     <h2>📝 100 Preguntas de Repaso del Material</h2>
     <p style="font-size: 0.9rem;">Selecciona el número de pregunta para ir directamente a ella:</p>
     
-    <!-- Selector numérico rápido -->
     <div class="question-nav-grid" id="qNavGrid">
       <!-- Generado por JS -->
     </div>
@@ -324,7 +362,7 @@
       <li><strong>Homología y Genoma:</strong> Los humanos compartimos cerca del 99% de nuestro genoma. El <strong>Reloj Molecular</strong> mide el tiempo evolutivo mediante la tasa de mutación acumulada.</li>
       <li><strong>Composición:</strong> El genoma humano mide unas **3,000 Megabases (Mb)** y contiene aproximadamente 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA).</li>
       <li><strong>Proporción:</strong> Solo el **4% del genoma corresponde a genes verdaderos**, mientras que el 96% restante son secuencias no codificantes e intrones.</li>
-      <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> **No es codificante y carece de genes**, compuesto por heterocromatina especializada para la unión del cinetocoro.</li>
+      <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> <strong>No es codificante y carece de genes</strong>, compuesto por heterocromatina especializada para la unión del cinetocoro.</li>
       <li><strong>Secuencias Repetitivas:</strong> Satélites, minisatélites y microsatélites (STR) con alto polimorfismo, muy útiles en genética forense y pruebas de paternidad.</li>
     </ul>
   </div>
@@ -397,6 +435,59 @@
     window.scrollTo(0, 0);
   }
 
+  // --- 30 TARJETAS INTERACTIVAS DE CLASE ---
+  const cardsData = [
+    { q: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?", a: "Todos los seres humanos compartimos más del 99% del genoma debido al cuello de botella poblacional ocurrido hace ~200,000 años en África." },
+    { q: "¿Qué estudia la Genética?", a: "La ciencia que estudia la herencia biológica y la transmisión de caracteres de una generación a otra." },
+    { q: "¿Cuáles son las 4 grandes áreas de la Genética?", a: "Genética Molecular, Genética de la Herencia, Citogenética y Genética de Poblaciones." },
+    { q: "¿Qué estudia la Genética Molecular?", a: "Estudia la herencia a nivel molecular y los compuestos principales: Proteínas y Ácidos Nucleicos." },
+    { q: "¿Quiénes descubrieron la estructura de la doble hélice del ADN?", a: "James Watson y Francis Crick." },
+    { q: "¿En qué se divide la Genética de la Herencia?", a: "En Genética Mendeliana y Genética Multifactorial." },
+    { q: "¿Qué caracteriza a la Genética Mendeliana?", a: "Los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el responsable principal (impulsado por Thomas Morgan con Drosophila)." },
+    { q: "¿Qué caracteriza a la Genética Multifactorial?", a: "Liderada por Francis Galton; muchos genes contribuyen de manera individual con un efecto pequeño al fenotipo global." },
+    { q: "¿Qué estudia la Citogenética?", a: "El estudio profundo de los cromosomas y su morfología desde finales del siglo antepasado." },
+    { q: "¿Qué estudia la Genética de Poblaciones?", a: "La dinámica poblacional (movimientos, expansiones, contracciones, migraciones) y la estructura genética que diferencia a las poblaciones." },
+    { q: "¿Cuáles fueron las tres teorías de moléculas primigenias?", a: "Proteínas, ARN y ADN como portadoras iniciales de información y función." },
+    { q: "¿Cuáles son los niveles de plegamiento del ADN desnudo?", a: "1. Nucleosoma (~2 nm), 2. Solenoide, 3. Andamio o lazos de cromatina, 4. Nivel de cromátide, 5. Cromosoma en metafase." },
+    { q: "¿Qué tipo de molécula es la doble hélice de ADN?", a: "Es una molécula dextrógira, con un ancho de 2.4 nm." },
+    { q: "¿Cuántos nucleótidos tiene una vuelta completa de ADN?", a: "Exactamente 10 nucleótidos por cada vuelta completa." },
+    { q: "¿Cómo se disponen las cadenas de ADN?", a: "Son antiparalelas (5' a 3' y 3' a 5')." },
+    { q: "¿Cómo se disponen los fosfatos y bases en la doble hélice?", a: "Los fosfatos van por fuera (polares, hidrofílicos) y las bases nitrogenadas van por dentro (hidrofóbicas)." },
+    { q: "¿Qué es la desnaturalización del ADN?", a: "Es el proceso de separar las dos cadenas rompiendo los enlaces débiles (puentes de hidrógeno)." },
+    { q: "¿Cómo es el pareo de bases nitrogenadas?", a: "Adenina se une a Timina con 2 puentes de hidrógeno (A=T), y Guanina se une a Citosina con 3 puentes de hidrógeno (G≡C)." },
+    { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", a: "A 260 nm de manera característica." },
+    { q: "¿Qué es el efecto hipercrómico?", a: "El incremento de la absorbancia de luz UV cuando el ADN se desnaturaliza." },
+    { q: "¿De qué depende la Temperatura de Fusión (Tm)?", a: "A mayor contenido de pares G-C, mayor es la temperatura de fusión por sus 3 puentes de hidrógeno." },
+    { q: "¿Qué es la homología genómica?", a: "La existencia de dos secuencias biológicas parecidas debido a un ancestro común." },
+    { q: "¿Qué representa el Reloj Molecular?", a: "El concepto de que el ADN funciona como un lenguaje; al pasar los años y acumular mutaciones, nos parecemos menos al ancestro." },
+    { q: "¿Cuánto mide el genoma humano?", a: "Aproximadamente 3,000 Megabases (Mb)." },
+    { q: "¿Cuántos genes tiene el genoma humano?", a: "Alrededor de 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA)." },
+    { q: "¿Qué porcentaje del genoma humano es codificante?", a: "Únicamente el 4%, mientras que el 96% restante corresponde a secuencias no codificantes." },
+    { q: "¿El ADN centromérico tiene genes?", a: "No, el ADN centromérico no es codificante y carece por completo de genes; forma heterocromatina estructural." },
+    { q: "¿Qué son los microsatélites y minisatélites?", a: "Secuencias repetitivas de ADN no codificante en tándem, clave para pruebas de paternidad y genética forense." },
+    { q: "¿Qué diferencia a las bacterias de los eucariotas en su genoma?", a: "Las bacterias tienen genomas circulares compactos hechos de genes esenciales y carecen de histonas complejas." },
+    { q: "¿Qué es la Epigenética y la Metilación?", a: "Cambios heredables en la expresión sin alterar la secuencia; la metilación con grupos metilo (-CH3) silencia la transcripción." }
+  ];
+
+  let currentCardIndex = 0;
+
+  function loadCard() {
+    const card = cardsData[currentCardIndex];
+    document.getElementById('card-title').innerText = `Concepto ${currentCardIndex + 1} de 30`;
+    document.getElementById('card-question').innerText = card.q;
+    document.getElementById('card-answer').innerText = card.a;
+  }
+
+  function nextCard() {
+    currentCardIndex = (currentCardIndex + 1) % cardsData.length;
+    loadCard();
+  }
+
+  function prevCard() {
+    currentCardIndex = (currentCardIndex - 1 + cardsData.length) % cardsData.length;
+    loadCard();
+  }
+
   // --- LÓGICA DEL BUSCADOR DE CONCEPTOS ---
   const conceptsDatabase = [
     { term: "Genética", desc: "Ciencia que estudia la herencia biológica y la transmisión de caracteres de una generación a otra." },
@@ -465,7 +556,6 @@
 
   // --- LÓGICA DE LAS 100 PREGUNTAS DE EXAMEN ---
   const examQuestions = [];
-  // Generamos dinámicamente las 100 preguntas basadas fielmente en los apuntes
   const basePool = [
     { q: "¿Qué ciencia estudia la herencia biológica y la transmisión de caracteres?", a: "La Genética." },
     { q: "¿En qué se centra principalmente la Genética Molecular?", a: "En proteínas y ácidos nucleicos." },
@@ -519,7 +609,6 @@
     { q: "¿Cómo son los genomas de las bacterias?", a: "Circulares simples, compactos y sin histonas complejas." }
   ];
 
-  // Rellenar hasta 100 preguntas para completar el apartado solicitado
   for (let i = 1; i <= 100; i++) {
     const base = basePool[(i - 1) % basePool.length];
     examQuestions.push({
@@ -539,11 +628,10 @@
       btn.onclick = () => displayQuestion(index);
       navGrid.appendChild(btn);
     });
-    displayQuestion(0); // Mostrar la primera por defecto
+    displayQuestion(0);
   }
 
   function displayQuestion(index) {
-    // Actualizar botones activos
     const buttons = document.querySelectorAll('.q-jump-btn');
     buttons.forEach((b, idx) => {
       if (idx === index) b.classList.add('active');
@@ -567,9 +655,9 @@
     `;
   }
 
-  // Inicializar al cargar la página
   window.onload = function() {
     initQuizNav();
+    loadCard();
   };
 </script>
 
