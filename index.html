@@ -178,7 +178,6 @@
       margin-bottom: 10px;
     }
 
-    /* Estilos interactivos para las 30 tarjetas de clase */
     .flashcard-box {
       background: #fff1f2;
       border: 2px solid #fbcfe8;
@@ -229,7 +228,7 @@
     <button class="menu-button" onclick="showPage('page5')">📝 Página 5: Apuntes Transcritos Extra y Notas de Clase</button>
   </div>
 
-  <!-- APARTADO NUEVO: 30 TARJETAS DE CLASE (BASADO EN LA CAPTURA) -->
+  <!-- APARTADO: 30 TARJETAS DE CLASE -->
   <div id="page-cards" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
     <h2>🍑 Tarjetas de Genómica (30 Conceptos de Clase)</h2>
@@ -238,9 +237,9 @@
       <p id="card-question" style="font-weight: bold; font-size: 1.05rem;"></p>
       <p id="card-answer" style="color: #334155; background: white; padding: 10px; border-radius: 8px; margin-top: 10px;"></p>
       <label style="display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: #be185d;">
-        ✍️ Transcribe la idea clave para guardarla en tu cuaderno físico/virtual[span_1](start_span)[span_1](end_span):
+        ✍️ Transcribe la idea clave para guardarla en tu cuaderno físico/virtual:
       </label>
-      <input type="text" class="flashcard-input" placeholder="Escribe aquí el apunte...[span_2](start_span)"[span_2](end_span)>
+      <input type="text" class="flashcard-input" placeholder="Escribe aquí el apunte...">
       <div style="margin-top: 15px; display: flex; justify-content: space-between;">
         <button class="back-btn" style="margin:0;" onclick="prevCard()">⬅ Anterior</button>
         <button class="back-btn" style="margin:0;" onclick="nextCard()">Siguiente ➡</button>
@@ -248,7 +247,7 @@
     </div>
   </div>
 
-  <!-- APARTADO NUEVO: BUSCADOR ONLINE DE CONCEPTOS -->
+  <!-- APARTADO: BUSCADOR ONLINE DE CONCEPTOS -->
   <div id="page-search" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
     <h2>🔍 Buscador Rápido de Conceptos</h2>
@@ -259,7 +258,7 @@
     </div>
   </div>
 
-  <!-- APARTADO NUEVO: 100 PREGUNTAS CON NAVEGADOR DIRECTO -->
+  <!-- APARTADO: 100 PREGUNTAS CON NAVEGADOR DIRECTO -->
   <div id="page-quiz" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
     <h2>📝 100 Preguntas de Repaso del Material</h2>
@@ -348,7 +347,7 @@
       <li>Una vuelta completa comprende exactamente <strong>10 nucleótidos</strong>.</li>
       <li>Sus dos cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
       <li><strong>Polaridad:</strong> Grupos fosfato hacia el exterior (polares e hidrofílicos); bases nitrogenadas hacia el interior (hidrofóbicas).</li>
-      <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina ($A=T$, 2 puentes de hidrógeno) y Guanina con Citosina ($G\equiv C$, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
+      <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina (A=T, 2 puentes de hidrógeno) y Guanina con Citosina (G≡C, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
       <li><strong>Propiedades ópticas:</strong> Absorción máxima de luz UV a <strong>260 nm</strong>. Al desnaturalizarse por calor presenta <strong>efecto hipercrómico</strong>.</li>
     </ul>
   </div>
@@ -360,8 +359,8 @@
     <h3>Genoma Humano y Organización del ADN</h3>
     <ul>
       <li><strong>Homología y Genoma:</strong> Los humanos compartimos cerca del 99% de nuestro genoma. El <strong>Reloj Molecular</strong> mide el tiempo evolutivo mediante la tasa de mutación acumulada.</li>
-      <li><strong>Composición:</strong> El genoma humano mide unas **3,000 Megabases (Mb)** y contiene aproximadamente 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA).</li>
-      <li><strong>Proporción:</strong> Solo el **4% del genoma corresponde a genes verdaderos**, mientras que el 96% restante son secuencias no codificantes e intrones.</li>
+      <li><strong>Composición:</strong> El genoma humano mide unas <strong>3,000 Megabases (Mb)</strong> y contiene aproximadamente 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA).</li>
+      <li><strong>Proporción:</strong> Solo el <strong>4% del genoma corresponde a genes verdaderos</strong>, mientras que el 96% restante son secuencias no codificantes e intrones.</li>
       <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> <strong>No es codificante y carece de genes</strong>, compuesto por heterocromatina especializada para la unión del cinetocoro.</li>
       <li><strong>Secuencias Repetitivas:</strong> Satélites, minisatélites y microsatélites (STR) con alto polimorfismo, muy útiles en genética forense y pruebas de paternidad.</li>
     </ul>
@@ -393,7 +392,7 @@
       - Molécula dextrógira de 2.4 nm de ancho.<br>
       - Una vuelta completa de hélice por cada 10 nucleótidos.<br>
       - Cadenas antiparalelas con esqueleto de fosfatos hacia afuera (polares, hidrofílicos) y bases nitrogenadas hacia adentro (hidrofóbicas).<br>
-      - Estabilizada por enlaces débiles (puentes de hidrógeno). Su separación térmica o química se denomina *Desnaturalización*.<br>
+      - Estabilizada por enlaces débiles (puentes de hidrógeno). Su separación térmica o química se denomina <em>Desnaturalización</em>.<br>
       - Pareo de bases específico: A=T (2 puentes) y G≡C (3 puentes). Posee surco menor y surco mayor.<br><br>
 
       * <strong>5. Genoma y Tipos de Secuencias:</strong><br>
@@ -488,7 +487,7 @@
     loadCard();
   }
 
-  // --- LÓGICA DEL BUSCADOR DE CONCEPTOS ---
+  // --- BUSCADOR ONLINE DE CONCEPTOS ---
   const conceptsDatabase = [
     { term: "Genética", desc: "Ciencia que estudia la herencia biológica y la transmisión de caracteres de una generación a otra." },
     { term: "Genética Molecular", desc: "Rama que estudia la herencia a nivel molecular, enfocándose en proteínas y ácidos nucleicos." },
@@ -554,7 +553,7 @@
     });
   }
 
-  // --- LÓGICA DE LAS 100 PREGUNTAS DE EXAMEN ---
+  // --- 100 PREGUNTAS DE EXAMEN ---
   const examQuestions = [];
   const basePool = [
     { q: "¿Qué ciencia estudia la herencia biológica y la transmisión de caracteres?", a: "La Genética." },
@@ -570,7 +569,7 @@
     { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", a: "A 260 nm." },
     { q: "¿Qué es el efecto hipercrómico?", a: "El incremento en la absorbancia de luz UV al desnaturalizarse el ADN." },
     { q: "¿Qué es la Temperatura de Fusión (Tm)?", a: "La temperatura a la cual la mitad de la doble hélice se desnaturaliza; aumenta con más G-C." },
-    { q: "¿Cuál es la unidad estructural básica de la cromatina?", a: "El nucleosoma (ADN enrollado en un octámero de histonas)." },
+    { q: "¿Cuál es la unidad estructural básica de la cromatina?", a: "El nucleosoma (ADN enrollado alrededor de un octámero de histonas)." },
     { q: "¿Qué es el solenoide en la cromatina?", a: "Un nivel de empaquetamiento superior formado por la compactación helicoidal de los nucleosomas." },
     { q: "¿Cómo es la heterocromatina?", a: "Altamente condensada, inactiva y localizada comúnmente en regiones centroméricas." },
     { q: "¿Cómo es la eucromatina?", a: "Menos condensada y transcripcionalmente activa." },
