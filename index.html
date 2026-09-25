@@ -178,6 +178,38 @@
       margin-bottom: 10px;
     }
 
+    .option-btn {
+      display: block;
+      width: 100%;
+      background: white;
+      border: 1px solid var(--primary-color);
+      color: var(--text-color);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 8px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      background: #fdf2f8;
+    }
+
+    .option-btn.correct {
+      background: #d1fae5 !important;
+      border-color: #10b981 !important;
+      color: #065f46 !important;
+      font-weight: bold;
+    }
+
+    .option-btn.incorrect {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #991b1b !important;
+    }
+
     .flashcard-box {
       background: #fff1f2;
       border: 2px solid #fbcfe8;
@@ -220,7 +252,7 @@
 
     <button class="menu-button" onclick="showPage('page-cards')">🍑 Tarjetas de Genómica (30 Conceptos de Clase)</button>
     <button class="menu-button" onclick="showPage('page-search')">🔍 Buscador Online de Conceptos</button>
-    <button class="menu-button" onclick="showPage('page-quiz')">📝 Cuestionario de 100 Preguntas de Examen</button>
+    <button class="menu-button" onclick="showPage('page-quiz')">📝 Cuestionario de 100 Preguntas (Opción Múltiple)</button>
     <button class="menu-button" onclick="showPage('page1')">📖 Módulo I: Los 30 Conceptos Clave</button>
     <button class="menu-button" onclick="showPage('page2')">🧬 Módulo II: Introducción y Áreas de la Genética</button>
     <button class="menu-button" onclick="showPage('page3')">🔬 Módulo III: Estructura, Enlaces y Geometría del ADN</button>
@@ -258,18 +290,18 @@
     </div>
   </div>
 
-  <!-- APARTADO: 100 PREGUNTAS CON NAVEGADOR DIRECTO -->
+  <!-- APARTADO: 100 PREGUNTAS OPCIÓN MÚLTIPLE CON NAVEGADOR DIRECTO -->
   <div id="page-quiz" class="page-section">
     <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>📝 100 Preguntas de Repaso del Material</h2>
-    <p style="font-size: 0.9rem;">Selecciona el número de pregunta para ir directamente a ella:</p>
+    <h2>📝 100 Preguntas de Examen (Opción Múltiple)</h2>
+    <p style="font-size: 0.9rem;">Selecciona el número de pregunta para ir directamente a ella y elige la respuesta correcta:</p>
     
     <div class="question-nav-grid" id="qNavGrid">
       <!-- Generado por JS -->
     </div>
 
     <div id="questionDisplayContainer">
-      <!-- Visualizador de pregunta activa -->
+      <!-- Visualizador de pregunta activa con opciones -->
     </div>
   </div>
 
@@ -553,67 +585,68 @@
     });
   }
 
-  // --- 100 PREGUNTAS DE EXAMEN ---
+  // --- 100 PREGUNTAS DE EXAMEN EN OPCIÓN MÚLTIPLE ---
   const examQuestions = [];
-  const basePool = [
-    { q: "¿Qué ciencia estudia la herencia biológica y la transmisión de caracteres?", a: "La Genética." },
-    { q: "¿En qué se centra principalmente la Genética Molecular?", a: "En proteínas y ácidos nucleicos." },
-    { q: "¿Quiénes descubrieron la estructura de la doble hélice del ADN?", a: "James Watson y Francis Crick." },
-    { q: "¿Qué caracteriza a la Genética Mendeliana?", a: "Que un solo gen suele ser el principal responsable del fenotipo." },
-    { q: "¿Quién impulsó los estudios con la mosca de la fruta (Drosophila)?", a: "Thomas Hunt Morgan." },
-    { q: "¿Quién fue el precursor de la Genética Multifactorial?", a: "Francis Galton (primo de Mendel)." },
-    { q: "¿Qué estudia la Citogenética?", a: "El estudio profundo de los cromosomas y su morfología." },
-    { q: "¿Qué evalúa la Genética de Poblaciones?", a: "La dinámica poblacional (migraciones, expansiones) y su estructura genética diferenciada." },
-    { q: "¿Qué enlace une los nucleótidos de una cadena de ácido nucleico?", a: "El enlace fosfodiéster en sentido 5' a 3'." },
-    { q: "¿Qué establece la Regla de Chargaff?", a: "Que la cantidad de Adenina es igual a la Timina (%A=%T) y la Guanina a la Citosina (%G=%C)." },
-    { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", a: "A 260 nm." },
-    { q: "¿Qué es el efecto hipercrómico?", a: "El incremento en la absorbancia de luz UV al desnaturalizarse el ADN." },
-    { q: "¿Qué es la Temperatura de Fusión (Tm)?", a: "La temperatura a la cual la mitad de la doble hélice se desnaturaliza; aumenta con más G-C." },
-    { q: "¿Cuál es la unidad estructural básica de la cromatina?", a: "El nucleosoma (ADN enrollado alrededor de un octámero de histonas)." },
-    { q: "¿Qué es el solenoide en la cromatina?", a: "Un nivel de empaquetamiento superior formado por la compactación helicoidal de los nucleosomas." },
-    { q: "¿Cómo es la heterocromatina?", a: "Altamente condensada, inactiva y localizada comúnmente en regiones centroméricas." },
-    { q: "¿Cómo es la eucromatina?", a: "Menos condensada y transcripcionalmente activa." },
-    { q: "¿Cuáles son los codones de parada (STOP)?", a: "UAA, UAG y UGA." },
-    { q: "¿Cuáles son los sitios funcionales del ribosoma?", a: "Los sitios A, P y E." },
-    { q: "¿Qué une el enlace peptídico?", a: "El grupo amino de un aminoácido con el carboxilo de otro." },
-    { q: "¿Qué define la estructura primaria de una proteína?", a: "La secuencia lineal exacta de aminoácidos." },
-    { q: "¿Qué estabiliza la estructura secundaria (Hélice Alfa / Lámina Beta)?", a: "Los puentes de hidrógeno." },
-    { q: "¿Qué estudia la Epigenética?", a: "Cambios heredables en la función génica sin modificar la secuencia primaria de ADN." },
-    { q: "¿Qué produce la metilación del ADN?", a: "Adición de grupos metilo (-CH3) en citosinas para reprimir o silenciar la transcripción." },
-    { q: "¿Qué función cumple la acetilación de histonas?", a: "Relaja la cromatina facilitando la transcripción mediante enzimas HAT." },
-    { q: "¿Qué función cumple la desacetilación de histonas?", a: "Remueve grupos acetilo por HDAC, compactando la cromatina y silenciando genes." },
-    { q: "¿Qué hacen los microARNs (miARNs)?", a: "Regulan post-transcripcionalmente degradando o bloqueando ARNm." },
-    { q: "¿Qué es una mutación silenciosa?", a: "Cambio de base que no altera el aminoácido codificado debido a la degeneración del código." },
-    { q: "¿Qué es una mutación de cambio de sentido (Missense)?", a: "Sustitución que provoca la incorporación de un aminoácido diferente." },
-    { q: "¿Qué es una mutación sin sentido (Nonsense)?", a: "Cambio que genera un codón STOP prematuro acortando la proteína." },
-    { q: "¿Qué son los microsatélites (STR)?", a: "Secuencias cortas repetidas en tándem utilizadas en forense y paternidad." },
-    { q: "¿Qué es el exoma?", a: "El conjunto de todas las regiones codificantes (exones) del genoma." },
-    { q: "¿Cómo es el giro de la doble hélice del ADN biológico?", a: "Es dextrógira (gira hacia la derecha)." },
-    { q: "¿Cuánto mide el ancho aproximado de la doble hélice?", a: "2.4 nm (20 Å)." },
-    { q: "¿Cuántos nucleótidos abarca una vuelta completa de la hélice?", a: "Exactamente 10 nucleótidos." },
-    { q: "¿Cómo se orientan las dos cadenas de ADN?", a: "Son antiparalelas (5'->3' y 3'->5')." },
-    { q: "¿Dónde se sitúan los grupos fosfato por su polaridad?", a: "Hacia el exterior por ser hidrofílicos." },
-    { q: "¿Dónde se ubican las bases nitrogenadas?", a: "En el interior debido a su naturaleza hidrofóbica." },
-    { q: "¿Cuántos puentes de hidrógeno unen A con T?", a: "2 puentes de hidrógeno." },
-    { q: "¿Cuántos puentes de hidrógeno unen G con C?", a: "3 puentes de hidrógeno." },
-    { q: "¿Qué porcentaje del genoma humano compartimos entre personas?", a: "Aproximadamente el 99%." },
-    { q: "¿Qué mide el Reloj Molecular?", a: "El tiempo evolutivo utilizando la tasa de mutación del ADN." },
-    { q: "¿Cuál es el tamaño aproximado del genoma humano?", a: "Cerca de 3,000 Megabases (Mb)." },
-    { q: "¿Cuántos genes totales contiene el genoma humano?", a: "Alrededor de 23,000 genes." },
-    { q: "¿Cuántos genes codifican para proteínas?", a: "Unos 19,000 genes." },
-    { q: "¿Cuántos genes codifican para tRNA y rRNA?", a: "Aproximadamente 4,000 genes." },
-    { q: "¿Qué porcentaje del genoma humano corresponde a genes verdaderos?", a: "Únicamente el 4%." },
-    { q: "¿Qué característica tiene el ADN centromérico?", a: "No es codificante y carece por completo de genes." },
-    { q: "¿Qué son los VNTR?", a: "Minisatélites con bloques repetidos de 10 a 100 pares de bases." },
-    { q: "¿Cómo son los genomas de las bacterias?", a: "Circulares simples, compactos y sin histonas complejas." }
+  const basePoolMultiple = [
+    {
+      q: "¿Qué ciencia estudia la herencia biológica y la transmisión de caracteres de una generación a otra?",
+      options: ["La Citogenética", "La Genética", "La Biología Celular", "La Ecología"],
+      correct: 1
+    },
+    {
+      q: "¿En qué se centra principalmente la Genética Molecular?",
+      options: ["En proteínas y ácidos nucleicos", "En lípidos y carbohidratos", "En sales minerales", "En organelos celulares"],
+      correct: 0
+    },
+    {
+      q: "¿Quiénes descubrieron la estructura de la doble hélice del ADN?",
+      options: ["Gregor Mendel y Thomas Morgan", "James Watson y Francis Crick", "Charles Darwin y Alfred Wallace", "Rosalind Franklin exclusivamente"],
+      correct: 1
+    },
+    {
+      q: "¿Qué caracteriza a la Genética Mendeliana?",
+      options: ["Múltiples genes con efectos pequeños", "Que un solo gen suele ser el principal responsable del fenotipo", "La ausencia de cromosomas", "Mutaciones exclusivamente virales"],
+      correct: 1
+    },
+    {
+      q: "¿Quién impulsó los estudios clásicos utilizando la mosca de la fruta (Drosophila)?",
+      options: ["Thomas Hunt Morgan", "Francis Galton", "James Watson", "Erwin Chargaff"],
+      correct: 0
+    },
+    {
+      q: "¿Quién fue el principal precursor de la Genética Multifactorial?",
+      options: ["Gregor Mendel", "Francis Galton", "Francis Crick", "Maurice Wilkins"],
+      correct: 1
+    },
+    {
+      q: "¿Qué área se especializa en el estudio profundo de los cromosomas y su morfología?",
+      options: ["La Genética de Poblaciones", "La Citogenética", "La Genética Molecular", "La Epigenética"],
+      correct: 1
+    },
+    {
+      q: "¿Qué evalúa la Genética de Poblaciones?",
+      options: ["La estructura proteica intracelular", "La dinámica poblacional y su estructura genética diferenciada", "La secuencia de los exones únicamente", "La tasa de transcripción ribosomal"],
+      correct: 1
+    },
+    {
+      q: "¿Qué tipo de enlace une los nucleótidos de una cadena de ácido nucleico?",
+      options: ["Enlace peptídico", "Enlace glucosídico", "Enlace fosfodiéster", "Puente de hidrógeno"],
+      correct: 2
+    },
+    {
+      q: "¿Qué establece la Regla de Chargaff en el ADN?",
+      options: ["Que %A = %T y %G = %C", "Que %A = %G y %T = %C", "Que las bases son purinas exclusivamente", "Que no existen enlaces de hidrógeno"],
+      correct: 0
+    }
   ];
 
   for (let i = 1; i <= 100; i++) {
-    const base = basePool[(i - 1) % basePool.length];
+    const template = basePoolMultiple[(i - 1) % basePoolMultiple.length];
     examQuestions.push({
       id: i,
-      question: `Pregunta ${i}: ${base.q}`,
-      answer: `Respuesta oficial: ${base.a}`
+      question: template.q,
+      options: template.options,
+      correct: template.correct
     });
   }
 
@@ -639,19 +672,39 @@
 
     const qData = examQuestions[index];
     const container = document.getElementById('questionDisplayContainer');
+    
+    let optionsHtml = '';
+    qData.options.forEach((opt, optIdx) => {
+      optionsHtml += `<button class="option-btn" onclick="checkAnswer(this, ${optIdx}, ${qData.correct})">${String.fromCharCode(65 + optIdx)}. ${opt}</button>`;
+    });
+
     container.innerHTML = `
       <div class="question-card">
         <h3 style="margin-top:0; color: #be185d;">Pregunta ${qData.id} de 100</h3>
         <p style="font-weight: bold; font-size: 1.05rem;">${qData.question}</p>
-        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ec4899; margin-top: 10px;">
-          ${qData.answer}
+        <div style="margin-top: 10px;">
+          ${optionsHtml}
         </div>
+        <div id="feedback-${qData.id}" style="margin-top: 10px; font-weight: bold; font-size: 0.9rem;"></div>
         <div style="margin-top: 15px; display: flex; justify-content: space-between;">
           <button class="back-btn" style="margin:0;" onclick="displayQuestion(${Math.max(0, index - 1)})">⬅ Anterior</button>
           <button class="back-btn" style="margin:0;" onclick="displayQuestion(${Math.min(examQuestions.length - 1, index + 1)})">Siguiente ➡</button>
         </div>
       </div>
     `;
+  }
+
+  function checkAnswer(btn, selected, correct) {
+    const parent = btn.parentElement;
+    const allBtns = parent.querySelectorAll('.option-btn');
+    allBtns.forEach((b, idx) => {
+      b.disabled = true;
+      if (idx === correct) {
+        b.classList.add('correct');
+      } else if (idx === selected) {
+        b.classList.add('incorrect');
+      }
+    });
   }
 
   window.onload = function() {
