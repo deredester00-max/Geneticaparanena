@@ -2,44 +2,54 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Filtros Interactivo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Portal de Filtros Ultra Fluido</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
-      background-color: #121212;
+      padding: 0;
+    }
+    body {
+      background-color: #0d0d0d;
       color: white;
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      overflow: hidden;
+      padding: 10px;
     }
 
     .info-bar {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       text-align: center;
     }
 
     .badge {
-      background: #800080;
-      padding: 6px 12px;
+      background: linear-gradient(135deg, #7e22ce, #a855f7);
+      padding: 6px 16px;
       border-radius: 20px;
       font-weight: bold;
       display: inline-block;
-      margin-top: 5px;
+      margin-top: 6px;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(168, 85, 247, 0.4);
     }
 
     .container {
       position: relative;
-      width: 640px;
-      height: 480px;
-      border: 2px solid #444;
-      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #333;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      background: #000;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
     }
 
     #input_video {
@@ -48,26 +58,27 @@
 
     #output_canvas {
       width: 100%;
-      height: 100%;
-      transform: scaleX(-1); /* Efecto espejo */
+      height: auto;
+      display: block;
+      transform: scaleX(-1); /* Modo espejo */
     }
   </style>
 
-  <!-- Mediapipe Hands & Camera utils -->
+  <!-- Mediapipe Hands -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
   <div class="info-bar">
-    <h2>Portal Interactivo Optimizado</h2>
-    <p>☝️ <b>Sube el dedo índice derecho arriba</b> para cambiar de filtro.</p>
+    <h3 style="margin: 0 0 4px 0;">Portal de Filtros</h3>
+    <p style="margin: 0; opacity: 0.8; font-size: 13px;">☝️ Sube el dedo índice arriba para cambiar filtro</p>
     <div class="badge" id="filterName">Filtro: Morado Portal</div>
   </div>
 
   <div class="container">
-    <video id="input_video" autoplay playsinline></video>
-    <canvas id="output_canvas" width="640" height="480"></canvas>
+    <video id="input_video" autoplay playsinline muted></video>
+    <canvas id="output_canvas"></canvas>
   </div>
 
   <script>
@@ -81,133 +92,150 @@
       { id: 'blur_inside', name: 'Desenfoque / Blur' },
       { id: 'sepia_inside', name: 'Tono Sepia' },
       { id: 'invert_inside', name: 'Invertir Colores' },
-      { id: 'pixel_inside', name: 'Pixelado' }
+      { id: 'pixel_inside', name: 'Pixelado / Neón' }
     ];
 
     let currentFilterIndex = 0;
     let canSwitchFilter = true;
+    let isVideoRatioSet = false;
 
-    // Configuración ligera de MediaPipe para máxima fluidez
+    // Configuración ligera y rápida de MediaPipe para cero lag
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
 
     hands.setOptions({
       maxNumHands: 2,
-      modelComplexity: 0, // 0 = ultra rápido / ligero para navegadores
-      minDetectionConfidence: 0.6,
-      minTrackingConfidence: 0.6
+      modelComplexity: 0, // 0 = Modo liviano ultrarrápido para celulares
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
     });
 
     hands.onResults(onResults);
 
     function onResults(results) {
+      // Ajuste automático de resolución real para eliminar deformaciones
+      if (!isVideoRatioSet && videoElement.videoWidth) {
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+        isVideoRatioSet = true;
+      }
+
+      if (!canvasElement.width) return;
+
       canvasCtx.save();
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      
-      // Dibujar la cámara original
+
+      // Renderizado del video a su resolución natural sin estirar
       canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-      let allHandPoints = [];
+      let handsData = [];
       let triggerGestureDetected = false;
 
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (let i = 0; i < results.multiHandLandmarks.length; i++) {
           const landmarks = results.multiHandLandmarks[i];
-          
-          // Detección de gesto: Índice bien arriba (cerca del borde superior, Y < 0.18)
-          const indexTip = landmarks[8];
-          if (indexTip.y < 0.18) {
+
+          // Detección de gesto: índice levantado cerca del borde superior
+          if (landmarks[8].y < 0.15) {
             triggerGestureDetected = true;
           }
 
-          // Guardar puntos clave de la mano (Índice y Pulgar para formar la caja)
-          [4, 8, 12, 20].forEach(p => {
-            allHandPoints.push({
-              x: landmarks[p].x * canvasElement.width,
-              y: landmarks[p].y * canvasElement.height
-            });
+          handsData.push({
+            top: {
+              x: landmarks[8].x * canvasElement.width,
+              y: landmarks[8].y * canvasElement.height
+            },
+            bottom: {
+              x: landmarks[20].x * canvasElement.width,
+              y: landmarks[20].y * canvasElement.height
+            },
+            centerX: landmarks[9].x * canvasElement.width
           });
         }
       }
 
-      // Cambiar filtro por gesto arriba
+      // Cambio suave de filtro por gesto
       if (triggerGestureDetected && canSwitchFilter) {
         currentFilterIndex = (currentFilterIndex + 1) % filters.length;
         filterNameLabel.innerText = 'Filtro: ' + filters[currentFilterIndex].name;
         canSwitchFilter = false;
-        setTimeout(() => { canSwitchFilter = true; }, 1000); // Evitar cambios accidentales rápidos
+        setTimeout(() => { canSwitchFilter = true; }, 800);
       }
 
-      // Si detectamos las manos, creamos el área/cuadro de filtro según la posición de las manos
-      if (allHandPoints.length > 0) {
-        applyBoundingFilter(allHandPoints, filters[currentFilterIndex].id);
+      // Dibujar portal ajustado si hay 2 manos detectadas
+      if (handsData.length === 2) {
+        handsData.sort((a, b) => a.centerX - b.centerX);
+        drawTrapezoidFilter(handsData[0], handsData[1], filters[currentFilterIndex].id);
       }
 
       canvasCtx.restore();
     }
 
-    function applyBoundingFilter(points, filterType) {
-      // Calcular el recuadro que engloba los puntos de las manos
-      let minX = Math.min(...points.map(p => p.x));
-      let maxX = Math.max(...points.map(p => p.x));
-      let minY = Math.min(...points.map(p => p.y));
-      let maxY = Math.max(...points.map(p => p.y));
-
-      // Darle un pequeño margen
-      const padding = 20;
-      minX = Math.max(0, minX - padding);
-      maxX = Math.min(canvasElement.width, maxX + padding);
-      minY = Math.max(0, minY - padding);
-      maxY = Math.min(canvasElement.height, maxY + padding);
-
-      const width = maxX - minX;
-      const height = maxY - minY;
-
-      if (width < 30 || height < 30) return;
+    function drawTrapezoidFilter(leftHand, rightHand, filterType) {
+      const p1 = leftHand.top;
+      const p2 = rightHand.top;
+      const p3 = rightHand.bottom;
+      const p4 = leftHand.bottom;
 
       canvasCtx.save();
-      
-      // Crear máscara con la forma del marco
       canvasCtx.beginPath();
-      canvasCtx.rect(minX, minY, width, height);
+      canvasCtx.moveTo(p1.x, p1.y);
+      canvasCtx.lineTo(p2.x, p2.y);
+      canvasCtx.lineTo(p3.x, p3.y);
+      canvasCtx.lineTo(p4.x, p4.y);
+      canvasCtx.closePath();
 
       if (filterType === 'purple_polygon') {
-        canvasCtx.fillStyle = 'rgba(147, 51, 234, 0.6)';
-        canvasCtx.fillRect(minX, minY, width, height);
-        canvasCtx.strokeStyle = '#c084fc';
-        canvasCtx.lineWidth = 4;
-        canvasCtx.strokeRect(minX, minY, width, height);
+        canvasCtx.fillStyle = 'rgba(147, 51, 234, 0.65)';
+        canvasCtx.fill();
+        canvasCtx.strokeStyle = '#e9d5ff';
+        canvasCtx.lineWidth = 3;
+        canvasCtx.stroke();
       } else {
         canvasCtx.clip();
 
         if (filterType === 'blur_inside') {
-          canvasCtx.filter = 'blur(12px)';
+          canvasCtx.filter = 'blur(10px)';
         } else if (filterType === 'sepia_inside') {
-          canvasCtx.filter = 'sepia(100%) saturate(200%)';
+          canvasCtx.filter = 'sepia(100%) saturate(180%)';
         } else if (filterType === 'invert_inside') {
           canvasCtx.filter = 'invert(100%)';
         } else if (filterType === 'pixel_inside') {
-          canvasCtx.filter = 'contrast(150%) hue-rotate(90deg)';
+          canvasCtx.filter = 'hue-rotate(240deg) saturate(300%)';
         }
 
-        // Aplicar el filtro dentro de la caja ajustada por tus manos
         canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
       }
 
       canvasCtx.restore();
     }
 
-    // Inicializar la cámara con resolución ligera para máxima velocidad
-    const camera = new Camera(videoElement, {
-      onFrame: async () => {
+    // Procesamiento optimizado en bucle continuo para celulares
+    async function processFrame() {
+      if (videoElement.readyState >= 2) {
         await hands.send({ image: videoElement });
-      },
-      width: 480,
-      height: 360
-    });
+      }
+      requestAnimationFrame(processFrame);
+    }
 
-    camera.start();
+    // Inicializar cámara móvil sin forzar resoluciones no compatibles
+    navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    }).then((stream) => {
+      videoElement.srcObject = stream;
+      videoElement.onloadedmetadata = () => {
+        videoElement.play();
+        requestAnimationFrame(processFrame);
+      };
+    }).catch((err) => {
+      console.error("Error al acceder a la cámara: ", err);
+    });
   </script>
 </body>
 </html>
