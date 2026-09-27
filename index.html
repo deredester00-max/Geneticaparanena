@@ -15,34 +15,33 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      overflow: hidden;
     }
 
-    h1 {
+    .info-bar {
       margin-bottom: 10px;
+      text-align: center;
     }
 
-    .controls {
-      margin-bottom: 15px;
-    }
-
-    select, button {
-      padding: 8px 16px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
+    .badge {
+      background: #800080;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 5px;
     }
 
     .container {
       position: relative;
       width: 640px;
       height: 480px;
-      border: 2px solid #333;
-      border-radius: 8px;
+      border: 2px solid #444;
+      border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     }
 
-    /* Ocultamos el video original y dibujamos todo en el Canvas */
     #input_video {
       display: none;
     }
@@ -54,26 +53,20 @@
     }
   </style>
 
-  <!-- Librerías de MediaPipe para detección de manos -->
+  <!-- Mediapipe Hands & Camera utils -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <h1>Portal de Filtros con Seguimiento de Manos</h1>
-
-  <div class="controls">
-    <label for="filterSelect">Elige un filtro/efecto: </label>
-    <select id="filterSelect">
-      <option value="purple_polygon">Polígono Morado (Portal)</option>
-      <option value="blur_inside">Desenfoque / Blur</option>
-      <option value="sepia_inside">Tono Sepia</option>
-      <option value="invert_inside">Invertir Colores</option>
-    </select>
+  <div class="info-bar">
+    <h2>Portal Interactivo Optimizado</h2>
+    <p>☝️ <b>Sube el dedo índice derecho arriba</b> para cambiar de filtro.</p>
+    <div class="badge" id="filterName">Filtro: Morado Portal</div>
   </div>
 
   <div class="container">
-    <video id="input_video" width="640" height="480" autoplay playsinline></video>
+    <video id="input_video" autoplay playsinline></video>
     <canvas id="output_canvas" width="640" height="480"></canvas>
   </div>
 
@@ -81,97 +74,137 @@
     const videoElement = document.getElementById('input_video');
     const canvasElement = document.getElementById('output_canvas');
     const canvasCtx = canvasElement.getContext('2d');
-    const filterSelect = document.getElementById('filterSelect');
+    const filterNameLabel = document.getElementById('filterName');
 
-    let handPoints = [];
+    const filters = [
+      { id: 'purple_polygon', name: 'Morado Portal' },
+      { id: 'blur_inside', name: 'Desenfoque / Blur' },
+      { id: 'sepia_inside', name: 'Tono Sepia' },
+      { id: 'invert_inside', name: 'Invertir Colores' },
+      { id: 'pixel_inside', name: 'Pixelado' }
+    ];
 
-    // Configuración de MediaPipe Hands
+    let currentFilterIndex = 0;
+    let canSwitchFilter = true;
+
+    // Configuración ligera de MediaPipe para máxima fluidez
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
 
     hands.setOptions({
       maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
+      modelComplexity: 0, // 0 = ultra rápido / ligero para navegadores
+      minDetectionConfidence: 0.6,
+      minTrackingConfidence: 0.6
     });
 
     hands.onResults(onResults);
 
     function onResults(results) {
-      // Dibujar la imagen de la cámara en el canvas
       canvasCtx.save();
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      
+      // Dibujar la cámara original
       canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-      handPoints = [];
+      let allHandPoints = [];
+      let triggerGestureDetected = false;
 
-      // Detectar las posiciones de las manos (usamos la punta del dedo índice de cada mano)
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        for (const landmarks of results.multiHandLandmarks) {
-          // El punto 8 corresponde a la punta del dedo índice
+        for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+          const landmarks = results.multiHandLandmarks[i];
+          
+          // Detección de gesto: Índice bien arriba (cerca del borde superior, Y < 0.18)
           const indexTip = landmarks[8];
-          handPoints.push({
-            x: indexTip.x * canvasElement.width,
-            y: indexTip.y * canvasElement.height
+          if (indexTip.y < 0.18) {
+            triggerGestureDetected = true;
+          }
+
+          // Guardar puntos clave de la mano (Índice y Pulgar para formar la caja)
+          [4, 8, 12, 20].forEach(p => {
+            allHandPoints.push({
+              x: landmarks[p].x * canvasElement.width,
+              y: landmarks[p].y * canvasElement.height
+            });
           });
         }
       }
 
-      // Si detectamos al menos 2 dedos/puntos, creamos la región o portal
-      if (handPoints.length >= 2) {
-        applyHandFilter(handPoints, filterSelect.value);
+      // Cambiar filtro por gesto arriba
+      if (triggerGestureDetected && canSwitchFilter) {
+        currentFilterIndex = (currentFilterIndex + 1) % filters.length;
+        filterNameLabel.innerText = 'Filtro: ' + filters[currentFilterIndex].name;
+        canSwitchFilter = false;
+        setTimeout(() => { canSwitchFilter = true; }, 1000); // Evitar cambios accidentales rápidos
+      }
+
+      // Si detectamos las manos, creamos el área/cuadro de filtro según la posición de las manos
+      if (allHandPoints.length > 0) {
+        applyBoundingFilter(allHandPoints, filters[currentFilterIndex].id);
       }
 
       canvasCtx.restore();
     }
 
-    function applyHandFilter(points, filterType) {
-      const p1 = points[0];
-      const p2 = points[1];
+    function applyBoundingFilter(points, filterType) {
+      // Calcular el recuadro que engloba los puntos de las manos
+      let minX = Math.min(...points.map(p => p.x));
+      let maxX = Math.max(...points.map(p => p.x));
+      let minY = Math.min(...points.map(p => p.y));
+      let maxY = Math.max(...points.map(p => p.y));
 
-      // Definimos la forma del portal/polígono según las manos
+      // Darle un pequeño margen
+      const padding = 20;
+      minX = Math.max(0, minX - padding);
+      maxX = Math.min(canvasElement.width, maxX + padding);
+      minY = Math.max(0, minY - padding);
+      maxY = Math.min(canvasElement.height, maxY + padding);
+
+      const width = maxX - minX;
+      const height = maxY - minY;
+
+      if (width < 30 || height < 30) return;
+
+      canvasCtx.save();
+      
+      // Crear máscara con la forma del marco
       canvasCtx.beginPath();
-      canvasCtx.moveTo(p1.x, p1.y - 50);
-      canvasCtx.lineTo(p2.x, p2.y - 50);
-      canvasCtx.lineTo(p2.x, p2.y + 50);
-      canvasCtx.lineTo(p1.x, p1.y + 50);
-      canvasCtx.closePath();
+      canvasCtx.rect(minX, minY, width, height);
 
-      // Aplicar estilos/filtros dentro de la forma seleccionada
       if (filterType === 'purple_polygon') {
-        canvasCtx.fillStyle = 'rgba(128, 0, 128, 0.65)'; // Color púrpura semitransparente
-        canvasCtx.fill();
-        canvasCtx.strokeStyle = '#d8b4fe';
+        canvasCtx.fillStyle = 'rgba(147, 51, 234, 0.6)';
+        canvasCtx.fillRect(minX, minY, width, height);
+        canvasCtx.strokeStyle = '#c084fc';
         canvasCtx.lineWidth = 4;
-        canvasCtx.stroke();
+        canvasCtx.strokeRect(minX, minY, width, height);
       } else {
-        // Para filtros avanzados (blur, sepia, invert) usamos el modo de recorte
-        canvasCtx.save();
         canvasCtx.clip();
 
         if (filterType === 'blur_inside') {
-          canvasCtx.filter = 'blur(10px)';
+          canvasCtx.filter = 'blur(12px)';
         } else if (filterType === 'sepia_inside') {
-          canvasCtx.filter = 'sepia(100%)';
+          canvasCtx.filter = 'sepia(100%) saturate(200%)';
         } else if (filterType === 'invert_inside') {
           canvasCtx.filter = 'invert(100%)';
+        } else if (filterType === 'pixel_inside') {
+          canvasCtx.filter = 'contrast(150%) hue-rotate(90deg)';
         }
 
-        // Redibujar la sección recortada con el filtro activo
+        // Aplicar el filtro dentro de la caja ajustada por tus manos
         canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-        canvasCtx.restore();
       }
+
+      canvasCtx.restore();
     }
 
-    // Inicializar la cámara
+    // Inicializar la cámara con resolución ligera para máxima velocidad
     const camera = new Camera(videoElement, {
       onFrame: async () => {
         await hands.send({ image: videoElement });
       },
-      width: 640,
-      height: 480
+      width: 480,
+      height: 360
     });
 
     camera.start();
