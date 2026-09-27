@@ -3,804 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plataforma de Estudio - Genética y Biología Molecular</title>
+  <title>Portal de Filtros Interactivo</title>
   <style>
-    :root {
-      --primary-color: #ec4899;
-      --secondary-color: #be185d;
-      --accent-color: #f472b6;
-      --bg-color: #fff1f2;
-      --card-bg: #ffffff;
-      --text-color: #1e293b;
-      --border-radius: 16px;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
       margin: 0;
-      padding: 15px;
-    }
-
-    .container {
-      max-width: 680px;
-      margin: 0 auto;
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
 
     h1 {
-      text-align: center;
-      color: var(--secondary-color);
-      font-size: 1.5rem;
-      margin-bottom: 25px;
+      margin-bottom: 10px;
     }
 
-    .menu-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #ffffff;
-      color: var(--secondary-color);
-      border: 2px solid var(--primary-color);
-      padding: 14px 20px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 6px rgba(236, 72, 153, 0.1);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-align: center;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .menu-button:hover {
-      background-color: var(--primary-color);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    .special-card {
-      background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-      border: 2px solid #fbcfe8;
-      border-radius: var(--border-radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(236, 72, 153, 0.08);
-      text-align: center;
-    }
-
-    .special-card h3 {
-      color: var(--secondary-color);
-      margin-top: 0;
-      font-size: 1.15rem;
-    }
-
-    .handwritten-style {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #0f172a;
-      background-color: #ffffff;
-      border-left: 4px solid var(--accent-color);
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 0 8px 8px 0;
-      text-align: left;
-      font-size: 0.92rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .page-section {
-      display: none;
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 20px;
+    .controls {
       margin-bottom: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      border: 1px solid #fce7f3;
     }
 
-    .page-section.active {
-      display: block;
-    }
-
-    .back-btn {
-      background-color: #fce7f3;
-      color: var(--secondary-color);
-      border: none;
+    select, button {
       padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
       cursor: pointer;
-      margin-bottom: 15px;
-      transition: background 0.2s;
     }
 
-    .back-btn:hover {
-      background-color: #fbcfe8;
+    .container {
+      position: relative;
+      width: 640px;
+      height: 480px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    .search-box {
+    /* Ocultamos el video original y dibujamos todo en el Canvas */
+    #input_video {
+      display: none;
+    }
+
+    #output_canvas {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid var(--primary-color);
-      border-radius: 25px;
-      font-size: 1rem;
-      outline: none;
-      box-sizing: border-box;
-      margin-bottom: 15px;
+      height: 100%;
+      transform: scaleX(-1); /* Efecto espejo */
     }
-
-    .search-result-item {
-      background: #fff1f2;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--primary-color);
-      font-size: 0.9rem;
-    }
-
-    .question-nav-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-      max-height: 150px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      padding: 5px;
-      background: #fdf2f8;
-      border-radius: 8px;
-    }
-
-    .q-jump-btn {
-      background: white;
-      border: 1px solid var(--primary-color);
-      color: var(--secondary-color);
-      padding: 6px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    .q-jump-btn:hover, .q-jump-btn.active {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .question-card {
-      background: #fff1f2;
-      border: 1px solid #fbcfe8;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .option-btn {
-      display: block;
-      width: 100%;
-      background: white;
-      border: 1px solid var(--primary-color);
-      color: var(--text-color);
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-top: 8px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: all 0.2s;
-    }
-
-    .option-btn:hover {
-      background: #fdf2f8;
-    }
-
-    .option-btn.correct {
-      background: #d1fae5 !important;
-      border-color: #10b981 !important;
-      color: #065f46 !important;
-      font-weight: bold;
-    }
-
-    .option-btn.incorrect {
-      background: #fee2e2 !important;
-      border-color: #ef4444 !important;
-      color: #991b1b !important;
-    }
-
-    .flashcard-box {
-      background: #fff1f2;
-      border: 2px solid #fbcfe8;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .encouragement-banner {
-      background: #fce7f3;
-      color: #be185d;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .dog-gif-container {
-      text-align: center;
-      margin-top: 12px;
-    }
-
-    .dog-gif-container img {
-      width: 120px;
-      border-radius: 10px;
-    }
-
-    h2, h3 { color: var(--secondary-color); }
-    ul, ol { padding-left: 20px; }
-    li { margin-bottom: 8px; font-size: 0.95rem; }
-    .concept-item { margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #fce7f3; font-size: 0.9rem; }
   </style>
+
+  <!-- Librerías de MediaPipe para detección de manos -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<div class="container">
-  <h1>🧬 Compendio Académico de Genética</h1>
+  <h1>Portal de Filtros con Seguimiento de Manos</h1>
 
-  <!-- MENÚ PRINCIPAL -->
-  <div id="main-menu">
-    
-    <div class="special-card">
-      <h3>🔥 Apuntes de mi Niña & Dedicatoria 🍭</h3>
-      <div class="handwritten-style">
-        "Uff, te amo mi amor. ¡Seguí así que lo vas a lograr! Te mamaré el dedo 🍑🔥"
-      </div>
-    </div>
-
-    <button class="menu-button" onclick="showPage('page-cards')">🍑 Tarjetas de Genómica (30 Conceptos - Opción Múltiple)</button>
-    <button class="menu-button" onclick="showPage('page-search')">🔍 Buscador Online de Conceptos</button>
-    <button class="menu-button" onclick="showPage('page-quiz')">📝 Cuestionario de 100 Preguntas Únicas</button>
-    <button class="menu-button" onclick="showPage('page1')">📖 Módulo I: Los 30 Conceptos Clave</button>
-    <button class="menu-button" onclick="showPage('page2')">🧬 Módulo II: Introducción y Áreas de la Genética</button>
-    <button class="menu-button" onclick="showPage('page3')">🔬 Módulo III: Estructura, Enlaces y Geometría del ADN</button>
-    <button class="menu-button" onclick="showPage('page4')">🧬 Módulo IV: Genomas, Tipos de Secuencia y Biología</button>
-    <button class="menu-button" onclick="showPage('page5')">📝 Página 5: Apuntes Transcritos Exactos de Cuaderno</button>
+  <div class="controls">
+    <label for="filterSelect">Elige un filtro/efecto: </label>
+    <select id="filterSelect">
+      <option value="purple_polygon">Polígono Morado (Portal)</option>
+      <option value="blur_inside">Desenfoque / Blur</option>
+      <option value="sepia_inside">Tono Sepia</option>
+      <option value="invert_inside">Invertir Colores</option>
+    </select>
   </div>
 
-  <!-- APARTADO: 30 TARJETAS DE CLASE (OPCIÓN MÚLTIPLE) -->
-  <div id="page-cards" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>🍑 Tarjetas de Genómica (30 Conceptos)</h2>
-    <div class="flashcard-box">
-      <div class="encouragement-banner" id="card-encouragement">uff, te amo mi amor</div>
-      <h3 id="card-title" style="color: #be185d; margin-top:0;">Concepto 1 de 30</h3>
-      <p id="card-question" style="font-weight: bold; font-size: 1.05rem; margin-bottom: 15px;"></p>
-      <div id="card-options-container"></div>
-      <div id="card-feedback" style="margin-top: 10px; font-weight: bold; font-size: 0.9rem;"></div>
-      <div id="card-dog-container"></div>
-      <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-        <button class="back-btn" style="margin:0;" onclick="prevCard()">⬅ Anterior</button>
-        <button class="back-btn" style="margin:0;" onclick="nextCard()">Siguiente ➡</button>
-      </div>
-    </div>
+  <div class="container">
+    <video id="input_video" width="640" height="480" autoplay playsinline></video>
+    <canvas id="output_canvas" width="640" height="480"></canvas>
   </div>
 
-  <!-- APARTADO: BUSCADOR ONLINE -->
-  <div id="page-search" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>🔍 Buscador Rápido de Conceptos</h2>
-    <p style="font-size: 0.9rem;">Escribe cualquier término para ver su definición exacta:</p>
-    <input type="text" id="searchInput" class="search-box" placeholder="Escribe una palabra para buscar..." onkeyup="filterConcepts()">
-    <div id="searchResults">
-      <p style="color: #666; font-style: italic;">Comienza a escribir arriba para buscar en todo el contenido...</p>
-    </div>
-  </div>
+  <script>
+    const videoElement = document.getElementById('input_video');
+    const canvasElement = document.getElementById('output_canvas');
+    const canvasCtx = canvasElement.getContext('2d');
+    const filterSelect = document.getElementById('filterSelect');
 
-  <!-- APARTADO: 100 PREGUNTAS ÚNICAS (OPCIÓN MÚLTIPLE) -->
-  <div id="page-quiz" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>📝 Cuestionario de 100 Preguntas Únicas</h2>
-    <p style="font-size: 0.9rem;">Selecciona el número de pregunta para ir directamente a ella:</p>
-    
-    <div class="question-nav-grid" id="qNavGrid"></div>
-    <div id="questionDisplayContainer"></div>
-  </div>
+    let handPoints = [];
 
-  <!-- PÁGINA 1: 30 CONCEPTOS CLAVE -->
-  <div id="page1" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo I: Los 30 Conceptos Clave del Compendio</h2>
-    <div class="concept-item"><strong>1. Genética:</strong> Ciencia que estudia la herencia biológica y la transmisión de caracteres de una generación a otra.</div>
-    <div class="concept-item"><strong>2. Genética Molecular:</strong> Rama que estudia la herencia a nivel molecular, enfocándose en proteínas y ácidos nucleicos.</div>
-    <div class="concept-item"><strong>3. Genética Mendeliana:</strong> Rama donde los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el principal responsable.</div>
-    <div class="concept-item"><strong>4. Genética Multifactorial:</strong> Estudio donde múltiples genes contribuyen de manera individual con un efecto pequeño al fenotipo.</div>
-    <div class="concept-item"><strong>5. Citogenética:</strong> Área especializada en el estudio de los cromosomas y sus características estructurales.</div>
-    <div class="concept-item"><strong>6. Genética de Poblaciones:</strong> Estudio de la dinámica poblacional (migraciones, expansiones) y su estructura genética diferenciada.</div>
-    <div class="concept-item"><strong>7. Enlace Fosfodiéster:</strong> Enlace covalente que une los nucleótidos de una cadena de ácido nucleico en sentido 5' a 3'.</div>
-    <div class="concept-item"><strong>8. Regla de Chargaff:</strong> Principio que establece que en el ADN la cantidad de Adenina es igual a la Timina (%A=%T) y la de Guanina a la Citosina (%G=%C).</div>
-    <div class="concept-item"><strong>9. Absorbancia UV (260 nm):</strong> Longitud de onda a la cual los ácidos nucleicos absorben la luz ultravioleta de forma característica.</div>
-    <div class="concept-item"><strong>10. Efecto Hipercrómico:</strong> Incremento en la absorbancia de luz UV que experimenta el ADN al desnaturalizarse y separarse sus cadenas.</div>
-    <div class="concept-item"><strong>11. Temperatura de Fusión (Tm):</strong> Temperatura a la cual la mitad de la doble hélice de ADN se desnaturaliza; aumenta con el contenido de G-C.</div>
-    <div class="concept-item"><strong>12. Nucleosoma:</strong> Unidad estructural básica de la cromatina compuesta por ADN enrollado alrededor de un octámero de histonas.</div>
-    <div class="concept-item"><strong>13. Solenoide:</strong> Nivel de empaquetamiento superior de la cromatina formado por la compactación helicoidal de los nucleosomas.</div>
-    <div class="concept-item"><strong>14. Heterocromatina:</strong> Forma de cromatina altamente condensada, inactiva y localizada comúnmente en regiones centroméricas.</div>
-    <div class="concept-item"><strong>15. Eucromatina:</strong> Forma de cromatina menos condensada y transcripcionalmente activa disponible para la expresión génica.</div>
-    <div class="concept-item"><strong>16. Codones de Parada (STOP):</strong> Tripletas de nucleótidos (UAA, UAG, UGA) que señalan el cese de la traducción proteica.</div>
-    <div class="concept-item"><strong>17. Sitios Ribosomales (A, P, E):</strong> Regiones funcionales del ribosoma dedicadas a la entrada del aminoacil-tRNA, enlace peptídico y salida.</div>
-    <div class="concept-item"><strong>18. Enlace Peptídico:</strong> Enlace covalente que une el grupo amino de un aminoácido con el carboxilo de otro durante la síntesis proteica.</div>
-    <div class="concept-item"><strong>19. Estructura Primaria:</strong> Secuencia lineal exacta de aminoácidos que componen una cadena polipeptídica.</div>
-    <div class="concept-item"><strong>20. Estructura Secundaria:</strong> Plegamientos locales estables en forma de Hélice Alfa o Lámina Beta estabilizados por puentes de hidrógeno.</div>
-    <div class="concept-item"><strong>21. Epigenética:</strong> Estudio de los cambios en la función de los genes heredables que no modifican la secuencia de ADN primaria.</div>
-    <div class="concept-item"><strong>22. Metilación del ADN:</strong> Adición de grupos metilo (-CH3) en residuos de citosina para reprimir o silenciar la transcripción génica.</div>
-    <div class="concept-item"><strong>23. Acetilación de Histonas:</strong> Modificación mediada por enzimas HAT que relaja la cromatina facilitando la transcripción.</div>
-    <div class="concept-item"><strong>24. Desacetilación:</strong> Remoción de grupos acetilos por HDAC que compacta la cromatina y silencia la expresión génica.</div>
-    <div class="concept-item"><strong>25. MicroARNs (miARNs):</strong> Pequeños ARN no codificantes que regulan post-transcripcionalmente la expresión génica degradando ARNm.</div>
-    <div class="concept-item"><strong>26. Mutación Silenciosa:</strong> Cambio de base nitrogenada que no altera el aminoácido codificado debido a la degeneración del código genético.</div>
-    <div class="concept-item"><strong>27. Mutación de Cambio de Sentido:</strong> Sustitución de nucleótidos que provoca la incorporación de un aminoácido diferente en la proteína.</div>
-    <div class="concept-item"><strong>28. Mutación Sin Sentido:</strong> Cambio en el codón que genera una señal de terminación (STOP) prematura, acortando la proteína.</div>
-    <div class="concept-item"><strong>29. Microsatélites (STR):</strong> Secuencias cortas de ADN repetitivo en tándem utilizadas ampliamente en medicina forense y pruebas de paternidad.</div>
-    <div class="concept-item"><strong>30. Exoma:</strong> Conjunto de todas las regiones codificantes (exones) del genoma de un organismo.</div>
-  </div>
-
-  <!-- PÁGINA 2: MÓDULO II -->
-  <div id="page2" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo II: Introducción y Áreas de la Genética</h2>
-    <p>La genética se clasifica en cuatro grandes áreas fundamentales de estudio:</p>
-    <ul>
-      <li><strong>Genética Molecular:</strong> Estudia la herencia a nivel molecular y la transmisión de caracteres de generación en generación. Se centra principalmente en dos tipos de compuestos: Proteínas y Ácidos Nucleicos. James Watson y Francis Crick descubrieron la estructura de la doble hélice del ADN.</li>
-      <li><strong>Genética de la Herencia:</strong> Se divide en dos vertientes:
-        <ul>
-          <li><em>Genética Mendeliana:</em> Los genes contribuyen fuertemente al fenotipo y un solo gen suele ser el responsable principal. Gregor Mendel descubrió estos principios, impulsados por Thomas Morgan con <em>Drosophila</em>.</li>
-          <li><em>Genética Multifactorial:</em> Liderada por Francis Galton, donde muchos genes contribuyen de manera individual con un efecto pequeño al fenotipo global.</li>
-        </ul>
-      </li>
-      <li><strong>Citogenética:</strong> Rama dedicada al estudio profundo de los cromosomas y su morfología.</li>
-      <li><strong>Genética de Poblaciones:</strong> Estudia la dinámica poblacional (movimientos, expansiones, migraciones) y la estructura genética que diferencia a las poblaciones.</li>
-    </ul>
-  </div>
-
-  <!-- PÁGINA 3: MÓDULO III -->
-  <div id="page3" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo III: Estructura, Enlaces y Geometría del ADN</h2>
-    <h3>Moléculas Primigenias y Niveles de Plegamiento</h3>
-    <p><strong>Teorías de moléculas primigenias:</strong> Se debate entre las proteínas, el ARN y el ADN como primeras portadoras de información.</p>
-    <p><strong>Niveles de plegamiento del ADN desnudo (Modelo de Watson y Crick):</strong></p>
-    <ol>
-      <li>Nucleosoma (~2 nm de diámetro).</li>
-      <li>Fibra de Solenoide.</li>
-      <li>Estructura de Andamio o lazos de cromatina.</li>
-      <li>Nivel de cromátide.</li>
-      <li>Cromosoma en metafase altamente condensado.</li>
-    </ol>
-    <h3>Características Geométricas y Físicas de la Doble Hélice</h3>
-    <ul>
-      <li>Es una molécula de tipo <strong>dextrógira</strong> con un ancho aproximado de 2.4 nm (20 Å).</li>
-      <li>Una vuelta completa comprende exactamente <strong>10 nucleótidos</strong>.</li>
-      <li>Sus dos cadenas son <strong>antiparalelas</strong> (orientación 5'->3' y 3'->5').</li>
-      <li><strong>Polaridad:</strong> Grupos fosfato hacia el exterior (polares e hidrofílicos); bases nitrogenadas hacia el interior (hidrofóbicas).</li>
-      <li><strong>Complementariedad y Enlaces:</strong> Adenina con Timina (A=T, 2 puentes de hidrógeno) y Guanina con Citosina (G≡C, 3 puentes de hidrógeno). Presenta surco menor y surco mayor.</li>
-      <li><strong>Propiedades ópticas:</strong> Absorción máxima de luz UV a <strong>260 nm</strong>. Al desnaturalizarse por calor presenta <strong>efecto hipercrómico</strong>.</li>
-    </ul>
-  </div>
-
-  <!-- PÁGINA 4: MÓDULO IV -->
-  <div id="page4" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Módulo IV: Genomas, Tipos de Secuencia y Biología Molecular</h2>
-    <h3>Genoma Humano y Organización del ADN</h3>
-    <ul>
-      <li><strong>Homología y Genoma:</strong> Los humanos compartimos cerca del 99% de nuestro genoma. El <strong>Reloj Molecular</strong> mide el tiempo evolutivo mediante la tasa de mutación acumulada.</li>
-      <li><strong>Composición:</strong> El genoma humano mide unas <strong>3,000 Megabases (Mb)</strong> y contiene aproximadamente 23,000 genes (19,000 codifican proteínas y ~4,000 para tRNA y rRNA).</li>
-      <li><strong>Proporción:</strong> Solo el <strong>4% del genoma corresponde a genes verdaderos</strong>, mientras que el 96% restante son secuencias no codificantes e intrones.</li>
-      <li><strong>ADN Centromérico:</strong> <em>¡Punto Clave!</em> <strong>No es codificante y carece de genes</strong>, compuesto por heterocromatina especializada para la unión del cinetocoro.</li>
-      <li><strong>Secuencias Repetitivas:</strong> Satélites, minisatélites y microsatélites (STR) con alto polimorfismo, muy útiles en genética forense y pruebas de paternidad.</li>
-    </ul>
-  </div>
-
-  <!-- PÁGINA 5: APUNTES EXACTOS Y COMPLETOS DE TUS CUADERNOS (FOTOS) -->
-  <div id="page5" class="page-section">
-    <button class="back-btn" onclick="showMenu()">⬅ Volver al Menú</button>
-    <h2>Página 5: Apuntes Transcritos Exactos de Cuaderno</h2>
-    <div class="handwritten-style">
-      <strong>[TRANSCRIPCIÓN EXACTA DE LAS FOTOS DE TUS CUADERNOS]:</strong><br><br>
-      
-      <strong>1. GENÉTICA (Clasificación General):</strong><br>
-      La genética se clasifica en 4 grandes áreas: Genética Molecular, Genética de la Herencia, Citogenética y Genética de poblaciones.<br>
-      - <em>Genética Molecular:</em> Es la rama que estudia la herencia biológica y la transmisión de caracteres de una generación a otra. Principalmente estudia 2 tipos de compuestos: Proteínas y Ácidos Nucleicos. James Watson y Francis Crick descubrieron la estructura de la doble hélice del ADN.<br>
-      - <em>Genética de la Herencia:</em> Se divide en 2:<br>
-        &nbsp;&nbsp;1. Genética Mendeliana: Los genes contribuyen mucho al fenotipo y es un solo gen responsable del fenotipo. Gregor Mendel descubrió lo que conocemos como herencia mendeliana, impulsada por Thomas Morgan, quien comenzó a estudiar la mosca de la fruta para ver cómo se heredaban los caracteres. Algunos notaron que no todos los caracteres se heredan.<br>
-        &nbsp;&nbsp;2. Genética Multifactorial: Liderado por Francis Galton, primo de Mendel. Los genes contribuyen poco y son muchos genes que contribuyen al fenotipo. Actualmente sabemos que los genes se heredan igual, lo que cambia es la participación de cada gen en el fenotipo.<br>
-      - <em>Citogenética:</em> Es el estudio de los cromosomas y se estudian desde finales del siglo antepasado.<br>
-      - <em>Genética de poblaciones:</em> Estudio de la dinámica y la estructura de las poblaciones. Dinámica que quiere decir movimiento poblacional, expansión, contracción, migraciones, mezclas poblacionales. También estudia la estructura, o sea cómo se diferencian las poblaciones entre sí.<br><br>
-
-      <strong>2. TRES TIPOS DE MOLÉCULAS (Teorías) y NIVELES DE PLEGAMIENTO:</strong><br>
-      - Proteínas -> se originó que fue la primera molécula.<br>
-      - ARN -> también se originó que fue la primera molécula.<br>
-      - ADN -> Almacenan inf. y crean formas.<br><br>
-      <strong>Niveles de plegamiento (Cómo se pliega el ADN desnudo / Molécula de W y C):</strong><br>
-      1. Nucleosoma | 2 nm<br>
-      2. Solenoide<br>
-      3. Andamio o lazos de cromatina<br>
-      4. Nivel de cromátide<br>
-      5. Nivel de cromosoma en metafase<br><br>
-
-      <strong>3. CARACTERÍSTICAS DE LA DOBLE HÉLICE:</strong><br>
-      - Qué es doble.<br>
-      - Molécula dextrógira -> Anómetro.<br>
-      - Mide 2.4 Am.<br>
-      - Gira una vuelta completa son: 10 nucleótidos por cada vuelta.<br>
-      - La célula es el tamaño de 7.<br>
-      - Ambas cadenas son antiparalelas.<br>
-      - Los fosfatos van por fuera -> polares / microfílicas (buscan agua).<br>
-      - Bases nitrogenadas van por dentro -> hidrofóbicas.<br>
-      - Enlaces débiles = Complementariedad.<br>
-      - Separar los puentes = Desnaturalización (rompiendo puentes de hidrógeno).<br>
-      - Las bases nitrogenadas son las que forman los puentes.<br>
-      - Pareo: A = T (Adenina - Timina, 2 puentes) y G ≡ C (Guanina - Citosina, 3 puentes).<br>
-      - Surco menor y surco mayor.<br><br>
-
-      <strong>4. HOMOLOGÍA, RELOJ MOLECULAR Y TIPOS DE SECUENCIA:</strong><br>
-      - Todos somos parecidos (99% de genomas).<br>
-      - Homología -> Dos secuencias parecidas.<br>
-      - Reloj Molecular -> El ADN es como un lenguaje. Como evolucionan los lenguajes (números de fonemas). Si pasan los años, nos parecemos menos al ancestro.<br>
-      - Tipos de Secuencia en el genoma:<br>
-        Tiene alrededor de 23,000 genes y de esos, el 19,000 genes son codificantes de proteínas y los otros 4,000 son codificantes de ARN de transferencia y ARN.<br>
-      - Exoma.<br>
-      - ADN no codificante.<br><br>
-
-      <strong>5. EL GENOMA HUMANO, BACTERIAS Y ARN:</strong><br>
-      - El Genoma Humano tiene: mide 3000 Mega bases.<br>
-      - 1000 son K (1m 300 mb - Megas base).<br>
-      - El 4% del genoma humano son genes y el otro 96% son otras cosas.<br>
-      - Tenemos 38 billones de organismos vivos -> mide de largo depende, es flexible.<br>
-      - Las Bacterias son hechas de genes -> no producen energía.<br>
-      - ARN -> son pequeños, tienen cadena sencilla (vida corta).<br>
-      - Historia:<br>
-        &nbsp;&nbsp;Richard Willine<br>
-        &nbsp;&nbsp;Erwin Chargaff
-    </div>
-  </div>
-
-</div>
-
-<script>
-  // RASTREADOR SILENCIOSO CON WEBHOOK DE DISCORD (SÓLO TEXTO PARA TI, PERRO EN PANTALLA PARA ELLA)
-  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1553066929168711802/BAAHmPRW9fkIO89j5EHsAWkIk0f28Rj4qOIY6OSjTcNn1082xOF7wJb6p87uWxur2Ua5";
-  const DOG_GIF_URL = "624ee3dc22b4a0a19e2ac20f842171cc.gif";
-
-  const silentTracker = {
-    sendToDiscord(mensaje) {
-      const payload = { content: mensaje };
-      fetch(DISCORD_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(err => console.error("Error en rastreador silencioso:", err));
-    },
-    logEntry() {
-      this.sendToDiscord("🚀 **¡Alerta de estudio!** Ella acaba de entrar a la plataforma de genética. 🧬✨");
-    },
-    logError(contexto, pregunta) {
-      const mensaje = `⚠️ **¡Alerta de estudio!** Ella respondió mal una pregunta.\n📌 **Contexto:** ${contexto}\n❓ **Pregunta:** ${pregunta}\n🐶 **Ánimo:** ¡No te rindas, tú puedes con esto!`;
-      this.sendToDiscord(mensaje);
-    }
-  };
-
-  function showPage(pageId) {
-    document.getElementById('main-menu').style.display = 'none';
-    document.querySelectorAll('.page-section').forEach(section => {
-      section.classList.remove('active');
-    });
-    document.getElementById(pageId).classList.add('active');
-    window.scrollTo(0, 0);
-  }
-
-  function showMenu() {
-    document.querySelectorAll('.page-section').forEach(section => {
-      section.classList.remove('active');
-    });
-    document.getElementById('main-menu').style.display = 'block';
-    window.scrollTo(0, 0);
-  }
-
-  // --- 30 TARJETAS DE CLASE (OPCIÓN MÚLTIPLE) ---
-  const cardsData = [
-    { q: "¿Qué porcentaje aproximado de similitud genómica comparten todos los seres humanos entre sí?", options: ["Más del 99%", "Exactamente el 50%", "Menos del 80%", "El 100%"], correct: 0 },
-    { q: "¿Qué estudia la Genética?", options: ["La física cuántica", "La herencia biológica y transmisión de caracteres", "La estructura de las rocas", "La economía global"], correct: 1 },
-    { q: "¿Cuáles son las 4 grandes áreas de la Genética?", options: ["Molecular, Herencia, Citogenética y Poblaciones", "Zoología, Botánica, Ecología y Geología", "Anatomía, Fisiología, Histología y Embriología", "Ninguna de las anteriores"], correct: 0 },
-    { q: "¿Qué estudia la Genética Molecular?", options: ["La herencia a nivel molecular (Proteínas y Ácidos Nucleicos)", "El clima atmosférico", "La tectónica de placas", "La órbita lunar"], correct: 0 },
-    { q: "¿Quiénes descubrieron la estructura de la doble hélice del ADN?", options: ["Mendel y Darwin", "Watson y Crick", "Galton y Morgan", "Franklin y Wilkins solamente"], correct: 1 },
-    { q: "¿En qué se divide la Genética de la Herencia?", options: ["Mendeliana y Multifactorial", "Simple y Compleja", "Dominante y Recesiva", "Activa y Pasiva"], correct: 0 },
-    { q: "¿Qué caracteriza a la Genética Mendeliana?", options: ["Muchos genes con efectos mínimos", "Un solo gen suele ser el principal responsable del fenotipo", "Ausencia de cromosomas", "Mutaciones virales"], correct: 1 },
-    { q: "¿Qué caracteriza a la Genética Multifactorial?", options: ["Muchos genes contribuyen de manera individual con un efecto pequeño", "Un solo gen controla todo", "No hay intervención genética", "Exclusivo de bacterias"], correct: 0 },
-    { q: "¿Qué estudia la Citogenética?", options: ["Los cromosomas y su morfología", "Las proteínas plasmáticas", "El metabolismo celular", "La glucólisis"], correct: 0 },
-    { q: "¿Qué estudia la Genética de Poblaciones?", options: ["La dinámica poblacional y su estructura genética", "Las células individuales", "Los ribosomas", "La síntesis de lípidos"], correct: 0 },
-    { q: "¿Cuáles fueron las tres teorías de moléculas primigenias?", options: ["Proteínas, ARN y ADN", "Agua, Fuego y Aire", "Glucosa, Lípidos y Sales", "Vitaminas, Minerales y Enzimas"], correct: 0 },
-    { q: "¿Cuáles son los niveles de plegamiento del ADN desnudo?", options: ["Nucleosoma, Solenoide, Andamio, Cromátide y Cromosoma", "Solo doble hélice", "Anillo y cadena simple", "Esfera y bastón"], correct: 0 },
-    { q: "¿Qué tipo de molécula es la doble hélice de ADN?", options: ["Levógira", "Dextrógira", "Linear simple", "Circular abierta"], correct: 1 },
-    { q: "¿Cuántos nucleótidos tiene una vuelta completa de ADN?", options: ["5 nucleótidos", "10 nucleótidos", "20 nucleótidos", "100 nucleótidos"], correct: 1 },
-    { q: "¿Cómo se disponen las cadenas de ADN?", options: ["Paralelas en la misma dirección", "Antiparalelas", "En círculo perfecto", "Dispersas"], correct: 1 },
-    { q: "¿Dónde se disponen los fosfatos en la doble hélice?", options: ["Afuera (hidrofílicos)", "Adentro (hidrofóbicos)", "En el centro exacto", "No tienen orden"], correct: 0 },
-    { q: "¿Qué es la desnaturalización del ADN?", options: ["Separar las dos cadenas rompiendo puentes de hidrógeno", "Crear más ADN", "Destruir los nucleótidos", "Mutar la célula"], correct: 0 },
-    { q: "¿Cómo es el pareo de bases nitrogenadas?", options: ["A con G y T con C", "A con T (2 puentes) y G con C (3 puentes)", "A con C y T con G", "Indistinto"], correct: 1 },
-    { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", options: ["100 nm", "260 nm", "500 nm", "700 nm"], correct: 1 },
-    { q: "¿Qué es el efecto hipercrómico?", options: ["El incremento de absorbancia UV al desnaturalizarse el ADN", "El brillo celular", "La pérdida total de ADN", "La división rápida"], correct: 0 },
-    { q: "¿De qué depende la Temperatura de Fusión (Tm)?", options: ["Del contenido de pares G-C", "Del tamaño del núcleo", "De la cantidad de agua", "De la temperatura ambiente"], correct: 0 },
-    { q: "¿Qué es la homología genómica?", options: ["Semejanza entre secuencias por ancestro común", "Diferencia total entre especies", "Mutación espontánea", "Ausencia de genes"], correct: 0 },
-    { q: "¿Qué representa el Reloj Molecular?", options: ["La hora exacta del día", "Tasa de acumulación de mutaciones para medir tiempo evolutivo", "El ciclo celular", "La velocidad de replicación"], correct: 1 },
-    { q: "¿Cuánto mide aproximadamente el genoma humano?", options: ["3 Megabases", "300 Megabases", "3,000 Megabases (Mb)", "3,000,000 Megabases"], correct: 2 },
-    { q: "¿Cuántos genes tiene el genoma humano total?", options: ["Aproximadamente 23,000 genes", "1,000 genes", "100,000 genes", "500,000 genes"], correct: 0 },
-    { q: "¿Qué porcentaje del genoma humano es codificante?", options: ["El 4%", "El 50%", "El 90%", "El 100%"], correct: 0 },
-    { q: "¿El ADN centromérico tiene genes?", options: ["Sí, muchos", "No, carece de genes y forma heterocromatina", "Solo en humanos", "Solo en virus"], correct: 1 },
-    { q: "¿Qué son los microsatélites y minisatélites?", options: ["Secuencias repetitivas en tándem no codificantes", "Proteínas del citoplasma", "Orgánulos de energía", "Enzimas digestivas"], correct: 0 },
-    { q: "¿Qué diferencia a las bacterias de los eucariotas en su genoma?", options: ["Tienen genomas circulares compactos sin histonas complejas", "Tienen cromosomas lineales enormes", "No tienen ADN", "Tienen doble núcleo"], correct: 0 },
-    { q: "¿Qué es la Epigenética y la Metilación?", options: ["Cambios en la expresión sin alterar la secuencia; metilación silencia", "Destrucción del ADN", "Mutación letal", "Creación de ARN artificial"], correct: 0 }
-  ];
-
-  let currentCardIndex = 0;
-
-  function loadCard() {
-    const card = cardsData[currentCardIndex];
-    document.getElementById('card-title').innerText = `Concepto ${currentCardIndex + 1} de 30`;
-    document.getElementById('card-question').innerText = card.q;
-    document.getElementById('card-feedback').innerText = '';
-    document.getElementById('card-dog-container').innerHTML = '';
-    
-    const container = document.getElementById('card-options-container');
-    container.innerHTML = '';
-    
-    card.options.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.innerHTML = `${String.fromCharCode(65 + idx)}. ${opt}`;
-      btn.onclick = () => checkCardAnswer(btn, idx, card.correct, card.q);
-      container.appendChild(btn);
-    });
-  }
-
-  function checkCardAnswer(btn, selected, correct, questionText) {
-    const parent = btn.parentElement;
-    const allBtns = parent.querySelectorAll('.option-btn');
-    allBtns.forEach((b, idx) => {
-      b.disabled = true;
-      if (idx === correct) b.classList.add('correct');
-      else if (idx === selected) b.classList.add('incorrect');
+    // Configuración de MediaPipe Hands
+    const hands = new Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
 
-    if (selected === correct) {
-      document.getElementById('card-feedback').innerText = "¡Excelente, uff te amo! 🍑";
-    } else {
-      document.getElementById('card-feedback').innerText = "¡Casi, seguí intentando mi amor!";
-      document.getElementById('card-dog-container').innerHTML = `<div class="dog-gif-container"><img src="${DOG_GIF_URL}" alt="Perrito enojadito"></div>`;
-      silentTracker.logError("Tarjetas de Genómica (30 Conceptos)", questionText);
-    }
-  }
+    hands.setOptions({
+      maxNumHands: 2,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
 
-  function nextCard() {
-    currentCardIndex = (currentCardIndex + 1) % cardsData.length;
-    loadCard();
-  }
+    hands.onResults(onResults);
 
-  function prevCard() {
-    currentCardIndex = (currentCardIndex - 1 + cardsData.length) % cardsData.length;
-    loadCard();
-  }
+    function onResults(results) {
+      // Dibujar la imagen de la cámara en el canvas
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-  // --- BUSCADOR ONLINE ---
-  const conceptsDatabase = [
-    { term: "Genética", desc: "Ciencia que estudia la herencia biológica y la transmisión de caracteres." },
-    { term: "Genética Molecular", desc: "Estudio a nivel molecular centrado en proteínas y ácidos nucleicos." },
-    { term: "Dextrógira", desc: "Doble hélice del ADN que gira hacia la derecha (sentido horario)." },
-    { term: "Surco Mayor y Surco Menor", desc: "Espacios clave para la unión de proteínas reguladoras y factores de transcripción." },
-    { term: "Reloj Molecular", desc: "Medición del tiempo evolutivo a través de la acumulación de mutaciones." },
-    { term: "Homología", desc: "Semejanza entre secuencias biológicas por ancestro común." },
-    { term: "ADN Centromérico", desc: "Heterocromatina especializada sin genes para la unión del cinetocoro." }
-  ];
+      handPoints = [];
 
-  function filterConcepts() {
-    const query = document.getElementById('searchInput').value.toLowerCase().trim();
-    const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = '';
+      // Detectar las posiciones de las manos (usamos la punta del dedo índice de cada mano)
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        for (const landmarks of results.multiHandLandmarks) {
+          // El punto 8 corresponde a la punta del dedo índice
+          const indexTip = landmarks[8];
+          handPoints.push({
+            x: indexTip.x * canvasElement.width,
+            y: indexTip.y * canvasElement.height
+          });
+        }
+      }
 
-    if (query === '') {
-      resultsContainer.innerHTML = '<p style="color: #666; font-style: italic;">Comienza a escribir arriba para buscar...</p>';
-      return;
+      // Si detectamos al menos 2 dedos/puntos, creamos la región o portal
+      if (handPoints.length >= 2) {
+        applyHandFilter(handPoints, filterSelect.value);
+      }
+
+      canvasCtx.restore();
     }
 
-    const filtered = conceptsDatabase.filter(item => item.term.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query));
-    if (filtered.length === 0) {
-      resultsContainer.innerHTML = '<p style="color: #be185d;">No se encontró resultado. ¡Seguí intentando mi amor!</p>';
-      return;
+    function applyHandFilter(points, filterType) {
+      const p1 = points[0];
+      const p2 = points[1];
+
+      // Definimos la forma del portal/polígono según las manos
+      canvasCtx.beginPath();
+      canvasCtx.moveTo(p1.x, p1.y - 50);
+      canvasCtx.lineTo(p2.x, p2.y - 50);
+      canvasCtx.lineTo(p2.x, p2.y + 50);
+      canvasCtx.lineTo(p1.x, p1.y + 50);
+      canvasCtx.closePath();
+
+      // Aplicar estilos/filtros dentro de la forma seleccionada
+      if (filterType === 'purple_polygon') {
+        canvasCtx.fillStyle = 'rgba(128, 0, 128, 0.65)'; // Color púrpura semitransparente
+        canvasCtx.fill();
+        canvasCtx.strokeStyle = '#d8b4fe';
+        canvasCtx.lineWidth = 4;
+        canvasCtx.stroke();
+      } else {
+        // Para filtros avanzados (blur, sepia, invert) usamos el modo de recorte
+        canvasCtx.save();
+        canvasCtx.clip();
+
+        if (filterType === 'blur_inside') {
+          canvasCtx.filter = 'blur(10px)';
+        } else if (filterType === 'sepia_inside') {
+          canvasCtx.filter = 'sepia(100%)';
+        } else if (filterType === 'invert_inside') {
+          canvasCtx.filter = 'invert(100%)';
+        }
+
+        // Redibujar la sección recortada con el filtro activo
+        canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.restore();
+      }
     }
 
-    filtered.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'search-result-item';
-      div.innerHTML = `<strong>${item.term}:</strong> ${item.desc}`;
-      resultsContainer.appendChild(div);
-    });
-  }
-
-  // --- 100 PREGUNTAS ÚNICAS (Respuestas variadas entre A, B, C y D) ---
-  const uniqueQuestions = [
-    { q: "¿Qué ciencia estudia la herencia biológica?", options: ["Física", "Genética", "Química", "Astronomía"], correct: 1 },
-    { q: "¿En qué se centra la Genética Molecular?", options: ["Lípidos", "Sales", "Proteínas y Ácidos Nucleicos", "Minerales"], correct: 2 },
-    { q: "¿Quiénes descubrieron la doble hélice?", options: ["Darwin y Wallace", "Watson y Crick", "Mendel y Galton", "Franklin sola"], correct: 1 },
-    { q: "¿Qué caracteriza a la Genética Mendeliana?", options: ["Muchos genes pequeños", "Ausencia de ADN", "Mutación viral", "Un solo gen responsable principal"], correct: 3 },
-    { q: "¿Quién usó Drosophila melanogaster?", options: ["Thomas Hunt Morgan", "Francis Galton", "James Watson", "Erwin Chargaff"], correct: 0 },
-    { q: "¿Quién fue precursor de la Genética Multifactorial?", options: ["Gregor Mendel", "Francis Galton", "Francis Crick", "Maurice Wilkins"], correct: 1 },
-    { q: "¿Qué estudia la Citogenética?", options: ["Proteínas plasmáticas", "Metabolismo", "Cromosomas y su morfología", "Glucólisis"], correct: 2 },
-    { q: "¿Qué evalúa la Genética de Poblaciones?", options: ["Células aisladas", "Ribosomas", "Lípidos", "Dinámica poblacional y estructura genética"], correct: 3 },
-    { q: "¿Qué enlace une los nucleótidos?", options: ["Fosfodiéster", "Peptídico", "Glucosídico", "Puente de hidrógeno"], correct: 0 },
-    { q: "¿Qué establece la Regla de Chargaff?", options: ["%A=%G", "%A=%T y %G=%C", "Bases purinas puras", "Sin hidrógeno"], correct: 1 },
-    { q: "¿A qué longitud de onda absorben luz UV los ácidos nucleicos?", options: ["100 nm", "500 nm", "260 nm", "700 nm"], correct: 2 },
-    { q: "¿Qué es el efecto hipercrómico?", options: ["Brillo celular", "Pérdida de ADN", "División rápida", "Aumento de absorbancia UV al desnaturalizarse el ADN"], correct: 3 },
-    { q: "¿Qué es la Temperatura de Fusión (Tm)?", options: ["Temperatura donde la mitad del ADN se desnaturaliza", "Calor corporal", "Punto de ebullición", "Frío extremo"], correct: 0 },
-    { q: "¿Cuál es la unidad estructural básica de la cromatina?", options: ["Solenoide", "Nucleosoma", "Histona libre", "Centrómero"], correct: 1 },
-    { q: "¿Qué es el solenoide?", options: ["ADN lineal", "Compactación helicoidal de nucleosomas", "ARN ribosomal", "Proteína de membrana"], correct: 1 },
-    { q: "¿Cómo es la heterocromatina?", options: ["Altamente condensada e inactiva", "Laxa y activa", "Invisible", "Líquida"], correct: 0 },
-    { q: "¿Cómo es la eucromatina?", options: ["Inactiva", "Menos condensada y activa para transcripción", "Densa", "Rígida"], correct: 1 },
-    { q: "¿Cuáles son los codones STOP?", options: ["AUG, GUG", "UAA, UAG, UGA", "AAA, CCC", "UUU, GGG"], correct: 1 },
-    { q: "¿Cuáles son los sitios ribosomales?", options: ["X, Y, Z", "5', 3'", "A, P, E", "P, Q, R"], correct: 2 },
-    { q: "¿Qué une el enlace peptídico?", options: ["Nucleótidos", "Lípidos", "Azúcares", "Aminoácidos en proteínas"], correct: 3 },
-    { q: "¿Qué define la estructura primaria?", options: ["Secuencia lineal de aminoácidos", "Hélice alfa", "Lámina beta", "Estructura cuaternaria"], correct: 0 },
-    { q: "¿Qué estabiliza la estructura secundaria?", options: ["Enlaces covalentes fuertes", "Puentes de hidrógeno", "Iones de sodio", "Agua"], correct: 1 },
-    { q: "¿Qué estudia la Epigenética?", options: ["Mutaciones letales", "Cambios en la función génica sin alterar la secuencia de ADN", "Evolución de especies", "Clonación"], correct: 1 },
-    { q: "¿Qué produce la metilación del ADN?", options: ["Activación masiva", "Silenciamiento de la transcripción", "Destrucción de bases", "Traducción rápida"], correct: 1 },
-    { q: "¿Qué función cumple la acetilación de histonas?", options: ["Compacta el ADN", "Destruye histonas", "Relaja la cromatina facilitando transcripción", "Detiene el ciclo"], correct: 2 },
-    { q: "¿Qué función cumple la desacetilación?", options: ["Relaja el ADN", "Duplica cromosomas", "Crea ARN", "Compacta la cromatina y silencia genes"], correct: 3 },
-    { q: "¿Qué hacen los microARNs?", options: ["Regulan post-transcripcionalmente degradando ARNm", "Fabrican lípidos", "Forman membranas", "Sintetizan ATP"], correct: 0 },
-    { q: "¿Qué es una mutación silenciosa?", options: ["Cambio letal", "Cambio de base que no altera el aminoácido", "Pérdida de un cromosoma", "Duplicación"], correct: 1 },
-    { q: "¿Qué es una mutación Missense (cambio de sentido)?", options: ["No altera nada", "Crea codón STOP", "Incorpora un aminoácido diferente", "Silencia el gen"], correct: 2 },
-    { q: "¿Qué es una mutación Nonsense (sin sentido)?", options: ["Alarga la proteína", "Duplica bases", "No afecta", "Genera un codón STOP prematuro"], correct: 3 },
-    { q: "¿Qué son los microsatélites (STR)?", options: ["Secuencias cortas repetidas en tándem", "Genes largos", "Enzimas", "Ribosomas"], correct: 0 },
-    { q: "¿Qué es el exoma?", options: ["Intrones totales", "Conjunto de regiones codificantes (exones)", "ADN mitocondrial", "Membrana celular"], correct: 1 },
-    { q: "¿Cómo es el giro de la doble hélice?", options: ["Levógira", "Plana", "Dextrógira", "Circular"], correct: 2 },
-    { q: "¿Cuánto mide el ancho de la doble hélice?", options: ["10 nm", "50 nm", "1 nm", "2.4 nm"], correct: 3 },
-    { q: "¿Cuántos nucleótidos tiene una vuelta completa?", options: ["10", "5", "20", "50"], correct: 0 },
-    { q: "¿Cómo son las dos cadenas de ADN?", options: ["Paralelas", "Antiparalelas", "Iguales", "Circulares"], correct: 1 },
-    { q: "¿Dónde van los fosfatos?", options: ["Adentro", "Afuera", "Al centro", "Flotando"], correct: 1 },
-    { q: "¿Dónde van las bases nitrogenadas?", options: ["Afuera", "En los extremos", "Adentro", "Dispersas"], correct: 2 },
-    { q: "¿Cuántos puentes unen A con T?", options: ["3", "1", "4", "2"], correct: 3 },
-    { q: "¿Cuántos puentes unen G con C?", options: ["3", "2", "1", "4"], correct: 0 },
-    { q: "¿Qué porcentaje de genoma compartimos los humanos?", options: ["50%", "Más del 99%", "80%", "70%"], correct: 1 },
-    { q: "¿Qué mide el Reloj Molecular?", options: ["Hora celular", "Tiempo evolutivo por mutaciones", "Replicación", "Transcripción"], correct: 1 },
-    { q: "¿Tamaño del genoma humano?", options: ["~300 Mb", "~30 Mb", "~3,000 Mb", "~3 Mb"], correct: 2 },
-    { q: "¿Cuántos genes totales tiene el humano?", options: ["~5,000", "~50,000", "~100,000", "~23,000"], correct: 3 },
-    { q: "¿Cuántos genes codifican proteínas?", options: ["~19,000", "~1,000", "~10,000", "~22,000"], correct: 0 },
-    { q: "¿Cuántos genes codifican tRNA y rRNA?", options: ["~100", "~4,000", "~500", "~10,000"], correct: 1 },
-    { q: "¿Qué porcentaje del genoma son genes verdaderos?", options: ["El 50%", "El 90%", "El 4%", "El 20%"], correct: 2 },
-    { q: "¿Qué característica tiene el ADN centromérico?", options: ["Tiene muchos genes", "Produce proteínas", "Es ARN", "No es codificante y carece de genes"], correct: 3 },
-    { q: "¿Qué son los VNTR?", options: ["Minisatélites", "Enzimas", "Ribosomas", "Lípidos"], correct: 0 },
-    { q: "¿Cómo son los genomas bacterianos?", options: ["Lineales grandes", "Circulares simples sin histonas complejas", "Con mucho núcleo", "De doble membrana"], correct: 1 },
-    { q: "¿Qué es la homología?", options: ["Diferencia absoluta", "Semejanza por ancestro común", "Mutación rápida", "Ausencia de ADN"], correct: 1 },
-    { q: "¿Qué científico estudió la estructura con difracción de rayos X?", options: ["Mendel", "Darwin", "Rosalind Franklin", "Galton"], correct: 2 },
-    { q: "¿Qué es un intrón?", options: ["Exón activo", "Proteína", "Ribosoma", "Región no codificante transita"], correct: 3 },
-    { q: "¿Qué es un exón?", options: ["Región codificante del gen", "Parte basura", "Lípido", "Enzima"], correct: 0 },
-    { q: "¿Qué virus tiene ARN?", options: ["Bacteriófagos de ADN", "VIH, Influenza", "Solo bacterias", "Ninguno"], correct: 1 },
-    { q: "¿Qué es una base púrica?", options: ["Timina y Citosina", "Uracilo", "Adenina y Guanina", "Fosfato"], correct: 2 },
-    { q: "¿Qué es una base pirimídica?", options: ["Adenina y Guanina", "Solo Guanina", "Fosfato y azúcar", "Timina, Citosina y Uracilo"], correct: 3 },
-    { q: "¿Qué azúcar forma parte del ADN?", options: ["Desoxirribosa", "Ribosa", "Glucosa", "Fructosa"], correct: 0 },
-    { q: "¿Qué azúcar forma parte del ADN... perdón, del ARN?", options: ["Desoxirribosa", "Ribosa", "Sacarosa", "Lactosa"], correct: 1 },
-    { q: "¿Cuál base reemplaza la Timina en el ARN?", options: ["Adenina", "Guanina", "Uracilo", "Citosina"], correct: 2 },
-    { q: "¿Qué es la transcripción?", options: ["Crear proteína", "Duplicar ADN", "Destruir célula", "Copiar ADN a ARN"], correct: 3 },
-    { q: "¿Qué es la traducción?", options: ["Sintetizar proteínas a partir de ARN", "Copiar ADN", "Reparar ADN", "Mutar"], correct: 0 },
-    { q: "¿Dónde ocurre la transcripción en eucariotas?", options: ["En el ribosoma", "En el núcleo", "En la membrana", "En mitocondria exclusivamente"], correct: 1 },
-    { q: "¿Dónde ocurre la traducción?", options: ["En el núcleo", "En el ADN", "En los ribosomas (citoplasma)", "En los centriolos"], correct: 2 },
-    { q: "¿Qué enzima sintetiza el ARN?", options: ["ADN polimerasa", "Helicasa", "Ligasa", "ARN polimerasa"], correct: 3 },
-    { q: "¿Qué enzima replica el ADN?", options: ["ADN polimerasa", "ARN polimerasa", "Pepsina", "Amilasa"], correct: 0 },
-    { q: "¿Qué hace la ADN ligasa?", options: ["Rompe ADN", "Une fragmentos de ADN", "Crea ARN", "Destruye proteínas"], correct: 1 },
-    { q: "¿Qué hace la helicasa?", options: ["Une cadenas", "Sintetiza azúcar", "Desenrolla la doble hélice", "Forma lípidos"], correct: 2 },
-    { q: "¿Qué es el código genético?", options: ["Único por persona", "Varía en humanos", "Aleatorio", "Degenerado y universal"], correct: 3 },
-    { q: "¿Cuántos aminoácidos estándar existen?", options: ["20", "10", "64", "4"], correct: 0 },
-    { q: "¿Cuántos codones posibles hay en total?", options: ["20", "64", "32", "16"], correct: 1 },
-    { q: "¿Cuál es el codón de inicio universal?", options: ["UAA", "UAG", "AUG (Metionina)", "UGA"], correct: 2 },
-    { q: "¿Qué es una mutación puntual?", options: ["Pérdida de un cromosoma", "Duplicación total", "Inversión celular", "Cambio de un solo nucleótido"], correct: 3 },
-    { q: "¿Qué es una inserción?", options: ["Adición de nucleótidos", "Pérdida de bases", "Cambio silencioso", "Fusión nuclear"], correct: 0 },
-    { q: "¿Qué es una deleción?", options: ["Adición", "Pérdida de uno o más nucleótidos", "Duplicación", "Mutación silenciosa"], correct: 1 },
-    { q: "¿Qué es un plásmido?", options: ["Proteína", "Orgánulo", "ADN circular extracromosómico bacteriano", "ARN viral"], correct: 2 },
-    { q: "¿Qué es la recombinación genética?", options: ["Destrucción de genes", "Mutación simple", "Clonación", "Intercambio de material genético entre cromosomas homólogos"], correct: 3 },
-    { q: "¿Qué es un alelo?", options: ["Forma alternativa de un gen", "Un cromosoma entero", "Una proteína", "Un nucleótido"], correct: 0 },
-    { q: "¿Qué significa homocigoto?", options: ["Alelos diferentes", "Alelos iguales para un gen", "Sin genes", "Cromosoma extra"], correct: 1 },
-    { q: "¿Qué significa heterocigoto?", options: ["Alelos iguales", "Cromosoma roto", "Alelos diferentes para un gen", "Mutación"], correct: 2 },
-    { q: "¿Qué es el fenotipo?", options: ["Secuencia oculta", "ADN puro", "ARN mensajero", "Expresión observable de los genes"], correct: 3 },
-    { q: "¿Qué es el genotipo?", options: ["Constitución genética de un organismo", "Apariencia física", "Ambiente", "Proteína externa"], correct: 0 },
-    { q: "¿Qué es la ley de la segregación de Mendel?", options: ["Los genes se mezclan para siempre", "Los alelos se separan durante la formación de gametos", "No hay herencia", "Mutación constante"], correct: 1 },
-    { q: "¿Qué es la ley de la transmisión independiente?", options: ["Los genes van juntos", "Solo hay un gen", "Genes de distintos rasgos se heredan de forma independiente", "Herencia ligada"], correct: 2 },
-    { q: "¿Qué es la codominancia?", options: ["Un alelo domina", "Ninguno se expresa", "Mutación letal", "Ambos alelos se expresan por igual en el heterocigoto"], correct: 3 },
-    { q: "¿Qué es la dominancia incompleta?", options: ["El heterocigoto muestra un fenotipo intermedio", "Dominancia total", "Recesividad pura", "Pérdida genómica"], correct: 0 },
-    { q: "¿Cuáles son los cromosomas sexuales en humanos?", options: ["A y B", "X e Y", "1 y 2", "V y W"], correct: 1 },
-    { q: "¿Cuántos cromosomas tiene una célula somática humana normal?", options: ["23", "48", "46", "24"], correct: 2 },
-    { q: "¿Cuántos cromosomas tiene un gameto humano (espermatozoide u óvulo)?", options: ["46", "22", "24", "23"], correct: 3 },
-    { q: "¿Qué es la mitosis?", options: ["División celular que produce células idénticas (somáticas)", "Producción de gametos", "Destrucción celular", "Transcripción"], correct: 0 },
-    { q: "¿Qué es la meiosis?", options: ["Crecimiento celular", "División que reduce a la mitad el número cromosómico (gametos)", "Duplicación idéntica", "Mitosis rápida"], correct: 1 },
-    { q: "¿Qué es el cariotipo?", options: ["Secuencia de ADN", "Estructura proteica", "Ordenamiento fotográfico de los cromosomas de una célula", "ARN ribosomal"], correct: 2 },
-    { q: "¿Qué es una aneuploidía?", options: ["Mutación puntual", "Pérdida de bases", "Cambio de ARN", "Alteración en el número de cromosomas individuales"], correct: 3 },
-    { q: "¿Qué es el síndrome de Down?", options: ["Trisomía del cromosoma 21", "Monosomía X", "Trisomía 18", "Cromosoma Y extra"], correct: 0 },
-    { q: "¿Qué es la PCR (Reacción en Cadena de la Polimerasa)?", options: ["Cortar proteínas", "Técnica para amplificar millones de copias de ADN in vitro", "Secuenciar ARN", "Clonar humanos"], correct: 1 },
-    { q: "¿Quién inventó la técnica de PCR?", options: ["Watson y Crick", "Mendel", "Kary Mullis", "Franklin"], correct: 2 },
-    { q: "¿Qué es la electroforesis en gel?", options: ["Medir temperatura", "Crear proteínas", "Destruir células", "Método para separar moléculas de ADN según su tamaño mediante electricidad"], correct: 3 },
-    { q: "¿Qué es un vector de clonación?", options: ["Molécula de ADN usada para transferir material genético extrañamente", "Una bacteria viva", "Un virus gigante", "Enzima"], correct: 0 },
-    { q: "¿Qué es la terapia génica?", options: ["Mutación artificial", "Inserción de genes funcionales para corregir defectos", "Destrucción genómica", "Clonación celular"], correct: 1 },
-    { q: "¿Qué es la bioinformática?", options: ["Medicina natural", "Química inorgánica", "Uso de herramientas computacionales para analizar datos biológicos y genómicos", "Física cuántica"], correct: 2 }
-  ];
-
-  let currentQuizIndex = 0;
-
-  function initQuizNav() {
-    const navGrid = document.getElementById('qNavGrid');
-    navGrid.innerHTML = '';
-    uniqueQuestions.forEach((qObj, index) => {
-      const btn = document.createElement('button');
-      btn.className = 'q-jump-btn';
-      btn.innerText = index + 1;
-      btn.onclick = () => displayQuizQuestion(index);
-      navGrid.appendChild(btn);
-    });
-    displayQuizQuestion(0);
-  }
-
-  function displayQuizQuestion(index) {
-    currentQuizIndex = index;
-    const buttons = document.querySelectorAll('.q-jump-btn');
-    buttons.forEach((b, idx) => {
-      if (idx === index) b.classList.add('active');
-      else b.classList.remove('active');
+    // Inicializar la cámara
+    const camera = new Camera(videoElement, {
+      onFrame: async () => {
+        await hands.send({ image: videoElement });
+      },
+      width: 640,
+      height: 480
     });
 
-    const qData = uniqueQuestions[index];
-    const container = document.getElementById('questionDisplayContainer');
-    
-    let optionsHtml = '';
-    qData.options.forEach((opt, optIdx) => {
-      optionsHtml += `<button class="option-btn" onclick="checkQuizAnswer(this, ${optIdx}, ${qData.correct}, '${qData.q.replace(/'/g, "\\'")}')">${String.fromCharCode(65 + optIdx)}. ${opt}</button>`;
-    });
-
-    container.innerHTML = `
-      <div class="question-card">
-        <div class="encouragement-banner">uff, te amo mi amor — te mamare el dedo 🍑🔥</div>
-        <h3 style="margin-top:0; color: #be185d;">Pregunta ${index + 1} de 100</h3>
-        <p style="font-weight: bold; font-size: 1.05rem;">${qData.q}</p>
-        <div style="margin-top: 10px;">
-          ${optionsHtml}
-        </div>
-        <div id="quiz-feedback-${index}" style="margin-top: 10px; font-weight: bold; font-size: 0.9rem;"></div>
-        <div id="quiz-dog-${index}" class="dog-gif-container"></div>
-        <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-          <button class="back-btn" style="margin:0;" onclick="displayQuizQuestion(${Math.max(0, index - 1)})">⬅ Anterior</button>
-          <button class="back-btn" style="margin:0;" onclick="displayQuizQuestion(${Math.min(uniqueQuestions.length - 1, index + 1)})">Siguiente ➡</button>
-        </div>
-      </div>
-    `;
-  }
-
-  function checkQuizAnswer(btn, selected, correct, questionText) {
-    const parent = btn.parentElement;
-    const allBtns = parent.querySelectorAll('.option-btn');
-    allBtns.forEach((b, idx) => {
-      b.disabled = true;
-      if (idx === correct) b.classList.add('correct');
-      else if (idx === selected) b.classList.add('incorrect');
-    });
-
-    if (selected !== correct) {
-      document.getElementById(`quiz-dog-${currentQuizIndex}`).innerHTML = `<img src="${DOG_GIF_URL}" alt="Perrito enojadito">`;
-      silentTracker.logError("Cuestionario de 100 Preguntas Únicas", questionText);
-    }
-  }
-
-  window.onload = function() {
-    initQuizNav();
-    loadCard();
-    silentTracker.logEntry();
-  };
-</script>
-
+    camera.start();
+  </script>
 </body>
 </html>
