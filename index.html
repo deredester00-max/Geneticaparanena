@@ -2,180 +2,343 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Filtro Ultra Rápido por Gestos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Holograma Embriológico Star Wars</title>
   <style>
-    body {
-      background-color: #0d0d0d;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body, html {
       margin: 0;
-      padding: 10px;
-    }
-    .container {
-      position: relative;
-      display: inline-block;
-      border-radius: 16px;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      background-color: #020617;
+      font-family: 'Segoe UI', Roboto, monospace;
+      color: #38bdf8;
     }
-    canvas {
-      display: block;
-      max-width: 100%;
-      height: auto;
+
+    /* Video de la cámara de fondo */
+    #webcam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* Efecto espejo */
+      z-index: 1;
+      filter: brightness(0.7) contrast(1.2);
     }
-    video { display: none; }
-    .status {
-      margin-top: 10px;
+
+    /* Canvas 3D para el holograma */
+    #hologramCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Capa de efecto cibernético de la pantalla */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 4px, 6px 100%;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* Panel de Control Flotante Estilo Star Wars (HUD) */
+    .hud-panel {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 280px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid #0284c7;
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3), inset 0 0 15px rgba(2, 132, 199, 0.2);
+      z-index: 4;
+    }
+
+    .hud-header {
       font-size: 14px;
-      color: #00ffcc;
       font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #7dd3fc;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.4);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-header::after {
+      content: '● REC';
+      color: #ef4444;
+      font-size: 10px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hud-btn {
+      width: 100%;
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid #38bdf8;
+      color: #e0f2fe;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hud-btn:hover, .hud-btn.active {
+      background: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+      border-color: #7dd3fc;
+      transform: translateX(-4px);
+    }
+
+    .hud-info {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      background: rgba(15, 23, 42, 0.7);
+      border-left: 3px solid #38bdf8;
+      padding: 10px 15px;
+      font-size: 12px;
+      z-index: 4;
+      max-width: 300px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Adaptación a celulares */
+    @media (max-width: 768px) {
+      .hud-panel {
+        right: 10px;
+        top: auto;
+        bottom: 10px;
+        transform: none;
+        width: calc(100% - 20px);
+      }
+      .hud-info { display: none; }
     }
   </style>
 
-  <!-- MediaPipe Hands Optimizado -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <!-- Motores 3D Ultra Rápidos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-  <h2>Filtro de Mano Ultra Rápido</h2>
-  <div class="container">
-    <video id="webcam" playsinline></video>
-    <canvas id="outputCanvas"></canvas>
+  <!-- Cámara de Fondo -->
+  <video id="webcam" autoplay playsinline muted></video>
+
+  <!-- Lienzo Holográfico -->
+  <canvas id="hologramCanvas"></canvas>
+
+  <!-- Textura cibernética -->
+  <div class="scanlines"></div>
+
+  <!-- Panel de Control Holográfico (Derecha) -->
+  <div class="hud-panel">
+    <div class="hud-header">EMBRIOLOGÍA HOLOGRÁFICA</div>
+    <button class="hud-btn active" onclick="loadStage(1, this)">
+      1. Célula Zigoto <span>01 DIA</span>
+    </button>
+    <button class="hud-btn" onclick="loadStage(2, this)">
+      2. Mórula <span>04 DÍAS</span>
+    </button>
+    <button class="hud-btn" onclick="loadStage(3, this)">
+      3. Blastocisto <span>07 DÍAS</span>
+    </button>
+    <button class="hud-btn" onclick="loadStage(4, this)">
+      4. Embrión Humano <span>06 SEMANAS</span>
+    </button>
   </div>
-  <div class="status" id="status">Filtro: Escala de Grises (Haz un recuadro con tus dedos)</div>
+
+  <!-- Información flotante (Izquierda) -->
+  <div class="hud-info" id="infoBox">
+    <strong>ETAPA 1: ZIGOTO</strong><br>
+    Fusión del material genético. Inicia la segmentación celular activa.
+  </div>
 
   <script>
     const video = document.getElementById('webcam');
-    const canvas = document.getElementById('outputCanvas');
-    const ctx = canvas.getContext('2d');
-    const statusEl = document.getElementById('status');
+    const canvas = document.getElementById('hologramCanvas');
+    const infoBox = document.getElementById('infoBox');
 
-    // Lista de filtros
-    const filters = [
-      { name: 'Escala de Grises', style: 'grayscale(100%)' },
-      { name: 'Sepia', style: 'sepia(100%)' },
-      { name: 'Cyberpunk', style: 'hue-rotate(280deg) saturate(200%)' },
-      { name: 'Invertido / Neón', style: 'invert(100%)' },
-      { name: 'B&N Dramático', style: 'grayscale(100%) contrast(250%)' }
-    ];
-    let filterIndex = 0;
-    let handLandmarks = [];
-    let lastAngle = 0;
-    let canSwitchFilter = true;
-
-    // Configuración ultra optimizada de MediaPipe Hands
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
-
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 0, // 0 = Modo súper veloz sin lag
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-
-    hands.onResults(results => {
-      handLandmarks = results.multiHandLandmarks || [];
-    });
-
-    // Iniciar cámara con tamaño ajustado para rendimiento
-    const camera = new Camera(video, {
-      onFrame: async () => {
-        await hands.send({ image: video });
-        render();
-      },
-      width: 480,
-      height: 360
-    });
-    camera.start();
-
-    // Ordenar 4 puntos geométricamente en sentido horario para que nunca se cruce el recuadro
-    function sortPointsClockwise(pts) {
-      const center = pts.reduce((acc, p) => ({ x: acc.x + p.x / pts.length, y: acc.y + p.y / pts.length }), { x: 0, y: 0 });
-      return pts.slice().sort((a, b) => {
-        const a1 = (Math.atan2(a.y - center.y, a.x - center.x) * 180 / Math.PI + 360) % 360;
-        const a2 = (Math.atan2(b.y - center.y, b.x - center.x) * 180 / Math.PI + 360) % 360;
-        return a1 - a2;
-      });
-    }
-
-    function render() {
-      canvas.width = video.videoWidth || 480;
-      canvas.height = video.videoHeight || 360;
-
-      // 1. Dibujar imagen a color normal de fondo
-      ctx.filter = 'none';
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      let rawPoints = [];
-
-      // 2. Extraer los 4 dedos (Índices y Pulgares de ambas manos)
-      if (handLandmarks.length >= 2) {
-        // Mano 1: Pulgar (4), Índice (8)
-        rawPoints.push({ x: handLandmarks[0][4].x * canvas.width, y: handLandmarks[0][4].y * canvas.height });
-        rawPoints.push({ x: handLandmarks[0][8].x * canvas.width, y: handLandmarks[0][8].y * canvas.height });
-
-        // Mano 2: Pulgar (4), Índice (8)
-        rawPoints.push({ x: handLandmarks[1][4].x * canvas.width, y: handLandmarks[1][4].y * canvas.height });
-        rawPoints.push({ x: handLandmarks[1][8].x * canvas.width, y: handLandmarks[1][8].y * canvas.height });
-
-        // Detectar inclinación/rotación de la línea entre los dos índices para cambiar de filtro
-        const dx = rawPoints[3].x - rawPoints[1].x;
-        const dy = rawPoints[3].y - rawPoints[1].y;
-        const currentAngle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-        if (Math.abs(currentAngle - lastAngle) > 25 && canSwitchFilter) {
-          filterIndex = (filterIndex + 1) % filters.length;
-          statusEl.innerText = `Filtro: ${filters[filterIndex].name}`;
-          canSwitchFilter = false;
-          setTimeout(() => { canSwitchFilter = true; }, 800);
-        }
-        lastAngle = currentAngle;
-      }
-
-      // 3. Dibujar el filtro dentro del recuadro ajustado
-      if (rawPoints.length === 4) {
-        // Ordenar esquinas para evitar deformaciones
-        const sortedPts = sortPointsClockwise(rawPoints);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(sortedPts[0].x, sortedPts[0].y);
-        ctx.lineTo(sortedPts[1].x, sortedPts[1].y);
-        ctx.lineTo(sortedPts[2].x, sortedPts[2].y);
-        ctx.lineTo(sortedPts[3].x, sortedPts[3].y);
-        ctx.closePath();
-
-        // Aplicar el filtro únicamente dentro del recuadro recortado
-        ctx.clip();
-        ctx.filter = filters[filterIndex].style;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-
-        // Dibujar borde verde neón en las 4 esquinas
-        ctx.beginPath();
-        ctx.moveTo(sortedPts[0].x, sortedPts[0].y);
-        for (let i = 1; i < sortedPts.length; i++) {
-          ctx.lineTo(sortedPts[i].x, sortedPts[i].y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = '#00ffcc';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Dibujar puntos indicadores en las puntas
-        sortedPts.forEach(pt => {
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 5, 0, 2 * Math.PI);
-          ctx.fillStyle = '#00ffcc';
-          ctx.fill();
+    // 1. Activar Cámara
+    async function initCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
         });
+        video.srcObject = stream;
+      } catch (err) {
+        console.error("No se pudo acceder a la cámara:", err);
       }
     }
+    initCamera();
+
+    // 2. Configurar Three.js para Holograma 3D
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    camera.position.set(-1.2, 0, 3.5); // Posición desplazada para ver el rostro a la izquierda
+
+    // Material de Holograma azul neón estilo Star Wars
+    const holoMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00f3ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    // Crear grupo para el modelo activo
+    let hologramGroup = new THREE.Group();
+    scene.add(hologramGroup);
+
+    // Luces
+    const light = new THREE.PointLight(0x00f3ff, 2, 100);
+    light.position.set(2, 2, 2);
+    scene.add(light);
+
+    // 3. Generar Modelos Embriológicos en 3D
+    function createZygote() {
+      const group = new THREE.Group();
+      const geo = new THREE.SphereGeometry(1, 32, 32);
+      const mesh = new THREE.Mesh(geo, holoMaterial);
+      group.add(mesh);
+      return group;
+    }
+
+    function createMorula() {
+      const group = new THREE.Group();
+      for (let i = 0; i < 16; i++) {
+        const geo = new THREE.SphereGeometry(0.35, 16, 16);
+        const mesh = new THREE.Mesh(geo, holoMaterial);
+        mesh.position.set(
+          (Math.random() - 0.5) * 1.2,
+          (Math.random() - 0.5) * 1.2,
+          (Math.random() - 0.5) * 1.2
+        );
+        group.add(mesh);
+      }
+      return group;
+    }
+
+    function createBlastocyst() {
+      const group = new THREE.Group();
+      // Capa externa
+      const outerGeo = new THREE.SphereGeometry(1.1, 24, 24);
+      const outerMesh = new THREE.Mesh(outerGeo, new THREE.MeshBasicMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.3 }));
+      group.add(outerMesh);
+
+      // Masa celular interna
+      const innerGeo = new THREE.SphereGeometry(0.5, 16, 16);
+      const innerMesh = new THREE.Mesh(innerGeo, holoMaterial);
+      innerMesh.position.set(-0.4, 0.2, 0);
+      group.add(innerMesh);
+
+      return group;
+    }
+
+    function createEmbryo() {
+      const group = new THREE.Group();
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0.8, 0),
+        new THREE.Vector3(-0.4, 0.4, 0),
+        new THREE.Vector3(-0.2, -0.3, 0),
+        new THREE.Vector3(0.3, -0.7, 0)
+      ]);
+      const geo = new THREE.TubeGeometry(curve, 32, 0.25, 12, false);
+      const mesh = new THREE.Mesh(geo, holoMaterial);
+      group.add(mesh);
+
+      // Cabeza del embrión
+      const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
+      const headMesh = new THREE.Mesh(headGeo, holoMaterial);
+      headMesh.position.set(0, 0.8, 0);
+      group.add(headMesh);
+
+      return group;
+    }
+
+    // Cargar modelo inicial
+    let currentModel = createZygote();
+    hologramGroup.add(currentModel);
+
+    // 4. Lógica para cambiar etapas embriológicas
+    window.loadStage = function(stage, btn) {
+      document.querySelectorAll('.hud-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      hologramGroup.remove(currentModel);
+
+      if (stage === 1) {
+        currentModel = createZygote();
+        infoBox.innerHTML = "<strong>ETAPA 1: ZIGOTO</strong><br>Fusión del material genético. Inicia la segmentación celular activa.";
+      } else if (stage === 2) {
+        currentModel = createMorula();
+        infoBox.innerHTML = "<strong>ETAPA 2: MÓRULA</strong><br>Masa compacta de 12 a 16 células semejante a una mora.";
+      } else if (stage === 3) {
+        currentModel = createBlastocyst();
+        infoBox.innerHTML = "<strong>ETAPA 3: BLASTOCISTO</strong><br>Formación de cavidad llena de líquido y masa celular interna.";
+      } else if (stage === 4) {
+        currentModel = createEmbryo();
+        infoBox.innerHTML = "<strong>ETAPA 4: EMBRIÓN (6 SEMANAS)</strong><br>Desarrollo inicial del tubo neural, extremidades y arcos faríngeos.";
+      }
+
+      hologramGroup.add(currentModel);
+    };
+
+    // 5. Bucle de animación fluida a 60 FPS
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotación constante estilo proyección holográfica
+      if (hologramGroup) {
+        hologramGroup.rotation.y += 0.01;
+        hologramGroup.rotation.x += 0.003;
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Reajuste de pantalla
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
 </html>
+
