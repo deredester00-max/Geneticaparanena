@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Filtro Dinámico por Gestos</title>
+  <title>Filtro Ultra Rápido por Gestos</title>
   <style>
     body {
       background-color: #0d0d0d;
       color: white;
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
       padding: 10px;
@@ -18,6 +18,7 @@
       display: inline-block;
       border-radius: 16px;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
     canvas {
       display: block;
@@ -29,22 +30,22 @@
       margin-top: 10px;
       font-size: 14px;
       color: #00ffcc;
+      font-weight: bold;
     }
   </style>
 
-  <!-- MediaPipe Hands & Face Mesh -->
+  <!-- MediaPipe Hands Optimizado -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <h2>Marco de Filtro Dinámico</h2>
+  <h2>Filtro de Mano Ultra Rápido</h2>
   <div class="container">
     <video id="webcam" playsinline></video>
     <canvas id="outputCanvas"></canvas>
   </div>
-  <div class="status" id="status">Inclina la cabeza a los lados para cambiar de filtro</div>
+  <div class="status" id="status">Filtro: Escala de Grises (Haz un recuadro con tus dedos)</div>
 
   <script>
     const video = document.getElementById('webcam');
@@ -52,7 +53,7 @@
     const ctx = canvas.getContext('2d');
     const statusEl = document.getElementById('status');
 
-    // Filtros disponibles
+    // Lista de filtros
     const filters = [
       { name: 'Escala de Grises', style: 'grayscale(100%)' },
       { name: 'Sepia', style: 'sepia(100%)' },
@@ -62,109 +63,114 @@
     ];
     let filterIndex = 0;
     let handLandmarks = [];
-    let headTiltAngle = 0;
-    let canChangeFilter = true;
+    let lastAngle = 0;
+    let canSwitchFilter = true;
 
-    // 1. Configurar MediaPipe Hands
+    // Configuración ultra optimizada de MediaPipe Hands
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
-    hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6 });
-    hands.onResults(results => { handLandmarks = results.multiHandLandmarks || []; });
 
-    // 2. Configurar MediaPipe FaceMesh (para inclinación de cabeza)
-    const faceMesh = new FaceMesh({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: false });
-    faceMesh.onResults(results => {
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-        const landmarks = results.multiFaceLandmarks[0];
-        // Puntos de los ojos (ojo izquierdo: 33, ojo derecho: 263)
-        const leftEye = landmarks[33];
-        const rightEye = landmarks[263];
-
-        const deltaY = rightEye.y - leftEye.y;
-        const deltaX = rightEye.x - leftEye.x;
-        headTiltAngle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-        // Cambiar de filtro al inclinar la cabeza a la izquierda o derecha (> 15 grados)
-        if (Math.abs(headTiltAngle) > 15 && canChangeFilter) {
-          filterIndex = (filterIndex + 1) % filters.length;
-          statusEl.innerText = `Filtro Activo: ${filters[filterIndex].name}`;
-          canChangeFilter = false;
-          setTimeout(() => { canChangeFilter = true; }, 1000); // Cooldown de 1 seg
-        }
-      }
+    hands.setOptions({
+      maxNumHands: 2,
+      modelComplexity: 0, // 0 = Modo súper veloz sin lag
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
     });
 
-    // 3. Iniciar Cámara
+    hands.onResults(results => {
+      handLandmarks = results.multiHandLandmarks || [];
+    });
+
+    // Iniciar cámara con tamaño ajustado para rendimiento
     const camera = new Camera(video, {
       onFrame: async () => {
         await hands.send({ image: video });
-        await faceMesh.send({ image: video });
-        renderFrame();
+        render();
       },
-      width: 640,
-      height: 480
+      width: 480,
+      height: 360
     });
     camera.start();
 
-    // 4. Dibujar en Canvas
-    function renderFrame() {
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
+    // Ordenar 4 puntos geométricamente en sentido horario para que nunca se cruce el recuadro
+    function sortPointsClockwise(pts) {
+      const center = pts.reduce((acc, p) => ({ x: acc.x + p.x / pts.length, y: acc.y + p.y / pts.length }), { x: 0, y: 0 });
+      return pts.slice().sort((a, b) => {
+        const a1 = (Math.atan2(a.y - center.y, a.x - center.x) * 180 / Math.PI + 360) % 360;
+        const a2 = (Math.atan2(b.y - center.y, b.x - center.x) * 180 / Math.PI + 360) % 360;
+        return a1 - a2;
+      });
+    }
 
-      // A) Dibujar video a color base (fuera del recuadro)
+    function render() {
+      canvas.width = video.videoWidth || 480;
+      canvas.height = video.videoHeight || 360;
+
+      // 1. Dibujar imagen a color normal de fondo
       ctx.filter = 'none';
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // B) Obtener las 4 puntas de los dedos si hay 2 manos detectadas
-      let points = [];
+      let rawPoints = [];
+
+      // 2. Extraer los 4 dedos (Índices y Pulgares de ambas manos)
       if (handLandmarks.length >= 2) {
-        // Mano 1: Índice (8) y Pulgar (4)
-        const h1_index = { x: handLandmarks[0][8].x * canvas.width, y: handLandmarks[0][8].y * canvas.height };
-        const h1_thumb = { x: handLandmarks[0][4].x * canvas.width, y: handLandmarks[0][4].y * canvas.height };
+        // Mano 1: Pulgar (4), Índice (8)
+        rawPoints.push({ x: handLandmarks[0][4].x * canvas.width, y: handLandmarks[0][4].y * canvas.height });
+        rawPoints.push({ x: handLandmarks[0][8].x * canvas.width, y: handLandmarks[0][8].y * canvas.height });
 
-        // Mano 2: Índice (8) y Pulgar (4)
-        const h2_index = { x: handLandmarks[1][8].x * canvas.width, y: handLandmarks[1][8].y * canvas.height };
-        const h2_thumb = { x: handLandmarks[1][4].x * canvas.width, y: handLandmarks[1][4].y * canvas.height };
+        // Mano 2: Pulgar (4), Índice (8)
+        rawPoints.push({ x: handLandmarks[1][4].x * canvas.width, y: handLandmarks[1][4].y * canvas.height });
+        rawPoints.push({ x: handLandmarks[1][8].x * canvas.width, y: handLandmarks[1][8].y * canvas.height });
 
-        // Puntos ordenados formando un recuadro cerrado
-        points = [h1_index, h1_thumb, h2_thumb, h2_index];
+        // Detectar inclinación/rotación de la línea entre los dos índices para cambiar de filtro
+        const dx = rawPoints[3].x - rawPoints[1].x;
+        const dy = rawPoints[3].y - rawPoints[1].y;
+        const currentAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+        if (Math.abs(currentAngle - lastAngle) > 25 && canSwitchFilter) {
+          filterIndex = (filterIndex + 1) % filters.length;
+          statusEl.innerText = `Filtro: ${filters[filterIndex].name}`;
+          canSwitchFilter = false;
+          setTimeout(() => { canSwitchFilter = true; }, 800);
+        }
+        lastAngle = currentAngle;
       }
 
-      // C) Si están las 4 puntas de los dedos, recortar y aplicar el filtro
-      if (points.length === 4) {
+      // 3. Dibujar el filtro dentro del recuadro ajustado
+      if (rawPoints.length === 4) {
+        // Ordenar esquinas para evitar deformaciones
+        const sortedPts = sortPointsClockwise(rawPoints);
+
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        ctx.lineTo(points[1].x, points[1].y);
-        ctx.lineTo(points[2].x, points[2].y);
-        ctx.lineTo(points[3].x, points[3].y);
+        ctx.moveTo(sortedPts[0].x, sortedPts[0].y);
+        ctx.lineTo(sortedPts[1].x, sortedPts[1].y);
+        ctx.lineTo(sortedPts[2].x, sortedPts[2].y);
+        ctx.lineTo(sortedPts[3].x, sortedPts[3].y);
         ctx.closePath();
 
-        // Recortar canvas para que el filtro SOLO exista dentro de las 4 puntas
+        // Aplicar el filtro únicamente dentro del recuadro recortado
         ctx.clip();
         ctx.filter = filters[filterIndex].style;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         ctx.restore();
 
-        // D) Dibujar bordes conectados entre las 4 puntas de los dedos
+        // Dibujar borde verde neón en las 4 esquinas
         ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
+        ctx.moveTo(sortedPts[0].x, sortedPts[0].y);
+        for (let i = 1; i < sortedPts.length; i++) {
+          ctx.lineTo(sortedPts[i].x, sortedPts[i].y);
         }
         ctx.closePath();
         ctx.strokeStyle = '#00ffcc';
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Dibujar pequeños círculos en las 4 puntas de los dedos
-        points.forEach(p => {
+        // Dibujar puntos indicadores en las puntas
+        sortedPts.forEach(pt => {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+          ctx.arc(pt.x, pt.y, 5, 0, 2 * Math.PI);
           ctx.fillStyle = '#00ffcc';
           ctx.fill();
         });
