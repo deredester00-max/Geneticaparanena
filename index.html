@@ -4,216 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal de Filtros</title>
-  
-  <!-- Cargar MediaPipe (Camera, Hands y Face Mesh) -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-
   <style>
     body {
-      margin: 0;
-      padding: 0;
       background-color: #0d0d0d;
       color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
-
-    h1 {
-      font-size: 1.2rem;
-      margin-bottom: 4px;
+    .badge {
+      background-color: #6b21a8;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      display: inline-block;
+      margin-bottom: 10px;
     }
-
-    .info-badge {
-      background-color: #7c3aed;
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .container {
-      position: relative;
-      width: 90vw;
-      max-width: 440px;
-      aspect-ratio: 3 / 4;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-    }
-
-    video {
-      display: none;
-    }
-
     canvas {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1); /* Modo espejo */
+      border-radius: 16px;
+      max-width: 90%;
+      height: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    video {
+      display: none; /* Mantenemos el video oculto y mostramos solo el canvas */
     }
   </style>
 </head>
 <body>
 
-  <h1>Portal de Filtros</h1>
-  <div class="info-badge" id="filter_badge">Filtro: Invertir Colores</div>
+  <h2>Portal de Filtros</h2>
+  <div class="badge">Filtro: Escala de Grises</div>
+  <br>
 
-  <div class="container">
-    <video id="input_video" playsinline></video>
-    <canvas id="output_canvas"></canvas>
-  </div>
+  <!-- Elemento de video oculto para recibir el stream de la cámara -->
+  <video id="webcam" autoplay playsinline></video>
+  
+  <!-- Canvas visible donde procesamos todo a máxima velocidad -->
+  <canvas id="outputCanvas"></canvas>
 
   <script>
-    const videoElement = document.getElementById('input_video');
-    const canvasElement = document.getElementById('output_canvas');
-    const canvasCtx = canvasElement.getContext('2d');
-    const filterBadge = document.getElementById('filter_badge');
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('outputCanvas');
+    const ctx = canvas.getContext('2d');
 
-    // Lista de filtros disponibles
-    const filtersList = [
-      { name: 'Invertir Colores', css: 'invert(100%)' },
-      { name: 'Escala de Grises', css: 'grayscale(100%)' },
-      { name: 'Sepia', css: 'sepia(100%)' },
-      { name: 'Saturado Neón', css: 'saturate(300%) contrast(150%)' },
-      { name: 'Hue Rotate', css: 'hue-rotate(180deg)' },
-      { name: 'Efecto Térmico', css: 'invert(100%) hue-rotate(90deg)' }
-    ];
-
-    let currentFilterIndex = 0;
-    let headUpTriggered = false;
-
-    let latestHandResults = null;
-    let latestFaceResults = null;
-
-    // 1. Configuración de MediaPipe Hands
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-    hands.onResults((results) => {
-      latestHandResults = results;
-      renderFrame();
-    });
-
-    // 2. Configuración de MediaPipe Face Mesh
-    const faceMesh = new FaceMesh({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-    faceMesh.setOptions({
-      maxNumFaces: 1,
-      refineLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-    faceMesh.onResults((results) => {
-      latestFaceResults = results;
-      checkHeadMotion();
-    });
-
-    // Cambiar filtro detectando inclinación de la cabeza hacia arriba
-    function checkHeadMotion() {
-      if (latestFaceResults && latestFaceResults.multiFaceLandmarks.length > 0) {
-        const landmarks = latestFaceResults.multiFaceLandmarks[0];
-        
-        // Puntos de referencia: punta de la nariz (4) y barbilla (152)
-        const noseTip = landmarks[4];
-        const chin = landmarks[152];
-
-        // Distancia vertical relativa
-        const verticalDistance = chin.y - noseTip.y;
-
-        // Si levantas la cabeza, la distancia relativa disminuye
-        if (verticalDistance < 0.16 && !headUpTriggered) {
-          headUpTriggered = true;
-          currentFilterIndex = (currentFilterIndex + 1) % filtersList.length;
-          filterBadge.innerText = `Filtro: ${filtersList[currentFilterIndex].name}`;
-        } else if (verticalDistance > 0.20) {
-          headUpTriggered = false; // Reiniciar gatillo al volver a posición normal
-        }
-      }
-    }
-
-    // Dibujar el video y el filtro delimitado por las manos
-    function renderFrame() {
-      if (!latestHandResults) return;
-
-      if (canvasElement.width !== latestHandResults.image.width) {
-        canvasElement.width = latestHandResults.image.width;
-        canvasElement.height = latestHandResults.image.height;
-      }
-
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-      // Dibujar imagen normal de fondo
-      canvasCtx.drawImage(latestHandResults.image, 0, 0, canvasElement.width, canvasElement.height);
-
-      // Procesar recuadro si se detectan 2 manos
-      if (latestHandResults.multiHandLandmarks && latestHandResults.multiHandLandmarks.length === 2) {
-        let allX = [];
-        let allY = [];
-
-        // Obtener todas las coordenadas de los puntos de ambas manos
-        latestHandResults.multiHandLandmarks.forEach(hand => {
-          hand.forEach(point => {
-            allX.push(point.x * canvasElement.width);
-            allY.push(point.y * canvasElement.height);
-          });
+    // Inicializar la cámara web
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+          audio: false
         });
-
-        // Encontrar las 4 esquinas extremas que forman el cuadro envolvente
-        const minX = Math.min(...allX);
-        const maxX = Math.max(...allX);
-        const minY = Math.min(...allY);
-        const maxY = Math.max(...allY);
-
-        const width = maxX - minX;
-        const height = maxY - minY;
-
-        // Aplicar el filtro dentro de la región recortada
-        canvasCtx.save();
-        canvasCtx.beginPath();
-        canvasCtx.rect(minX, minY, width, height);
-        canvasCtx.clip();
-
-        canvasCtx.filter = filtersList[currentFilterIndex].css;
-        canvasCtx.drawImage(latestHandResults.image, 0, 0, canvasElement.width, canvasElement.height);
-        canvasCtx.restore();
-
-        // DIBUJAR EL BORDE VISIBLE DEL RECUADRO
-        canvasCtx.lineWidth = 4;
-        canvasCtx.strokeStyle = '#00ffcc';
-        canvasCtx.setLineDash([8, 8]);
-        canvasCtx.strokeRect(minX, minY, width, height);
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          renderFrame(); // Iniciar ciclo de renderizado ultra rápido
+        };
+      } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
       }
-
-      canvasCtx.restore();
     }
 
-    // Configurar e iniciar la cámara
-    const camera = new Camera(videoElement, {
-      onFrame: async () => {
-        await hands.send({ image: videoElement });
-        await faceMesh.send({ image: videoElement });
-      },
-      width: 640,
-      height: 480
-    });
+    function renderFrame() {
+      // 1. Limpiar el canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    camera.start();
+      // 2. Aplicar el filtro súper rápido (Nativo de GPU)
+      ctx.filter = 'grayscale(100%)'; 
+
+      // 3. Dibujar el video en el canvas
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // 4. Restaurar el filtro a 'none' para que no afecte el recuadro u otros elementos
+      ctx.filter = 'none';
+
+      // 5. Dibujar el recuadro (Box)
+      drawBoundingBox();
+
+      // 6. Solicitar el siguiente fotograma a la velocidad de actualización de la pantalla (~60fps)
+      requestAnimationFrame(renderFrame);
+    }
+
+    function drawBoundingBox() {
+      // Ejemplo de coordenadas (ajusta según la detección de tu modelo de IA o valores fijos)
+      const x = canvas.width * 0.25;
+      const y = canvas.height * 0.2;
+      const width = canvas.width * 0.5;
+      const height = canvas.height * 0.6;
+
+      // Configuración del estilo del recuadro
+      ctx.strokeStyle = '#00ffcc'; // Color del borde visible
+      ctx.lineWidth = 4;           // Grosor del borde
+      ctx.strokeRect(x, y, width, height); // Dibujar borde rectáungulo
+
+      // Opcional: Texto sobre el recuadro
+      ctx.fillStyle = '#00ffcc';
+      ctx.font = '16px Arial';
+      ctx.fillText('Rostro Detectado', x, y - 8);
+    }
+
+    startCamera();
   </script>
 </body>
 </html>
