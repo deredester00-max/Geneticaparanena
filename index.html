@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Realidad Aumentada - Embriología 3D</title>
+  <title>Realidad Aumentada - Anatomía Humana 3D</title>
   <style>
     * { box-sizing: border-box; user-select: none; }
     body, html {
@@ -26,23 +26,23 @@
       width: 100%; height: 100%; z-index: 2;
     }
 
-    /* BARRA SUPERIOR DE ETAPAS */
+    /* BARRA LATERAL DE SISTEMAS ANATÓMICOS */
     .selector-bar {
-      position: absolute; top: 15px; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 8px;
-      background: rgba(10, 15, 30, 0.9);
-      padding: 8px 12px; border-radius: 16px;
+      position: absolute; right: 20px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 10px;
+      background: rgba(10, 15, 30, 0.85);
+      padding: 12px; border-radius: 16px;
       border: 1px solid rgba(56, 189, 248, 0.4);
       backdrop-filter: blur(10px);
-      z-index: 4; max-width: 95%; overflow-x: auto;
+      z-index: 4; max-height: 80vh; overflow-y: auto;
     }
 
     .select-card {
       background: rgba(2, 132, 199, 0.2);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 10px;
-      padding: 8px 12px; min-width: 90px;
+      padding: 10px 14px; min-width: 110px;
       text-align: center; cursor: pointer;
       transition: all 0.2s ease;
       display: flex; flex-direction: column; align-items: center;
@@ -59,7 +59,7 @@
     }
 
     .select-card .stage-name {
-      font-size: 11px; color: #fff; font-weight: 600; margin-top: 2px;
+      font-size: 12px; color: #fff; font-weight: 600; margin-top: 2px;
     }
 
     /* CUADRO INFORMATIVO INFERIOR */
@@ -92,29 +92,29 @@
   <canvas id="hologramCanvas"></canvas>
   <div id="virtualCursor"></div>
 
-  <!-- SELECTOR DE ETAPAS -->
+  <!-- SELECTOR DE SISTEMAS ANATÓMICOS -->
   <div class="selector-bar">
     <div class="select-card active" id="card-1" onclick="loadStage(1)">
-      <span class="stage-num">Semana 4</span>
-      <span class="stage-name">Primitivo</span>
+      <span class="stage-num">Sistema</span>
+      <span class="stage-name">Esqueleto</span>
     </div>
     <div class="select-card" id="card-2" onclick="loadStage(2)">
-      <span class="stage-num">Semana 6</span>
-      <span class="stage-name">Saco Vitelino</span>
+      <span class="stage-num">Sistema</span>
+      <span class="stage-name">Muscular</span>
     </div>
     <div class="select-card" id="card-3" onclick="loadStage(3)">
-      <span class="stage-num">Semana 8</span>
-      <span class="stage-name">Umbilical</span>
+      <span class="stage-num">Sistema</span>
+      <span class="stage-name">Circulatorio</span>
     </div>
     <div class="select-card" id="card-4" onclick="loadStage(4)">
-      <span class="stage-num">Semana 12</span>
-      <span class="stage-name">Feto 3D</span>
+      <span class="stage-num">Sistema</span>
+      <span class="stage-name">Órganos</span>
     </div>
   </div>
 
   <div class="hud-info" id="infoBox">
-    <strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>
-    Morfología real sólida con tubo neural y curvatura cóncava.
+    <strong>SISTEMA ESQUELÉTICO</strong><br>
+    Estructura ósea completa con cráneo, caja torácica y columna vertebral.
   </div>
 
   <script>
@@ -123,23 +123,23 @@
     const infoBox = document.getElementById('infoBox');
     const cursor = document.getElementById('virtualCursor');
 
-    // Inicialización de cámara con manejo seguro de excepciones
+    // Inicialización de cámara
     async function initCamera() {
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error("API MediaDevices no soportada en este entorno");
+          throw new Error("API MediaDevices no soportada");
         }
         const constraints = { video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         return true;
       } catch (err) {
-        console.warn("Cámara no disponible. Se continuará en modo solo 3D:", err);
+        console.warn("Cámara no disponible. Modo 3D activo:", err);
         return false;
       }
     }
 
-    // Configuración del render 3D
+    // Configuración 3D
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -147,11 +147,10 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Luces para volumen orgánico
-    const light1 = new THREE.AmbientLight(0xffffff, 0.8);
+    const light1 = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(light1);
 
-    const light2 = new THREE.DirectionalLight(0xffdfd3, 1.2);
+    const light2 = new THREE.DirectionalLight(0xffffff, 1.2);
     light2.position.set(5, 5, 5);
     scene.add(light2);
 
@@ -159,104 +158,112 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    camera.position.set(-1.5, 0, 4.0);
+    camera.position.set(0, 0, 4.5);
 
-    // Materiales orgánicos opacos con deshabilitación estricta de wireframe
-    const embryoMat = new THREE.MeshStandardMaterial({ 
-      color: 0xf5d0c5, 
-      roughness: 0.3, 
-      metalness: 0.1,
-      wireframe: false 
-    });
-    const yolkMat = new THREE.MeshStandardMaterial({ 
-      color: 0xef4444, 
-      roughness: 0.3,
-      wireframe: false 
-    });
-    const cordMat = new THREE.MeshStandardMaterial({ 
-      color: 0x38bdf8, 
-      roughness: 0.4,
-      wireframe: false 
-    });
+    // Materiales Anatómicos
+    const boneMat = new THREE.MeshStandardMaterial({ color: 0xe5e5e5, roughness: 0.4, metalness: 0.1 });
+    const muscleMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.5, metalness: 0.1 });
+    const veinMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.3 });
+    const arteryMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.3 });
+    const organMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 });
 
+    // Grupo desplazado a un lado para no tapar el rostro
     let currentGroup = new THREE.Group();
+    currentGroup.position.set(-1.3, -0.4, 0); 
     scene.add(currentGroup);
 
-    // Modelos anatómicos sólidos
-    function buildStage1() {
+    // 1. Modelo de Esqueleto
+    function buildSkeleton() {
       const g = new THREE.Group();
-      const curve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-0.2, 0.9, 0),
-        new THREE.Vector3(-0.6, 0.3, 0),
-        new THREE.Vector3(-0.3, -0.4, 0),
-        new THREE.Vector3(0.3, -0.8, 0)
-      ]);
-      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.22, 20, false), embryoMat));
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 32), embryoMat);
-      head.position.set(-0.2, 0.9, 0);
-      g.add(head);
+      // Cráneo
+      const skull = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), boneMat);
+      skull.position.set(0, 1.2, 0);
+      skull.scale.set(1, 1.2, 1);
+      g.add(skull);
+
+      // Columna
+      const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.2, 16), boneMat);
+      spine.position.set(0, 0.3, 0);
+      g.add(spine);
+
+      // Torax / Costillas
+      for(let i = 0; i < 5; i++) {
+        const rib = new THREE.Mesh(new THREE.TorusGeometry(0.35 - (i*0.02), 0.03, 16, 32, Math.PI * 1.5), boneMat);
+        rib.rotation.x = Math.PI / 2;
+        rib.position.set(0, 0.7 - (i * 0.12), 0);
+        g.add(rib);
+      }
+
+      // Pelvis
+      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.2, 0.3, 16), boneMat);
+      pelvis.position.set(0, -0.4, 0);
+      g.add(pelvis);
+
       return g;
     }
 
-    function buildStage2() {
-      const g = new THREE.Group();
-      const curve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, 0.8, 0),
-        new THREE.Vector3(-0.5, 0.4, 0),
-        new THREE.Vector3(-0.3, -0.3, 0),
-        new THREE.Vector3(0.2, -0.7, 0)
-      ]);
-      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.3, 20, false), embryoMat));
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), embryoMat);
-      head.position.set(0, 0.8, 0);
-      g.add(head);
+    // 2. Modelo Sistema Muscular
+    function buildMuscular() {
+      const g = buildSkeleton(); // Base
+      // Músculos de Torso y Brazos
+      const chest = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 32), muscleMat);
+      chest.position.set(0, 0.55, 0.05);
+      chest.scale.set(1.1, 0.7, 0.6);
+      g.add(chest);
 
-      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), yolkMat);
-      yolk.position.set(0.2, -0.1, 0);
-      g.add(yolk);
+      const abs = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.28, 0.6, 16), muscleMat);
+      abs.position.set(0, 0.05, 0.05);
+      g.add(abs);
+
       return g;
     }
 
-    function buildStage3() {
+    // 3. Modelo Sistema Circulatorio
+    function buildCirculatory() {
       const g = new THREE.Group();
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 32, 32), embryoMat);
-      head.position.set(0, 0.6, 0);
-      g.add(head);
+      // Corazón
+      const heart = new THREE.Mesh(new THREE.SphereGeometry(0.18, 32, 32), arteryMat);
+      heart.position.set(0.05, 0.55, 0.1);
+      g.add(heart);
 
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 32), embryoMat);
-      body.position.set(0, -0.2, 0);
-      g.add(body);
+      // Red vascular primaria
+      const mainArtery = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 1.4, 16), arteryMat);
+      mainArtery.position.set(-0.03, 0.3, 0);
+      g.add(mainArtery);
 
-      const cordCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, -0.2, 0.2),
-        new THREE.Vector3(0.4, -0.4, 0.5),
-        new THREE.Vector3(0.7, -0.8, 0.2)
-      ]);
-      g.add(new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 32, 0.08, 16, false), cordMat));
+      const mainVein = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 1.4, 16), veinMat);
+      mainVein.position.set(0.03, 0.3, 0);
+      g.add(mainVein);
+
       return g;
     }
 
-    function buildStage4() {
+    // 4. Modelo Órganos Internos
+    function buildOrgans() {
       const g = new THREE.Group();
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), embryoMat);
-      head.position.set(0, 0.8, 0);
-      g.add(head);
+      // Pulmones
+      const lungL = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 32), organMat);
+      lungL.position.set(-0.2, 0.6, 0);
+      lungL.scale.set(0.8, 1.4, 0.8);
+      g.add(lungL);
 
-      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32), embryoMat);
-      torso.position.set(0, -0.1, 0);
-      g.add(torso);
+      const lungR = lungL.clone();
+      lungR.position.set(0.2, 0.6, 0);
+      g.add(lungR);
 
-      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16), embryoMat);
-      armL.position.set(-0.45, 0.1, 0.2);
-      armL.rotation.z = 0.5;
-      g.add(armL);
+      // Estómago e Intestinos
+      const stomach = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), organMat);
+      stomach.position.set(0, 0.1, 0);
+      stomach.scale.set(1.2, 0.9, 1);
+      g.add(stomach);
+
       return g;
     }
 
-    let activeModel = buildStage1();
+    let activeModel = buildSkeleton();
     currentGroup.add(activeModel);
 
-    // Cambio de etapas
+    // Cambiar de vista anatómica
     window.loadStage = function(stage) {
       document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
       const card = document.getElementById(`card-${stage}`);
@@ -265,23 +272,23 @@
       currentGroup.remove(activeModel);
 
       if (stage === 1) {
-        activeModel = buildStage1();
-        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Morfología real sólida con tubo neural y curvatura cóncava.";
+        activeModel = buildSkeleton();
+        infoBox.innerHTML = "<strong>SISTEMA ESQUELÉTICO</strong><br>Estructura ósea completa con cráneo, caja torácica y columna vertebral.";
       } else if (stage === 2) {
-        activeModel = buildStage2();
-        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Presencia de saco vitelino rojo vascularizado.";
+        activeModel = buildMuscular();
+        infoBox.innerHTML = "<strong>SISTEMA MUSCULAR</strong><br>Estructura muscular superficial y grupos de fuerza torso/extremidades.";
       } else if (stage === 3) {
-        activeModel = buildStage3();
-        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Diferenciación de tronco y cordón umbilical azul.";
+        activeModel = buildCirculatory();
+        infoBox.innerHTML = "<strong>SISTEMA CIRCULATORIO</strong><br>Red de arterias (rojo) y venas (azul) asociadas al núcleo cardíaco.";
       } else if (stage === 4) {
-        activeModel = buildStage4();
-        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Estructura fetal articulada en 3D opaco.";
+        activeModel = buildOrgans();
+        infoBox.innerHTML = "<strong>ÓRGANOS INTERNOS</strong><br>Visualización de cavidad torácica y abdominal (pulmones y sistema digestivo).";
       }
 
       currentGroup.add(activeModel);
     };
 
-    // Detección gestual desacoplada
+    // Control por gestos interactivos
     async function startGestureDetection() {
       const cameraOk = await initCamera();
       if (!cameraOk) return;
@@ -332,31 +339,31 @@
             try {
               await hands.send({ image: video }); 
             } catch (e) {
-              console.warn("Fallo puntual procesando frame de MediaPipe:", e);
+              console.warn("Error puntual en frame:", e);
             }
           },
           width: 640, height: 480
         });
         camUtils.start();
       } catch (err) {
-        console.warn("Error al inicializar la IA gestual:", err);
+        console.warn("Error en la inicialización de IA gestual:", err);
       }
     }
 
     startGestureDetection();
 
-    // Bucle de renderizado 3D principal
+    // Bucle de renderizado
     function animate() {
       requestAnimationFrame(animate);
       if (currentGroup) {
-        currentGroup.rotation.y += 0.005;
+        currentGroup.rotation.y += 0.008;
       }
       controls.update();
       renderer.render(scene, camera);
     }
     animate();
 
-    // Redimensionamiento adaptativo
+    // Redimensionamiento
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
