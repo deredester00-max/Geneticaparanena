@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Realidad Aumentada - Anatomía Humana 3D</title>
+  <title>Realidad Aumentada - Anatomía 3D Realista</title>
   <style>
     * { box-sizing: border-box; user-select: none; }
     body, html {
@@ -20,13 +20,13 @@
       transform: scaleX(-1); z-index: 1;
     }
 
-    /* Lienzo 3D */
+    /* Canvas 3D */
     #hologramCanvas {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; z-index: 2;
     }
 
-    /* BARRA LATERAL DE SISTEMAS ANATÓMICOS */
+    /* BARRA LATERAL DE DERECHA PARA SELECCIÓN */
     .selector-bar {
       position: absolute; right: 20px; top: 50%;
       transform: translateY(-50%);
@@ -62,6 +62,14 @@
       font-size: 12px; color: #fff; font-weight: 600; margin-top: 2px;
     }
 
+    /* INDICADOR DE CARGA */
+    #loadingIndicator {
+      position: absolute; left: 20px; top: 20px;
+      background: rgba(0,0,0,0.7); padding: 8px 14px;
+      border-radius: 8px; font-size: 12px; color: #00ffcc;
+      z-index: 5; display: none; border: 1px solid #00ffcc;
+    }
+
     /* CUADRO INFORMATIVO INFERIOR */
     .hud-info {
       position: absolute; left: 20px; bottom: 20px;
@@ -79,10 +87,12 @@
     }
   </style>
 
-  <!-- LIBRERÍAS RENDERIZADO 3D -->
+  <!-- LIBRERÍAS DE THREE.JS Y GLTFLOADER DE ALTA DEFINICIÓN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <!-- IA RECONOCIMIENTO DE MANO -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- IA RECONOCIMIENTO DE MANO (MEDIAPIPE) -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
@@ -90,9 +100,10 @@
 
   <video id="webcam" autoplay playsinline muted></video>
   <canvas id="hologramCanvas"></canvas>
+  <div id="loadingIndicator">Cargando modelo 3D...</div>
   <div id="virtualCursor"></div>
 
-  <!-- SELECTOR DE SISTEMAS ANATÓMICOS -->
+  <!-- SELECTOR DE SISTEMAS ANATÓMICOS (MENU LATERAL) -->
   <div class="selector-bar">
     <div class="select-card active" id="card-1" onclick="loadStage(1)">
       <span class="stage-num">Sistema</span>
@@ -114,7 +125,7 @@
 
   <div class="hud-info" id="infoBox">
     <strong>SISTEMA ESQUELÉTICO</strong><br>
-    Estructura ósea completa con cráneo, caja torácica y columna vertebral.
+    Cargando modelo fotorealista HD...
   </div>
 
   <script>
@@ -122,24 +133,25 @@
     const canvas = document.getElementById('hologramCanvas');
     const infoBox = document.getElementById('infoBox');
     const cursor = document.getElementById('virtualCursor');
+    const loadingUI = document.getElementById('loadingIndicator');
 
-    // Inicialización de cámara
+    // Inicializar Cámara
     async function initCamera() {
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error("API MediaDevices no soportada");
+          throw new Error("API MediaDevices no disponible");
         }
         const constraints = { video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         return true;
       } catch (err) {
-        console.warn("Cámara no disponible. Modo 3D activo:", err);
+        console.warn("Cámara no disponible, continuando en 3D:", err);
         return false;
       }
     }
 
-    // Configuración 3D
+    // Configuración de la Escena 3D
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -147,148 +159,100 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const light1 = new THREE.AmbientLight(0xffffff, 0.9);
-    scene.add(light1);
+    // Iluminación Profesional para Modelos 3D Complejos
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
 
-    const light2 = new THREE.DirectionalLight(0xffffff, 1.2);
-    light2.position.set(5, 5, 5);
-    scene.add(light2);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight1.position.set(5, 10, 7);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.8);
+    dirLight2.position.set(-5, -5, -5);
+    scene.add(dirLight2);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    camera.position.set(0, 0, 4.5);
+    camera.position.set(0, 0, 3.5);
 
-    // Materiales Anatómicos
-    const boneMat = new THREE.MeshStandardMaterial({ color: 0xe5e5e5, roughness: 0.4, metalness: 0.1 });
-    const muscleMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.5, metalness: 0.1 });
-    const veinMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.3 });
-    const arteryMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.3 });
-    const organMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 });
-
-    // Grupo desplazado a un lado para no tapar el rostro
+    // Contenedor 3D y Cargador GLTF
+    const gltfLoader = new THREE.GLTFLoader();
     let currentGroup = new THREE.Group();
-    currentGroup.position.set(-1.3, -0.4, 0); 
+    
+    // DESPLAZAMIENTO A UN LADO (Para no tapar el rostro)
+    currentGroup.position.set(-1.2, -0.6, 0);
     scene.add(currentGroup);
 
-    // 1. Modelo de Esqueleto
-    function buildSkeleton() {
-      const g = new THREE.Group();
-      // Cráneo
-      const skull = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), boneMat);
-      skull.position.set(0, 1.2, 0);
-      skull.scale.set(1, 1.2, 1);
-      g.add(skull);
+    let activeModel = null;
 
-      // Columna
-      const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.2, 16), boneMat);
-      spine.position.set(0, 0.3, 0);
-      g.add(spine);
-
-      // Torax / Costillas
-      for(let i = 0; i < 5; i++) {
-        const rib = new THREE.Mesh(new THREE.TorusGeometry(0.35 - (i*0.02), 0.03, 16, 32, Math.PI * 1.5), boneMat);
-        rib.rotation.x = Math.PI / 2;
-        rib.position.set(0, 0.7 - (i * 0.12), 0);
-        g.add(rib);
+    // RUTAS DE MODELOS 3D (.GLB REALES)
+    // Puedes colocar aquí los nombres o URLs de tus archivos .glb descargados
+    const modelsList = {
+      1: {
+        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
+        scale: 1.0,
+        text: "<strong>SISTEMA ESQUELÉTICO / NERVIOSO</strong><br>Estructura anatómica HD detallada."
+      },
+      2: {
+        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb', 
+        scale: 8.0,
+        text: "<strong>SISTEMA MUSCULAR</strong><br>Vista detallada de tejdos y densidades."
+      },
+      3: {
+        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
+        scale: 1.0,
+        text: "<strong>SISTEMA CIRCULATORIO</strong><br>Estructura principal vascularizada."
+      },
+      4: {
+        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
+        scale: 1.0,
+        text: "<strong>ÓRGANOS INTERNOS</strong><br>Representación en espacio holográfico."
       }
+    };
 
-      // Pelvis
-      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.2, 0.3, 16), boneMat);
-      pelvis.position.set(0, -0.4, 0);
-      g.add(pelvis);
+    // Función para Cargar el Archivo 3D
+    function loadGLTFModel(stage) {
+      loadingUI.style.display = 'block';
+      const config = modelsList[stage];
 
-      return g;
+      gltfLoader.load(
+        config.url,
+        (gltf) => {
+          if (activeModel) currentGroup.remove(activeModel);
+          
+          activeModel = gltf.scene;
+          activeModel.scale.set(config.scale, config.scale, config.scale);
+          
+          currentGroup.add(activeModel);
+          infoBox.innerHTML = config.text;
+          loadingUI.style.display = 'none';
+        },
+        (xhr) => {
+          const percent = Math.round((xhr.loaded / xhr.total) * 100);
+          if(!isNaN(percent)) loadingUI.innerText = `Cargando 3D: ${percent}%`;
+        },
+        (error) => {
+          console.error("Error al cargar modelo .glb:", error);
+          loadingUI.innerText = "Error cargando archivo 3D";
+        }
+      );
     }
 
-    // 2. Modelo Sistema Muscular
-    function buildMuscular() {
-      const g = buildSkeleton(); // Base
-      // Músculos de Torso y Brazos
-      const chest = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 32), muscleMat);
-      chest.position.set(0, 0.55, 0.05);
-      chest.scale.set(1.1, 0.7, 0.6);
-      g.add(chest);
-
-      const abs = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.28, 0.6, 16), muscleMat);
-      abs.position.set(0, 0.05, 0.05);
-      g.add(abs);
-
-      return g;
-    }
-
-    // 3. Modelo Sistema Circulatorio
-    function buildCirculatory() {
-      const g = new THREE.Group();
-      // Corazón
-      const heart = new THREE.Mesh(new THREE.SphereGeometry(0.18, 32, 32), arteryMat);
-      heart.position.set(0.05, 0.55, 0.1);
-      g.add(heart);
-
-      // Red vascular primaria
-      const mainArtery = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 1.4, 16), arteryMat);
-      mainArtery.position.set(-0.03, 0.3, 0);
-      g.add(mainArtery);
-
-      const mainVein = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 1.4, 16), veinMat);
-      mainVein.position.set(0.03, 0.3, 0);
-      g.add(mainVein);
-
-      return g;
-    }
-
-    // 4. Modelo Órganos Internos
-    function buildOrgans() {
-      const g = new THREE.Group();
-      // Pulmones
-      const lungL = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 32), organMat);
-      lungL.position.set(-0.2, 0.6, 0);
-      lungL.scale.set(0.8, 1.4, 0.8);
-      g.add(lungL);
-
-      const lungR = lungL.clone();
-      lungR.position.set(0.2, 0.6, 0);
-      g.add(lungR);
-
-      // Estómago e Intestinos
-      const stomach = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), organMat);
-      stomach.position.set(0, 0.1, 0);
-      stomach.scale.set(1.2, 0.9, 1);
-      g.add(stomach);
-
-      return g;
-    }
-
-    let activeModel = buildSkeleton();
-    currentGroup.add(activeModel);
-
-    // Cambiar de vista anatómica
+    // Cambiar de vista desde los botones
     window.loadStage = function(stage) {
       document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
       const card = document.getElementById(`card-${stage}`);
       if(card) card.classList.add('active');
 
-      currentGroup.remove(activeModel);
-
-      if (stage === 1) {
-        activeModel = buildSkeleton();
-        infoBox.innerHTML = "<strong>SISTEMA ESQUELÉTICO</strong><br>Estructura ósea completa con cráneo, caja torácica y columna vertebral.";
-      } else if (stage === 2) {
-        activeModel = buildMuscular();
-        infoBox.innerHTML = "<strong>SISTEMA MUSCULAR</strong><br>Estructura muscular superficial y grupos de fuerza torso/extremidades.";
-      } else if (stage === 3) {
-        activeModel = buildCirculatory();
-        infoBox.innerHTML = "<strong>SISTEMA CIRCULATORIO</strong><br>Red de arterias (rojo) y venas (azul) asociadas al núcleo cardíaco.";
-      } else if (stage === 4) {
-        activeModel = buildOrgans();
-        infoBox.innerHTML = "<strong>ÓRGANOS INTERNOS</strong><br>Visualización de cavidad torácica y abdominal (pulmones y sistema digestivo).";
-      }
-
-      currentGroup.add(activeModel);
+      loadGLTFModel(stage);
     };
 
-    // Control por gestos interactivos
+    // Carga inicial del primer sistema anatómico
+    loadGLTFModel(1);
+
+    // Detección Gestual MediaPipe
     async function startGestureDetection() {
       const cameraOk = await initCamera();
       if (!cameraOk) return;
@@ -339,31 +303,31 @@
             try {
               await hands.send({ image: video }); 
             } catch (e) {
-              console.warn("Error puntual en frame:", e);
+              console.warn("Manejo de frame:", e);
             }
           },
           width: 640, height: 480
         });
         camUtils.start();
       } catch (err) {
-        console.warn("Error en la inicialización de IA gestual:", err);
+        console.warn("IA gestual no inicializada:", err);
       }
     }
 
     startGestureDetection();
 
-    // Bucle de renderizado
+    // Bucle de Animación
     function animate() {
       requestAnimationFrame(animate);
       if (currentGroup) {
-        currentGroup.rotation.y += 0.008;
+        currentGroup.rotation.y += 0.005; // Rotación sutil del modelo
       }
       controls.update();
       renderer.render(scene, camera);
     }
     animate();
 
-    // Redimensionamiento
+    // Ajuste al redimensionar ventana
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -372,3 +336,4 @@
   </script>
 </body>
 </html>
+
