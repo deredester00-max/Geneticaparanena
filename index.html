@@ -3,109 +3,204 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Filtros</title>
+  <title>Filtros y Detección de Mano</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background-color: #0d0d0d;
-      color: white;
-      font-family: Arial, sans-serif;
+      background-color: #0b0f19;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-align: center;
       margin: 0;
-      padding: 20px;
+      padding: 15px;
     }
-    .badge {
-      background-color: #6b21a8;
-      padding: 5px 12px;
-      border-radius: 12px;
-      font-size: 12px;
+    h2 {
+      margin: 5px 0 15px 0;
+      font-size: 20px;
+    }
+    .container {
+      position: relative;
       display: inline-block;
-      margin-bottom: 10px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      max-width: 100%;
     }
     canvas {
-      border-radius: 16px;
-      max-width: 90%;
+      display: block;
+      max-width: 100%;
       height: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
     video {
-      display: none; /* Mantenemos el video oculto y mostramos solo el canvas */
+      display: none;
+    }
+    /* Barra Flotante de Filtros */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .filter-btn {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: #6366f1;
+      color: #fff;
+      border-color: #818cf8;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
     }
   </style>
+
+  <!-- Librerías de MediaPipe Hands (Detección de dedos ultra rápida) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <h2>Portal de Filtros</h2>
-  <div class="badge">Filtro: Escala de Grises</div>
-  <br>
+  <h2>Portal de Filtros & Rastreo</h2>
 
-  <!-- Elemento de video oculto para recibir el stream de la cámara -->
-  <video id="webcam" autoplay playsinline></video>
-  
-  <!-- Canvas visible donde procesamos todo a máxima velocidad -->
-  <canvas id="outputCanvas"></canvas>
+  <div class="container">
+    <video id="webcam" playsinline></video>
+    <canvas id="outputCanvas"></canvas>
+  </div>
+
+  <!-- Botones de Filtro -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('grayscale')">Grises</button>
+    <button class="filter-btn" onclick="setFilter('sepia')">Sepia</button>
+    <button class="filter-btn" onclick="setFilter('cyberpunk')">Cyberpunk</button>
+    <button class="filter-btn" onclick="setFilter('invert')">Neón / Invertido</button>
+    <button class="filter-btn" onclick="setFilter('contrast')">B&N Dramático</button>
+    <button class="filter-btn" onclick="setFilter('none')">Sin Filtro</button>
+  </div>
 
   <script>
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('outputCanvas');
     const ctx = canvas.getContext('2d');
+    let currentFilter = 'grayscale';
 
-    // Inicializar la cámara web
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
-          audio: false
-        });
-        video.srcObject = stream;
-        video.onloadedmetadata = () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          renderFrame(); // Iniciar ciclo de renderizado ultra rápido
-        };
-      } catch (err) {
-        console.error("Error al acceder a la cámara:", err);
+    // 1. Configurar MediaPipe Hands
+    const hands = new Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    });
+
+    hands.setOptions({
+      maxNumHands: 2,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+
+    hands.onResults(onResults);
+
+    // 2. Activar Cámara Web
+    const camera = new Camera(video, {
+      onFrame: async () => {
+        await hands.send({ image: video });
+      },
+      width: 640,
+      height: 480
+    });
+    camera.start();
+
+    // 3. Selección de Filtros CSS
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function getFilterStyle() {
+      switch (currentFilter) {
+        case 'grayscale': return 'grayscale(100%) contrast(1.1)';
+        case 'sepia': return 'sepia(100%) contrast(1.1)';
+        case 'cyberpunk': return 'hue-rotate(280deg) saturate(200%) contrast(1.2)';
+        case 'invert': return 'invert(100%) hue-rotate(180deg)';
+        case 'contrast': return 'grayscale(100%) contrast(200%) brightness(90%)';
+        case 'none': return 'none';
+        default: return 'none';
       }
     }
 
-    function renderFrame() {
-      // 1. Limpiar el canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 4. Ciclo principal de procesamiento
+    function onResults(results) {
+      canvas.width = results.image.width;
+      canvas.height = results.image.height;
 
-      // 2. Aplicar el filtro súper rápido (Nativo de GPU)
-      ctx.filter = 'grayscale(100%)'; 
+      // Dibujar imagen con el filtro activo en GPU (ultra fluido)
+      ctx.save();
+      ctx.filter = getFilterStyle();
+      ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
 
-      // 3. Dibujar el video en el canvas
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Detectar y enmarcar la mano si aparece
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        for (const landmarks of results.multiHandLandmarks) {
+          let minX = canvas.width, minY = canvas.height;
+          let maxX = 0, maxY = 0;
 
-      // 4. Restaurar el filtro a 'none' para que no afecte el recuadro u otros elementos
-      ctx.filter = 'none';
+          // Calcular límites de los 4 dedos y el pulgar
+          landmarks.forEach(point => {
+            const x = point.x * canvas.width;
+            const y = point.y * canvas.height;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          });
 
-      // 5. Dibujar el recuadro (Box)
-      drawBoundingBox();
+          // Margen/Padding alrededor de la mano
+          const pad = 20;
+          minX = Math.max(0, minX - pad);
+          minY = Math.max(0, minY - pad);
+          maxX = Math.min(canvas.width, maxX + pad);
+          maxY = Math.min(canvas.height, maxY + pad);
 
-      // 6. Solicitar el siguiente fotograma a la velocidad de actualización de la pantalla (~60fps)
-      requestAnimationFrame(renderFrame);
+          // Dibujar cuadroHUD elegante
+          drawCyberBox(minX, minY, maxX - minX, maxY - minY);
+        }
+      }
     }
 
-    function drawBoundingBox() {
-      // Ejemplo de coordenadas (ajusta según la detección de tu modelo de IA o valores fijos)
-      const x = canvas.width * 0.25;
-      const y = canvas.height * 0.2;
-      const width = canvas.width * 0.5;
-      const height = canvas.height * 0.6;
+    // 5. Dibujar recuadro cibernético moderno
+    function drawCyberBox(x, y, w, h) {
+      const lineLen = Math.min(w, h) * 0.25;
+      ctx.strokeStyle = '#00f3ff';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
 
-      // Configuración del estilo del recuadro
-      ctx.strokeStyle = '#00ffcc'; // Color del borde visible
-      ctx.lineWidth = 4;           // Grosor del borde
-      ctx.strokeRect(x, y, width, height); // Dibujar borde rectáungulo
+      ctx.beginPath();
+      // Esquina Superior-Izquierda
+      ctx.moveTo(x, y + lineLen); ctx.lineTo(x, y); ctx.lineTo(x + lineLen, y);
+      // Esquina Superior-Derecha
+      ctx.moveTo(x + w - lineLen, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + lineLen);
+      // Esquina Inferior-Derecha
+      ctx.moveTo(x + w, y + h - lineLen); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w - lineLen, y + h);
+      // Esquina Inferior-Izquierda
+      ctx.moveTo(x + lineLen, y + h); ctx.lineTo(x, y + h); ctx.lineTo(x, y + h - lineLen);
+      ctx.stroke();
 
-      // Opcional: Texto sobre el recuadro
-      ctx.fillStyle = '#00ffcc';
-      ctx.font = '16px Arial';
-      ctx.fillText('Rostro Detectado', x, y - 8);
+      // Texto flotante
+      ctx.fillStyle = '#00f3ff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('MANO DETECTADA', x + 4, y - 8);
     }
-
-    startCamera();
   </script>
 </body>
 </html>
