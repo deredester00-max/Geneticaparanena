@@ -3,337 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Embriología Holográfica 3D</title>
+  <title>Holograma Embriológico Interactivo 3D</title>
   <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-    }
+    * { box-sizing: border-box; user-select: none; }
     body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #000;
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      overflow: hidden; background-color: #020617;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #38bdf8;
     }
 
-    /* Video de la cámara 100% normal sin ningún filtro */
+    /* Video de la cara normal sin filtros */
     #webcam {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1); /* Modo espejo natural */
-      z-index: 1;
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      transform: scaleX(-1); z-index: 1;
     }
 
-    /* Lienzo para los hologramas 3D interactivos */
+    /* Canvas para los hologramas 3D y puntero gestual */
     #hologramCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 2;
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; z-index: 2;
     }
 
-    /* Panel UI de Control Futurista */
+    /* Menú Holográfico Flotante Estilo Star Wars */
     .hud-panel {
-      position: absolute;
-      right: 15px;
-      top: 20px;
-      width: 260px;
-      background: rgba(10, 15, 30, 0.85);
-      border: 1px solid #0284c7;
-      border-radius: 12px;
-      padding: 14px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
-      z-index: 3;
+      position: absolute; right: 20px; top: 50%;
+      transform: translateY(-50%); width: 260px;
+      background: rgba(10, 15, 30, 0.85); border: 1px solid #0284c7;
+      border-radius: 12px; padding: 14px; backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(2, 132, 199, 0.4); z-index: 3;
     }
 
     .hud-title {
-      font-size: 13px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #7dd3fc;
-      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
-      padding-bottom: 8px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
+      font-size: 13px; font-weight: bold; letter-spacing: 1.5px;
+      color: #7dd3fc; border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      padding-bottom: 8px; margin-bottom: 10px;
     }
 
     .hud-btn {
-      width: 100%;
-      background: rgba(2, 132, 199, 0.1);
-      border: 1px solid #38bdf8;
-      color: #e0f2fe;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      width: 100%; background: rgba(2, 132, 199, 0.15);
+      border: 1px solid #38bdf8; color: #e0f2fe; padding: 10px 12px;
+      margin-bottom: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      text-align: left; cursor: pointer; transition: all 0.2s ease;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
-    .hud-btn:hover, .hud-btn.active {
-      background: rgba(56, 189, 248, 0.35);
-      border-color: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-      transform: translateX(-3px);
+    .hud-btn:hover, .hud-btn.active, .hud-btn.hover-gesture {
+      background: rgba(56, 189, 248, 0.4); border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6); transform: translateX(-4px);
     }
 
-    /* Cuadro Informativo Inferior */
     .hud-info {
-      position: absolute;
-      left: 15px;
-      bottom: 20px;
-      background: rgba(10, 15, 30, 0.85);
-      border-left: 3px solid #38bdf8;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #e0f2fe;
-      z-index: 3;
-      max-width: 320px;
-      border-radius: 0 8px 8px 0;
-      backdrop-filter: blur(8px);
+      position: absolute; left: 20px; bottom: 20px;
+      background: rgba(10, 15, 30, 0.85); border-left: 3px solid #38bdf8;
+      padding: 10px 14px; font-size: 12px; color: #e0f2fe; z-index: 3;
+      max-width: 300px; border-radius: 0 8px 8px 0; backdrop-filter: blur(8px);
     }
 
-    .instructions {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: rgba(0,0,0,0.5);
-      color: #38bdf8;
-      padding: 6px 12px;
-      font-size: 11px;
-      border-radius: 6px;
-      z-index: 3;
+    /* Puntero virtual controlado por el dedo */
+    #virtualCursor {
+      position: absolute; width: 20px; height: 20px;
+      border: 2px solid #00ffcc; border-radius: 50%;
+      background: rgba(0, 255, 204, 0.3); pointer-events: none;
+      z-index: 10; transform: translate(-50%, -50%); display: none;
     }
 
     @media (max-width: 768px) {
-      .hud-panel {
-        top: auto;
-        bottom: 15px;
-        right: 15px;
-        width: 220px;
-      }
+      .hud-panel { right: 10px; top: auto; bottom: 10px; transform: none; width: 220px; }
       .hud-info { display: none; }
     }
   </style>
 
-  <!-- Motores 3D y Control de Cámara -->
+  <!-- Motores 3D y Detección de Gestos por Inteligencia Artificial -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <!-- Cámara en vivo normal -->
+  <!-- Video limpia de la cara -->
   <video id="webcam" autoplay playsinline muted></video>
 
   <!-- Lienzo de Hologramas 3D -->
   <canvas id="hologramCanvas"></canvas>
 
-  <div class="instructions">🖱️ Toca y arrastra para girar / zoom en 3D</div>
+  <!-- Cursor flotante en el aire -->
+  <div id="virtualCursor"></div>
 
-  <!-- Menú Estilo Star Wars -->
+  <!-- Panel de Control Holográfico -->
   <div class="hud-panel">
-    <div class="hud-title">EMBRIOLOGÍA 3D</div>
-    <button class="hud-btn active" onclick="loadStage(1, this)">
-      1. Fecundación <span>DÍA 1</span>
+    <div class="hud-title">EMBRIOLOGÍA HOLOGRÁFICA</div>
+    <button class="hud-btn active" id="btn-1" onclick="loadStage(1)">
+      1. Embrión Primitivo <span>SEM 4</span>
     </button>
-    <button class="hud-btn" onclick="loadStage(2, this)">
-      2. Mórula <span>DÍA 4</span>
+    <button class="hud-btn" id="btn-2" onclick="loadStage(2)">
+      2. Embrión Humano <span>SEM 6</span>
     </button>
-    <button class="hud-btn" onclick="loadStage(3, this)">
-      3. Blastocisto <span>DÍA 7</span>
+    <button class="hud-btn" id="btn-3" onclick="loadStage(3)">
+      3. Embrión Avanzado <span>SEM 8</span>
     </button>
-    <button class="hud-btn" onclick="loadStage(4, this)">
-      4. Embrión Humano <span>SEM 6</span>
+    <button class="hud-btn" id="btn-4" onclick="loadStage(4)">
+      4. Feto Desarrollado <span>SEM 12</span>
     </button>
   </div>
 
   <div class="hud-info" id="infoBox">
-    <strong>ETAPA 1: FECUNDACIÓN (ZIGOTO)</strong><br>
-    Unión del óvulo y el espermatozoide. Se muestra el núcleo rodeado de la zona pelúcida.
+    <strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>
+    Estructura inicial en curva con somitas, tubo neural y cola embrionaria temprana.
   </div>
 
   <script>
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('hologramCanvas');
     const infoBox = document.getElementById('infoBox');
+    const cursor = document.getElementById('virtualCursor');
 
-    // 1. Iniciar cámara limpia sin filtros
+    // 1. Activar Cámara
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
         });
         video.srcObject = stream;
-      } catch (e) {
-        console.error("Error al cargar la cámara", e);
+      } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
       }
     }
     startCamera();
 
-    // 2. Escena 3D con Three.js
+    // 2. Configurar Escena 3D (Three.js)
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Permitir rotación, zoom y desplazamiento 3D libre con dedos o ratón
+    // Controles para rotar en 3D libremente con el mouse/dedo
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    camera.position.set(1.5, 0, 3.5); // Posicionar a la derecha para dar espacio al rostro
+    camera.position.set(-1.2, 0, 3.8); // Alineado para dejar espacio al rostro
 
-    // Material Holográfico
-    const holoMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00f3ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.75
-    });
-
-    const innerMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff0088,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.85
-    });
+    // Materiales Neón Holográficos
+    const holoMaterial = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.8 });
+    const innerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0077, wireframe: true, transparent: true, opacity: 0.9 });
 
     let currentGroup = new THREE.Group();
     scene.add(currentGroup);
 
-    // 3. Modelos 3D Detallados
-    function buildZygote() {
+    // 3. Modelos 3D Anatómicos Embriológicos
+    function buildStage1() { // Embrión temprano
       const group = new THREE.Group();
-      // Zona Pelúcida (Exterior)
-      const outer = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 24), holoMaterial);
-      group.add(outer);
-      // Pronúcleo (Interior)
-      const core1 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), innerMaterial);
-      core1.position.set(-0.2, 0, 0);
-      const core2 = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), innerMaterial);
-      core2.position.set(0.25, 0.1, 0);
-      group.add(core1);
-      group.add(core2);
-      return group;
-    }
-
-    function buildMorula() {
-      const group = new THREE.Group();
-      const numCells = 16;
-      for (let i = 0; i < numCells; i++) {
-        const cell = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 12), holoMaterial);
-        const phi = Math.acos(-1 + (2 * i) / numCells);
-        const theta = Math.sqrt(numCells * Math.PI) * phi;
-        cell.position.setFromSphericalCoords(0.65, phi, theta);
-        group.add(cell);
-      }
-      return group;
-    }
-
-    function buildBlastocyst() {
-      const group = new THREE.Group();
-      // Trofoblasto (Capa externa)
-      const outer = new THREE.Mesh(new THREE.SphereGeometry(1.1, 24, 24), holoMaterial);
-      group.add(outer);
-      // Embrioblasto (Masa celular interna acumulada a un lado)
-      const innerGroup = new THREE.Group();
-      for(let i=0; i<8; i++){
-        const cell = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), innerMaterial);
-        cell.position.set(-0.6 + (Math.random()*0.3), -0.2 + (Math.random()*0.3), (Math.random()*0.3)-0.15);
-        innerGroup.add(cell);
-      }
-      group.add(innerGroup);
-      return group;
-    }
-
-    function buildEmbryo() {
-      const group = new THREE.Group();
-      
-      // Estructura C-curvada del embrión
       const curve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, 0.9, 0),
-        new THREE.Vector3(-0.5, 0.5, 0),
-        new THREE.Vector3(-0.4, -0.3, 0),
-        new THREE.Vector3(0.2, -0.8, 0)
+        new THREE.Vector3(-0.2, 0.9, 0),
+        new THREE.Vector3(-0.6, 0.3, 0),
+        new THREE.Vector3(-0.3, -0.4, 0),
+        new THREE.Vector3(0.3, -0.8, 0)
       ]);
-      const body = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.28, 12, false), holoMaterial);
+      const body = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.22, 12, false), holoMaterial);
+      group.add(body);
+      
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), holoMaterial);
+      head.position.set(-0.2, 0.9, 0);
+      group.add(head);
+      return group;
+    }
+
+    function buildStage2() { // Embrión 6 semanas con saco y extremidades
+      const group = new THREE.Group();
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0.8, 0),
+        new THREE.Vector3(-0.5, 0.4, 0),
+        new THREE.Vector3(-0.3, -0.3, 0),
+        new THREE.Vector3(0.2, -0.7, 0)
+      ]);
+      const body = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.3, 12, false), holoMaterial);
       group.add(body);
 
-      // Cabeza prominente
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), holoMaterial);
-      head.position.set(0, 0.9, 0);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), holoMaterial);
+      head.position.set(0, 0.8, 0);
       group.add(head);
 
-      // Saco vitelino (Estructura circular inferior)
-      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), innerMaterial);
-      yolk.position.set(0.2, -0.1, 0);
-      group.add(yolk);
-
-      // Salientes de extremidades (Brotación de brazos y piernas)
-      const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), innerMaterial);
+      // Brotes de manos y pies
+      const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), innerMaterial);
       arm.position.set(-0.35, 0.2, 0.2);
       group.add(arm);
 
+      // Saco vitelino
+      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), innerMaterial);
+      yolk.position.set(0.2, -0.1, 0);
+      group.add(yolk);
+
       return group;
     }
 
-    // Cargar primera etapa por defecto
-    let activeModel = buildZygote();
+    function buildStage3() { // Embrión 8 Semanas
+      const group = new THREE.Group();
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 20, 20), holoMaterial);
+      head.position.set(0, 0.6, 0);
+      group.add(head);
+
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 16), holoMaterial);
+      body.position.set(0, -0.2, 0);
+      group.add(body);
+
+      // Cordón umbilical
+      const cordCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, -0.2, 0.2),
+        new THREE.Vector3(0.4, -0.4, 0.5),
+        new THREE.Vector3(0.7, -0.8, 0.2)
+      ]);
+      const cord = new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 20, 0.08, 8, false), innerMaterial);
+      group.add(cord);
+
+      return group;
+    }
+
+    function buildStage4() { // Feto 12 Semanas
+      const group = new THREE.Group();
+      // Cabeza desarrollada
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 24, 24), holoMaterial);
+      head.position.set(0, 0.8, 0);
+      group.add(head);
+
+      // Torso
+      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 20, 20), holoMaterial);
+      torso.position.set(0, -0.1, 0);
+      group.add(torso);
+
+      // Extremidades articuladas (Brazos y Piernas)
+      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), innerMaterial);
+      armL.position.set(-0.45, 0.1, 0.2);
+      armL.rotation.z = 0.5;
+      group.add(armL);
+
+      const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), innerMaterial);
+      armR.position.set(0.45, 0.1, 0.2);
+      armR.rotation.z = -0.5;
+      group.add(armR);
+
+      return group;
+    }
+
+    let activeModel = buildStage1();
     currentGroup.add(activeModel);
 
-    // 4. Cambiar etapas al presionar botones
-    window.loadStage = function(stage, btn) {
+    // 4. Cambiar Etapas del Embrión
+    window.loadStage = function(stage) {
       document.querySelectorAll('.hud-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      const activeBtn = document.getElementById(`btn-${stage}`);
+      if(activeBtn) activeBtn.classList.add('active');
 
       currentGroup.remove(activeModel);
 
       if (stage === 1) {
-        activeModel = buildZygote();
-        infoBox.innerHTML = "<strong>ETAPA 1: FECUNDACIÓN (ZIGOTO)</strong><br>Unión del óvulo y el espermatozoide. Se muestra el núcleo rodeado de la zona pelúcida.";
+        activeModel = buildStage1();
+        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Estructura inicial en curva con somitas, tubo neural y cola embrionaria temprana.";
       } else if (stage === 2) {
-        activeModel = buildMorula();
-        infoBox.innerHTML = "<strong>ETAPA 2: MÓRULA</strong><br>Masa de 16 blastómeros compactados formando una estructura tipo mora.";
+        activeModel = buildStage2();
+        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Formación del saco vitelino, brotes de extremidades y formación de vesículas cerebrales.";
       } else if (stage === 3) {
-        activeModel = buildBlastocyst();
-        infoBox.innerHTML = "<strong>ETAPA 3: BLASTOCISTO</strong><br>Formación del trofoblasto (capa exterior) y la masa celular interna.";
+        activeModel = buildStage3();
+        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Diferenciación de cabeza y cuerpo con presencia de cordón umbilical.";
       } else if (stage === 4) {
-        activeModel = buildEmbryo();
-        infoBox.innerHTML = "<strong>ETAPA 4: EMBRIÓN (SEM 6)</strong><br>Curvatura en 'C' con saco vitelino, formación de cabeza y primordios de miembros.";
+        activeModel = buildStage4();
+        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Extremidades articuladas, cara formada y postura fetal articulada.";
       }
 
       currentGroup.add(activeModel);
     };
 
-    // 5. Renderizado constante y rotación holográfica
+    // 5. Reconocimiento de Gestos con la Mano (Presionar en el Aire)
+    let isPinching = false;
+    const hands = new Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    });
+
+    hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5 });
+    hands.onResults(onHandResults);
+
+    const cameraUtils = new Camera(video, {
+      onFrame: async () => { await hands.send({ image: video }); },
+      width: 640, height: 480
+    });
+    cameraUtils.start();
+
+    function onHandResults(results) {
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const landmarks = results.multiHandLandmarks[0];
+
+        // Posición del dedo índice (Punto 8)
+        const indexX = (1 - landmarks[8].x) * window.innerWidth;
+        const indexY = landmarks[8].y * window.innerHeight;
+
+        // Posición del dedo pulgar (Punto 4)
+        const thumbX = (1 - landmarks[4].x) * window.innerWidth;
+        const thumbY = landmarks[4].y * window.innerHeight;
+
+        // Mostrar puntero flotante
+        cursor.style.display = 'block';
+        cursor.style.left = `${indexX}px`;
+        cursor.style.top = `${indexY}px`;
+
+        // Calcular distancia entre el índice y el pulgar para detectar "Clic en el aire"
+        const distance = Math.hypot(indexX - thumbX, indexY - thumbY);
+
+        // Detectar hover sobre los botones flotantes
+        document.querySelectorAll('.hud-btn').forEach(btn => {
+          const rect = btn.getBoundingClientRect();
+          if (indexX >= rect.left && indexX <= rect.right && indexY >= rect.top && indexY <= rect.bottom) {
+            btn.classList.add('hover-gesture');
+
+            // Si junta los dedos (distancia < 35px), hacer CLIC VIRTUAL
+            if (distance < 35 && !isPinching) {
+              isPinching = true;
+              btn.click(); // Presionar automáticamente el botón seleccionado
+              cursor.style.borderColor = '#ff0077';
+            }
+          } else {
+            btn.classList.remove('hover-gesture');
+          }
+        });
+
+        if (distance >= 35) {
+          isPinching = false;
+          cursor.style.borderColor = '#00ffcc';
+        }
+
+      } else {
+        cursor.style.display = 'none';
+      }
+    }
+
+    // 6. Bucle de Animación 3D
     function animate() {
       requestAnimationFrame(animate);
-
-      // Rotación suave del holograma
       if (currentGroup) {
-        currentGroup.rotation.y += 0.005;
+        currentGroup.rotation.y += 0.005; // Rotación constante estilo holograma
       }
-
       controls.update();
       renderer.render(scene, camera);
     }
