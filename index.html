@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Selector Anatómico de Embriología 3D</title>
+  <title>Realidad Aumentada - Embriología 3D</title>
   <style>
     * { box-sizing: border-box; user-select: none; }
     body, html {
@@ -13,25 +13,25 @@
       color: #38bdf8;
     }
 
-    /* Video de la cámara normal limpia */
+    /* Cámara de video */
     #webcam {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; object-fit: cover;
       transform: scaleX(-1); z-index: 1;
     }
 
-    /* Canvas de renderizado 3D */
+    /* Lienzo 3D */
     #hologramCanvas {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; z-index: 2;
     }
 
-    /* BARRA SUPERIOR DE NAVEGACIÓN Y SELECCIÓN */
+    /* BARRA SUPERIOR DE ETAPAS */
     .selector-bar {
       position: absolute; top: 15px; left: 50%;
       transform: translateX(-50%);
-      display: flex; gap: 10px;
-      background: rgba(10, 15, 30, 0.85);
+      display: flex; gap: 8px;
+      background: rgba(10, 15, 30, 0.9);
       padding: 8px 12px; border-radius: 16px;
       border: 1px solid rgba(56, 189, 248, 0.4);
       backdrop-filter: blur(10px);
@@ -39,20 +39,19 @@
     }
 
     .select-card {
-      background: rgba(2, 132, 199, 0.15);
+      background: rgba(2, 132, 199, 0.2);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 10px;
-      padding: 8px 12px; min-width: 100px;
+      padding: 8px 12px; min-width: 90px;
       text-align: center; cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       display: flex; flex-direction: column; align-items: center;
     }
 
     .select-card:hover, .select-card.active, .select-card.hover-gesture {
-      background: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.5);
       border-color: #00ffcc;
       box-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
-      transform: translateY(-2px);
     }
 
     .select-card .stage-num {
@@ -60,24 +59,10 @@
     }
 
     .select-card .stage-name {
-      font-size: 12px; color: #fff; font-weight: 600; margin-top: 2px;
+      font-size: 11px; color: #fff; font-weight: 600; margin-top: 2px;
     }
 
-    /* PANEL DERECHO INTERACTIVO */
-    .hud-panel {
-      position: absolute; right: 20px; top: 50%;
-      transform: translateY(-50%); width: 240px;
-      background: rgba(10, 15, 30, 0.85); border: 1px solid #0284c7;
-      border-radius: 12px; padding: 14px; backdrop-filter: blur(8px);
-      box-shadow: 0 0 20px rgba(2, 132, 199, 0.4); z-index: 3;
-    }
-
-    .hud-title {
-      font-size: 12px; font-weight: bold; letter-spacing: 1.5px;
-      color: #7dd3fc; border-bottom: 1px solid rgba(56, 189, 248, 0.3);
-      padding-bottom: 8px; margin-bottom: 10px;
-    }
-
+    /* CUADRO INFORMATIVO INFERIOR */
     .hud-info {
       position: absolute; left: 20px; bottom: 20px;
       background: rgba(10, 15, 30, 0.85); border-left: 3px solid #38bdf8;
@@ -85,37 +70,29 @@
       max-width: 320px; border-radius: 0 8px 8px 0; backdrop-filter: blur(8px);
     }
 
-    /* Puntero virtual para gestos */
+    /* PUNTERO VIRTUAL PARA GESTOS */
     #virtualCursor {
       position: absolute; width: 22px; height: 22px;
       border: 2px solid #00ffcc; border-radius: 50%;
       background: rgba(0, 255, 204, 0.3); pointer-events: none;
       z-index: 10; transform: translate(-50%, -50%); display: none;
     }
-
-    @media (max-width: 768px) {
-      .hud-panel { display: none; }
-      .hud-info { bottom: 10px; left: 10px; right: 10px; max-width: none; }
-    }
   </style>
 
+  <!-- LIBRERÍAS RENDERIZADO 3D -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- IA RECONOCIMIENTO DE MANO -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <!-- Video limpia de la cara -->
   <video id="webcam" autoplay playsinline muted></video>
-
-  <!-- Lienzo de renderizado 3D -->
   <canvas id="hologramCanvas"></canvas>
-
-  <!-- Puntero gestual flotante -->
   <div id="virtualCursor"></div>
 
-  <!-- SELECTOR DE FASES EN LAPARTE SUPERIOR -->
+  <!-- SELECTOR DE ETAPAS -->
   <div class="selector-bar">
     <div class="select-card active" id="card-1" onclick="loadStage(1)">
       <span class="stage-num">Semana 4</span>
@@ -127,25 +104,17 @@
     </div>
     <div class="select-card" id="card-3" onclick="loadStage(3)">
       <span class="stage-num">Semana 8</span>
-      <span class="stage-name">Cordón Umbilical</span>
+      <span class="stage-name">Umbilical</span>
     </div>
     <div class="select-card" id="card-4" onclick="loadStage(4)">
       <span class="stage-num">Semana 12</span>
-      <span class="stage-name">Feto Completo</span>
-    </div>
-  </div>
-
-  <!-- DETALLES LATERALES -->
-  <div class="hud-panel">
-    <div class="hud-title">VISUALIZACIÓN ANATÓMICA</div>
-    <div style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
-      Selecciona cualquier etapa del menú superior o mediante gestos en el aire para cambiar la capa anatómica en 3D.
+      <span class="stage-name">Feto 3D</span>
     </div>
   </div>
 
   <div class="hud-info" id="infoBox">
     <strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>
-    Morfología inicial opaca con curvatura en 'C', somitas y tubo neural.
+    Morfología real sólida con tubo neural y curvatura cóncava.
   </div>
 
   <script>
@@ -154,20 +123,23 @@
     const infoBox = document.getElementById('infoBox');
     const cursor = document.getElementById('virtualCursor');
 
-    // 1. Activar cámara sin filtros
-    async function startCamera() {
+    // Inicialización de cámara con manejo seguro de excepciones
+    async function initCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
-        });
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error("API MediaDevices no soportada en este entorno");
+        }
+        const constraints = { video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
+        return true;
       } catch (err) {
-        console.error("Error cámara:", err);
+        console.warn("Cámara no disponible. Se continuará en modo solo 3D:", err);
+        return false;
       }
     }
-    startCamera();
 
-    // 2. Renderizador 3D e Iluminación Sólida
+    // Configuración del render 3D
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -175,183 +147,205 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
+    // Luces para volumen orgánico
+    const light1 = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(light1);
 
-    const dirLight = new THREE.DirectionalLight(0xffe0ce, 1.3);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
+    const light2 = new THREE.DirectionalLight(0xffdfd3, 1.2);
+    light2.position.set(5, 5, 5);
+    scene.add(light2);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    camera.position.set(-1.6, 0, 4.0);
+    camera.position.set(-1.5, 0, 4.0);
 
-    // Materiales Anatómicos Sólidos Opacos
-    const embryoMaterial = new THREE.MeshStandardMaterial({ color: 0xf5d0c5, roughness: 0.4, metalness: 0.1 });
-    const yolkMaterial = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.1 });
-    const cordMaterial = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5, metalness: 0.1 });
+    // Materiales orgánicos opacos con deshabilitación estricta de wireframe
+    const embryoMat = new THREE.MeshStandardMaterial({ 
+      color: 0xf5d0c5, 
+      roughness: 0.3, 
+      metalness: 0.1,
+      wireframe: false 
+    });
+    const yolkMat = new THREE.MeshStandardMaterial({ 
+      color: 0xef4444, 
+      roughness: 0.3,
+      wireframe: false 
+    });
+    const cordMat = new THREE.MeshStandardMaterial({ 
+      color: 0x38bdf8, 
+      roughness: 0.4,
+      wireframe: false 
+    });
 
     let currentGroup = new THREE.Group();
     scene.add(currentGroup);
 
-    // 3. Estructuras de las Fases del Embrión
+    // Modelos anatómicos sólidos
     function buildStage1() {
-      const group = new THREE.Group();
+      const g = new THREE.Group();
       const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-0.2, 0.9, 0),
         new THREE.Vector3(-0.6, 0.3, 0),
         new THREE.Vector3(-0.3, -0.4, 0),
         new THREE.Vector3(0.3, -0.8, 0)
       ]);
-      group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.22, 20, false), embryoMaterial));
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 32), embryoMaterial);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.22, 20, false), embryoMat));
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 32), embryoMat);
       head.position.set(-0.2, 0.9, 0);
-      group.add(head);
-      return group;
+      g.add(head);
+      return g;
     }
 
     function buildStage2() {
-      const group = new THREE.Group();
+      const g = new THREE.Group();
       const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0.8, 0),
         new THREE.Vector3(-0.5, 0.4, 0),
         new THREE.Vector3(-0.3, -0.3, 0),
         new THREE.Vector3(0.2, -0.7, 0)
       ]);
-      group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.3, 20, false), embryoMaterial));
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), embryoMaterial);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.3, 20, false), embryoMat));
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), embryoMat);
       head.position.set(0, 0.8, 0);
-      group.add(head);
+      g.add(head);
 
-      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), yolkMaterial);
+      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), yolkMat);
       yolk.position.set(0.2, -0.1, 0);
-      group.add(yolk);
-      return group;
+      g.add(yolk);
+      return g;
     }
 
     function buildStage3() {
-      const group = new THREE.Group();
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 32, 32), embryoMaterial);
+      const g = new THREE.Group();
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 32, 32), embryoMat);
       head.position.set(0, 0.6, 0);
-      group.add(head);
+      g.add(head);
 
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 32), embryoMaterial);
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 32), embryoMat);
       body.position.set(0, -0.2, 0);
-      group.add(body);
+      g.add(body);
 
       const cordCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, -0.2, 0.2),
         new THREE.Vector3(0.4, -0.4, 0.5),
         new THREE.Vector3(0.7, -0.8, 0.2)
       ]);
-      group.add(new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 32, 0.08, 16, false), cordMaterial));
-      return group;
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 32, 0.08, 16, false), cordMat));
+      return g;
     }
 
     function buildStage4() {
-      const group = new THREE.Group();
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), embryoMaterial);
+      const g = new THREE.Group();
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), embryoMat);
       head.position.set(0, 0.8, 0);
-      group.add(head);
+      g.add(head);
 
-      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32), embryoMaterial);
+      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32), embryoMat);
       torso.position.set(0, -0.1, 0);
-      group.add(torso);
+      g.add(torso);
 
-      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16), embryoMaterial);
+      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16), embryoMat);
       armL.position.set(-0.45, 0.1, 0.2);
       armL.rotation.z = 0.5;
-      group.add(armL);
-      return group;
+      g.add(armL);
+      return g;
     }
 
     let activeModel = buildStage1();
     currentGroup.add(activeModel);
 
-    // 4. Función para cambiar entre etapas al seleccionar
+    // Cambio de etapas
     window.loadStage = function(stage) {
       document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
-      const activeCard = document.getElementById(`card-${stage}`);
-      if(activeCard) activeCard.classList.add('active');
+      const card = document.getElementById(`card-${stage}`);
+      if(card) card.classList.add('active');
 
       currentGroup.remove(activeModel);
 
       if (stage === 1) {
         activeModel = buildStage1();
-        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Morfología inicial en 'C' con somitas y tubo neural.";
+        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Morfología real sólida con tubo neural y curvatura cóncava.";
       } else if (stage === 2) {
         activeModel = buildStage2();
-        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Aparece el saco vitelino vascularizado y los brotes de los miembros.";
+        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Presencia de saco vitelino rojo vascularizado.";
       } else if (stage === 3) {
         activeModel = buildStage3();
-        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Formación del cordón umbilical y cabeza diferenciada del cuerpo.";
+        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Diferenciación de tronco y cordón umbilical azul.";
       } else if (stage === 4) {
         activeModel = buildStage4();
-        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Anatomía completa del feto con brazos y piernas articulares.";
+        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Estructura fetal articulada en 3D opaco.";
       }
 
       currentGroup.add(activeModel);
     };
 
-    // 5. Gestos virtuales mediante la mano
-    let isPinching = false;
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
+    // Detección gestual desacoplada
+    async function startGestureDetection() {
+      const cameraOk = await initCamera();
+      if (!cameraOk) return;
 
-    hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5 });
-    hands.onResults(onHandResults);
+      try {
+        let isPinching = false;
+        const hands = new Hands({
+          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
 
-    const cameraUtils = new Camera(video, {
-      onFrame: async () => { await hands.send({ image: video }); },
-      width: 640, height: 480
-    });
-    cameraUtils.start();
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5 });
+        hands.onResults((results) => {
+          if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            const lm = results.multiHandLandmarks[0];
 
-    function onHandResults(results) {
-      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        const landmarks = results.multiHandLandmarks[0];
+            const indexX = (1 - lm[8].x) * window.innerWidth;
+            const indexY = lm[8].y * window.innerHeight;
+            const thumbX = (1 - lm[4].x) * window.innerWidth;
+            const thumbY = lm[4].y * window.innerHeight;
 
-        const indexX = (1 - landmarks[8].x) * window.innerWidth;
-        const indexY = landmarks[8].y * window.innerHeight;
+            cursor.style.display = 'block';
+            cursor.style.left = `${indexX}px`;
+            cursor.style.top = `${indexY}px`;
 
-        const thumbX = (1 - landmarks[4].x) * window.innerWidth;
-        const thumbY = landmarks[4].y * window.innerHeight;
+            const dist = Math.hypot(indexX - thumbX, indexY - thumbY);
 
-        cursor.style.display = 'block';
-        cursor.style.left = `${indexX}px`;
-        cursor.style.top = `${indexY}px`;
+            document.querySelectorAll('.select-card').forEach(card => {
+              const rect = card.getBoundingClientRect();
+              if (indexX >= rect.left && indexX <= rect.right && indexY >= rect.top && indexY <= rect.bottom) {
+                card.classList.add('hover-gesture');
+                if (dist < 35 && !isPinching) {
+                  isPinching = true;
+                  card.click();
+                }
+              } else {
+                card.classList.remove('hover-gesture');
+              }
+            });
 
-        const distance = Math.hypot(indexX - thumbX, indexY - thumbY);
-
-        document.querySelectorAll('.select-card').forEach(card => {
-          const rect = card.getBoundingClientRect();
-          if (indexX >= rect.left && indexX <= rect.right && indexY >= rect.top && indexY <= rect.bottom) {
-            card.classList.add('hover-gesture');
-
-            if (distance < 35 && !isPinching) {
-              isPinching = true;
-              card.click();
-              cursor.style.borderColor = '#ff0077';
-            }
+            if (dist >= 35) isPinching = false;
           } else {
-            card.classList.remove('hover-gesture');
+            cursor.style.display = 'none';
           }
         });
 
-        if (distance >= 35) {
-          isPinching = false;
-          cursor.style.borderColor = '#00ffcc';
-        }
-
-      } else {
-        cursor.style.display = 'none';
+        const camUtils = new Camera(video, {
+          onFrame: async () => { 
+            try {
+              await hands.send({ image: video }); 
+            } catch (e) {
+              console.warn("Fallo puntual procesando frame de MediaPipe:", e);
+            }
+          },
+          width: 640, height: 480
+        });
+        camUtils.start();
+      } catch (err) {
+        console.warn("Error al inicializar la IA gestual:", err);
       }
     }
 
-    // 6. Animación y renderizado
+    startGestureDetection();
+
+    // Bucle de renderizado 3D principal
     function animate() {
       requestAnimationFrame(animate);
       if (currentGroup) {
@@ -362,6 +356,7 @@
     }
     animate();
 
+    // Redimensionamiento adaptativo
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
