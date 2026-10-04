@@ -3,79 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Holograma Embriológico Interactivo 3D</title>
+  <title>Selector Anatómico de Embriología 3D</title>
   <style>
     * { box-sizing: border-box; user-select: none; }
     body, html {
       margin: 0; padding: 0; width: 100%; height: 100%;
-      overflow: hidden; background-color: #020617;
+      overflow: hidden; background-color: #000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #38bdf8;
     }
 
-    /* Video de la cara normal sin filtros */
+    /* Video de la cámara normal limpia */
     #webcam {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; object-fit: cover;
       transform: scaleX(-1); z-index: 1;
     }
 
-    /* Canvas para los hologramas 3D y puntero gestual */
+    /* Canvas de renderizado 3D */
     #hologramCanvas {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; z-index: 2;
     }
 
-    /* Menú Holográfico Flotante Estilo Star Wars */
+    /* BARRA SUPERIOR DE NAVEGACIÓN Y SELECCIÓN */
+    .selector-bar {
+      position: absolute; top: 15px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 10px;
+      background: rgba(10, 15, 30, 0.85);
+      padding: 8px 12px; border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      backdrop-filter: blur(10px);
+      z-index: 4; max-width: 95%; overflow-x: auto;
+    }
+
+    .select-card {
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      padding: 8px 12px; min-width: 100px;
+      text-align: center; cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .select-card:hover, .select-card.active, .select-card.hover-gesture {
+      background: rgba(56, 189, 248, 0.4);
+      border-color: #00ffcc;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .select-card .stage-num {
+      font-size: 10px; color: #7dd3fc; font-weight: bold; text-transform: uppercase;
+    }
+
+    .select-card .stage-name {
+      font-size: 12px; color: #fff; font-weight: 600; margin-top: 2px;
+    }
+
+    /* PANEL DERECHO INTERACTIVO */
     .hud-panel {
       position: absolute; right: 20px; top: 50%;
-      transform: translateY(-50%); width: 260px;
+      transform: translateY(-50%); width: 240px;
       background: rgba(10, 15, 30, 0.85); border: 1px solid #0284c7;
       border-radius: 12px; padding: 14px; backdrop-filter: blur(8px);
       box-shadow: 0 0 20px rgba(2, 132, 199, 0.4); z-index: 3;
     }
 
     .hud-title {
-      font-size: 13px; font-weight: bold; letter-spacing: 1.5px;
+      font-size: 12px; font-weight: bold; letter-spacing: 1.5px;
       color: #7dd3fc; border-bottom: 1px solid rgba(56, 189, 248, 0.3);
       padding-bottom: 8px; margin-bottom: 10px;
-    }
-
-    .hud-btn {
-      width: 100%; background: rgba(2, 132, 199, 0.15);
-      border: 1px solid #38bdf8; color: #e0f2fe; padding: 10px 12px;
-      margin-bottom: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
-      text-align: left; cursor: pointer; transition: all 0.2s ease;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-
-    .hud-btn:hover, .hud-btn.active, .hud-btn.hover-gesture {
-      background: rgba(56, 189, 248, 0.4); border-color: #38bdf8;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6); transform: translateX(-4px);
     }
 
     .hud-info {
       position: absolute; left: 20px; bottom: 20px;
       background: rgba(10, 15, 30, 0.85); border-left: 3px solid #38bdf8;
       padding: 10px 14px; font-size: 12px; color: #e0f2fe; z-index: 3;
-      max-width: 300px; border-radius: 0 8px 8px 0; backdrop-filter: blur(8px);
+      max-width: 320px; border-radius: 0 8px 8px 0; backdrop-filter: blur(8px);
     }
 
-    /* Puntero virtual controlado por el dedo */
+    /* Puntero virtual para gestos */
     #virtualCursor {
-      position: absolute; width: 20px; height: 20px;
+      position: absolute; width: 22px; height: 22px;
       border: 2px solid #00ffcc; border-radius: 50%;
       background: rgba(0, 255, 204, 0.3); pointer-events: none;
       z-index: 10; transform: translate(-50%, -50%); display: none;
     }
 
     @media (max-width: 768px) {
-      .hud-panel { right: 10px; top: auto; bottom: 10px; transform: none; width: 220px; }
-      .hud-info { display: none; }
+      .hud-panel { display: none; }
+      .hud-info { bottom: 10px; left: 10px; right: 10px; max-width: none; }
     }
   </style>
 
-  <!-- Motores 3D y Detección de Gestos por Inteligencia Artificial -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -86,32 +109,43 @@
   <!-- Video limpia de la cara -->
   <video id="webcam" autoplay playsinline muted></video>
 
-  <!-- Lienzo de Hologramas 3D -->
+  <!-- Lienzo de renderizado 3D -->
   <canvas id="hologramCanvas"></canvas>
 
-  <!-- Cursor flotante en el aire -->
+  <!-- Puntero gestual flotante -->
   <div id="virtualCursor"></div>
 
-  <!-- Panel de Control Holográfico -->
+  <!-- SELECTOR DE FASES EN LAPARTE SUPERIOR -->
+  <div class="selector-bar">
+    <div class="select-card active" id="card-1" onclick="loadStage(1)">
+      <span class="stage-num">Semana 4</span>
+      <span class="stage-name">Primitivo</span>
+    </div>
+    <div class="select-card" id="card-2" onclick="loadStage(2)">
+      <span class="stage-num">Semana 6</span>
+      <span class="stage-name">Saco Vitelino</span>
+    </div>
+    <div class="select-card" id="card-3" onclick="loadStage(3)">
+      <span class="stage-num">Semana 8</span>
+      <span class="stage-name">Cordón Umbilical</span>
+    </div>
+    <div class="select-card" id="card-4" onclick="loadStage(4)">
+      <span class="stage-num">Semana 12</span>
+      <span class="stage-name">Feto Completo</span>
+    </div>
+  </div>
+
+  <!-- DETALLES LATERALES -->
   <div class="hud-panel">
-    <div class="hud-title">EMBRIOLOGÍA HOLOGRÁFICA</div>
-    <button class="hud-btn active" id="btn-1" onclick="loadStage(1)">
-      1. Embrión Primitivo <span>SEM 4</span>
-    </button>
-    <button class="hud-btn" id="btn-2" onclick="loadStage(2)">
-      2. Embrión Humano <span>SEM 6</span>
-    </button>
-    <button class="hud-btn" id="btn-3" onclick="loadStage(3)">
-      3. Embrión Avanzado <span>SEM 8</span>
-    </button>
-    <button class="hud-btn" id="btn-4" onclick="loadStage(4)">
-      4. Feto Desarrollado <span>SEM 12</span>
-    </button>
+    <div class="hud-title">VISUALIZACIÓN ANATÓMICA</div>
+    <div style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
+      Selecciona cualquier etapa del menú superior o mediante gestos en el aire para cambiar la capa anatómica en 3D.
+    </div>
   </div>
 
   <div class="hud-info" id="infoBox">
     <strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>
-    Estructura inicial en curva con somitas, tubo neural y cola embrionaria temprana.
+    Morfología inicial opaca con curvatura en 'C', somitas y tubo neural.
   </div>
 
   <script>
@@ -120,7 +154,7 @@
     const infoBox = document.getElementById('infoBox');
     const cursor = document.getElementById('virtualCursor');
 
-    // 1. Activar Cámara
+    // 1. Activar cámara sin filtros
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -128,12 +162,12 @@
         });
         video.srcObject = stream;
       } catch (err) {
-        console.error("Error al acceder a la cámara:", err);
+        console.error("Error cámara:", err);
       }
     }
     startCamera();
 
-    // 2. Configurar Escena 3D (Three.js)
+    // 2. Renderizador 3D e Iluminación Sólida
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -141,22 +175,29 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Controles para rotar en 3D libremente con el mouse/dedo
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffe0ce, 1.3);
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
+
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    camera.position.set(-1.2, 0, 3.8); // Alineado para dejar espacio al rostro
+    camera.position.set(-1.6, 0, 4.0);
 
-    // Materiales Neón Holográficos
-    const holoMaterial = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.8 });
-    const innerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0077, wireframe: true, transparent: true, opacity: 0.9 });
+    // Materiales Anatómicos Sólidos Opacos
+    const embryoMaterial = new THREE.MeshStandardMaterial({ color: 0xf5d0c5, roughness: 0.4, metalness: 0.1 });
+    const yolkMaterial = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.1 });
+    const cordMaterial = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5, metalness: 0.1 });
 
     let currentGroup = new THREE.Group();
     scene.add(currentGroup);
 
-    // 3. Modelos 3D Anatómicos Embriológicos
-    function buildStage1() { // Embrión temprano
+    // 3. Estructuras de las Fases del Embrión
+    function buildStage1() {
       const group = new THREE.Group();
       const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-0.2, 0.9, 0),
@@ -164,16 +205,14 @@
         new THREE.Vector3(-0.3, -0.4, 0),
         new THREE.Vector3(0.3, -0.8, 0)
       ]);
-      const body = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.22, 12, false), holoMaterial);
-      group.add(body);
-      
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), holoMaterial);
+      group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.22, 20, false), embryoMaterial));
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 32), embryoMaterial);
       head.position.set(-0.2, 0.9, 0);
       group.add(head);
       return group;
     }
 
-    function buildStage2() { // Embrión 6 semanas con saco y extremidades
+    function buildStage2() {
       const group = new THREE.Group();
       const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0.8, 0),
@@ -181,103 +220,82 @@
         new THREE.Vector3(-0.3, -0.3, 0),
         new THREE.Vector3(0.2, -0.7, 0)
       ]);
-      const body = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.3, 12, false), holoMaterial);
-      group.add(body);
-
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), holoMaterial);
+      group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.3, 20, false), embryoMaterial));
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), embryoMaterial);
       head.position.set(0, 0.8, 0);
       group.add(head);
 
-      // Brotes de manos y pies
-      const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), innerMaterial);
-      arm.position.set(-0.35, 0.2, 0.2);
-      group.add(arm);
-
-      // Saco vitelino
-      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), innerMaterial);
+      const yolk = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), yolkMaterial);
       yolk.position.set(0.2, -0.1, 0);
       group.add(yolk);
-
       return group;
     }
 
-    function buildStage3() { // Embrión 8 Semanas
+    function buildStage3() {
       const group = new THREE.Group();
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 20, 20), holoMaterial);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.65, 32, 32), embryoMaterial);
       head.position.set(0, 0.6, 0);
       group.add(head);
 
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 16), holoMaterial);
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.25, 1.2, 32), embryoMaterial);
       body.position.set(0, -0.2, 0);
       group.add(body);
 
-      // Cordón umbilical
       const cordCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, -0.2, 0.2),
         new THREE.Vector3(0.4, -0.4, 0.5),
         new THREE.Vector3(0.7, -0.8, 0.2)
       ]);
-      const cord = new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 20, 0.08, 8, false), innerMaterial);
-      group.add(cord);
-
+      group.add(new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 32, 0.08, 16, false), cordMaterial));
       return group;
     }
 
-    function buildStage4() { // Feto 12 Semanas
+    function buildStage4() {
       const group = new THREE.Group();
-      // Cabeza desarrollada
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 24, 24), holoMaterial);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), embryoMaterial);
       head.position.set(0, 0.8, 0);
       group.add(head);
 
-      // Torso
-      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 20, 20), holoMaterial);
+      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32), embryoMaterial);
       torso.position.set(0, -0.1, 0);
       group.add(torso);
 
-      // Extremidades articuladas (Brazos y Piernas)
-      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), innerMaterial);
+      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16), embryoMaterial);
       armL.position.set(-0.45, 0.1, 0.2);
       armL.rotation.z = 0.5;
       group.add(armL);
-
-      const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.6), innerMaterial);
-      armR.position.set(0.45, 0.1, 0.2);
-      armR.rotation.z = -0.5;
-      group.add(armR);
-
       return group;
     }
 
     let activeModel = buildStage1();
     currentGroup.add(activeModel);
 
-    // 4. Cambiar Etapas del Embrión
+    // 4. Función para cambiar entre etapas al seleccionar
     window.loadStage = function(stage) {
-      document.querySelectorAll('.hud-btn').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`btn-${stage}`);
-      if(activeBtn) activeBtn.classList.add('active');
+      document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
+      const activeCard = document.getElementById(`card-${stage}`);
+      if(activeCard) activeCard.classList.add('active');
 
       currentGroup.remove(activeModel);
 
       if (stage === 1) {
         activeModel = buildStage1();
-        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Estructura inicial en curva con somitas, tubo neural y cola embrionaria temprana.";
+        infoBox.innerHTML = "<strong>ETAPA 1: EMBRIÓN PRIMITIVO (SEM 4)</strong><br>Morfología inicial en 'C' con somitas y tubo neural.";
       } else if (stage === 2) {
         activeModel = buildStage2();
-        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Formación del saco vitelino, brotes de extremidades y formación de vesículas cerebrales.";
+        infoBox.innerHTML = "<strong>ETAPA 2: EMBRIÓN HUMANO (SEM 6)</strong><br>Aparece el saco vitelino vascularizado y los brotes de los miembros.";
       } else if (stage === 3) {
         activeModel = buildStage3();
-        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Diferenciación de cabeza y cuerpo con presencia de cordón umbilical.";
+        infoBox.innerHTML = "<strong>ETAPA 3: EMBRIÓN AVANZADO (SEM 8)</strong><br>Formación del cordón umbilical y cabeza diferenciada del cuerpo.";
       } else if (stage === 4) {
         activeModel = buildStage4();
-        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Extremidades articuladas, cara formada y postura fetal articulada.";
+        infoBox.innerHTML = "<strong>ETAPA 4: FETO DESARROLLADO (SEM 12)</strong><br>Anatomía completa del feto con brazos y piernas articulares.";
       }
 
       currentGroup.add(activeModel);
     };
 
-    // 5. Reconocimiento de Gestos con la Mano (Presionar en el Aire)
+    // 5. Gestos virtuales mediante la mano
     let isPinching = false;
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -296,36 +314,30 @@
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
 
-        // Posición del dedo índice (Punto 8)
         const indexX = (1 - landmarks[8].x) * window.innerWidth;
         const indexY = landmarks[8].y * window.innerHeight;
 
-        // Posición del dedo pulgar (Punto 4)
         const thumbX = (1 - landmarks[4].x) * window.innerWidth;
         const thumbY = landmarks[4].y * window.innerHeight;
 
-        // Mostrar puntero flotante
         cursor.style.display = 'block';
         cursor.style.left = `${indexX}px`;
         cursor.style.top = `${indexY}px`;
 
-        // Calcular distancia entre el índice y el pulgar para detectar "Clic en el aire"
         const distance = Math.hypot(indexX - thumbX, indexY - thumbY);
 
-        // Detectar hover sobre los botones flotantes
-        document.querySelectorAll('.hud-btn').forEach(btn => {
-          const rect = btn.getBoundingClientRect();
+        document.querySelectorAll('.select-card').forEach(card => {
+          const rect = card.getBoundingClientRect();
           if (indexX >= rect.left && indexX <= rect.right && indexY >= rect.top && indexY <= rect.bottom) {
-            btn.classList.add('hover-gesture');
+            card.classList.add('hover-gesture');
 
-            // Si junta los dedos (distancia < 35px), hacer CLIC VIRTUAL
             if (distance < 35 && !isPinching) {
               isPinching = true;
-              btn.click(); // Presionar automáticamente el botón seleccionado
+              card.click();
               cursor.style.borderColor = '#ff0077';
             }
           } else {
-            btn.classList.remove('hover-gesture');
+            card.classList.remove('hover-gesture');
           }
         });
 
@@ -339,11 +351,11 @@
       }
     }
 
-    // 6. Bucle de Animación 3D
+    // 6. Animación y renderizado
     function animate() {
       requestAnimationFrame(animate);
       if (currentGroup) {
-        currentGroup.rotation.y += 0.005; // Rotación constante estilo holograma
+        currentGroup.rotation.y += 0.005;
       }
       controls.update();
       renderer.render(scene, camera);
