@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             background-color: #f4f4f9;
             color: #333;
         }
@@ -17,7 +17,7 @@
             max-width: 800px;
             margin: 0 auto;
             background: #fff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
@@ -30,24 +30,36 @@
             margin-bottom: 20px;
             border: 1px solid #ccc;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 10px;
-            align-items: center;
+            z-index: 1000;
+        }
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         button {
-            padding: 10px 15px;
+            padding: 10px 14px;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
             color: white;
             cursor: pointer;
             font-weight: bold;
+            flex: 1;
+            min-width: 100px;
         }
         button:hover { background-color: #0056b3; }
         button#stop { background-color: #dc3545; }
         button#stop:hover { background-color: #a71d2a; }
-        label { font-weight: bold; }
-        select, input { padding: 5px; }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label { font-weight: bold; font-size: 14px; }
+        select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
         h1, h2 { color: #1a365d; }
         .resumen { background: #e8f4f8; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0; }
     </style>
@@ -59,18 +71,28 @@
 
     <!-- Controles de Audio -->
     <div class="controls">
-        <button onclick="leerTexto()">▶ Leer</button>
-        <button onclick="pausarTexto()">⏸ Pausar / Reanudar</button>
-        <button id="stop" onclick="detenerTexto()">⏹ Detener</button>
+        <div class="buttons">
+            <button onclick="leerTexto()">▶ Leer</button>
+            <button onclick="pausarTexto()">⏸ Pausar</button>
+            <button id="stop" onclick="detenerTexto()">⏹ Detener</button>
+        </div>
 
-        <div>
-            <label for="velocidad">Velocidad:</label>
-            <select id="velocidad" onchange="cambiarVelocidad()">
-                <option value="0.75">0.75x (Lenta / Más entendible)</option>
-                <option value="1" selected>1.0x (Normal)</option>
-                <option value="1.25">1.25x (Moderada)</option>
-                <option value="1.5">1.5x (Rápida)</option>
-            </select>
+        <div class="options">
+            <div>
+                <label for="selectVoz">Voz del sistema:</label>
+                <select id="selectVoz" style="width: 100%;">
+                    <option value="">Cargando voces...</option>
+                </select>
+            </div>
+            <div>
+                <label for="velocidad">Velocidad:</label>
+                <select id="velocidad" style="width: 100%;" onchange="cambiarVelocidad()">
+                    <option value="0.75">0.75x (Lenta / Entendible)</option>
+                    <option value="1" selected>1.0x (Normal)</option>
+                    <option value="1.25">1.25x (Moderada)</option>
+                    <option value="1.5">1.5x (Rápida)</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -109,26 +131,60 @@
 </div>
 
 <script>
-    let synth = window.speechSynthesis;
-    let utterance = null;
+    const synth = window.speechSynthesis;
+    const selectVoz = document.getElementById('selectVoz');
+    let voces = [];
+
+    function cargarVoces() {
+        voces = synth.getVoices();
+        selectVoz.innerHTML = '';
+
+        // Filtrar preferiblemente voces en español
+        const vocesEspanol = voces.filter(v => v.lang.startsWith('es'));
+        const listaAMostrar = vocesEspanol.length > 0 ? vocesEspanol : voces;
+
+        listaAMostrar.forEach((voz) => {
+            const option = document.createElement('option');
+            option.textContent = `${voz.name} (${voz.lang})`;
+            option.value = voz.name;
+            selectVoz.appendChild(option);
+        });
+
+        if (selectVoz.options.length === 0) {
+            const option = document.createElement('option');
+            option.textContent = "Voz por defecto del sistema";
+            selectVoz.appendChild(option);
+        }
+    }
+
+    // Cargar voces inmediatamente y cuando cambien en el sistema
+    cargarVoces();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = cargarVoces;
+    }
 
     function leerTexto() {
-        if (synth.speaking && synth.paused) {
-            synth.resume();
-            return;
+        if (synth.speaking) {
+            if (synth.paused) {
+                synth.resume();
+                return;
+            } else {
+                synth.cancel();
+            }
         }
-        
-        synth.cancel(); // Detener lecturas previas
 
-        let texto = document.getElementById('contenido').innerText;
-        utterance = new SpeechSynthesisUtterance(texto);
-        
-        // Configurar idioma a español
+        const texto = document.getElementById('contenido').innerText;
+        const utterance = new SpeechSynthesisUtterance(texto);
+
+        // Seleccionar la voz elegida
+        const nombreVoz = selectVoz.value;
+        const vozSeleccionada = voces.find(v => v.name === nombreVoz);
+        if (vozSeleccionada) {
+            utterance.voice = vozSeleccionada;
+        }
+
         utterance.lang = 'es-ES';
-        
-        // Configurar velocidad seleccionada
-        let vel = parseFloat(document.getElementById('velocidad').value);
-        utterance.rate = vel;
+        utterance.rate = parseFloat(document.getElementById('velocidad').value);
 
         synth.speak(utterance);
     }
