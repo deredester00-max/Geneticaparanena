@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lector de Embriología</title>
+
+    <!-- Librería externa de voz asegurada para móviles -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,7 +41,6 @@
         .buttons {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
         button {
             padding: 12px 14px;
@@ -55,7 +58,7 @@
         .options {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
         }
         label { font-weight: bold; font-size: 14px; }
         select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 15px; background: #fff; }
@@ -71,18 +74,13 @@
     <!-- Controles -->
     <div class="controls">
         <div class="buttons">
-            <button id="btnPlay">▶ Leer</button>
-            <button id="btnPause">⏸ Pausar</button>
-            <button id="stop">⏹ Detener</button>
+            <button onclick="leerTexto()">▶ Leer</button>
+            <button onclick="pausarTexto()">⏸ Pausar / Reanudar</button>
+            <button id="stop" onclick="detenerTexto()">⏹ Detener</button>
         </div>
 
         <div class="options">
-            <label for="selectVoz">Voz de lectura:</label>
-            <select id="selectVoz">
-                <option value="">Selecciona una voz...</option>
-            </select>
-
-            <label for="velocidad">Velocidad:</label>
+            <label for="velocidad">Velocidad de lectura:</label>
             <select id="velocidad">
                 <option value="0.75">0.75x (Lenta / Entendible)</option>
                 <option value="1" selected>1.0x (Normal)</option>
@@ -127,70 +125,31 @@
 </div>
 
 <script>
-    const synth = window.speechSynthesis;
-    const selectVoz = document.getElementById('selectVoz');
-    let voces = [];
+    function leerTexto() {
+        var texto = document.getElementById('contenido').innerText;
+        var vel = parseFloat(document.getElementById('velocidad').value);
 
-    function cargarVoces() {
-        voces = synth.getVoices();
-        selectVoz.innerHTML = '';
-
-        // Filtrar voces en español
-        const vocesEspanol = voces.filter(v => v.lang.toLowerCase().includes('es'));
-        const listaFinal = vocesEspanol.length > 0 ? vocesEspanol : voces;
-
-        listaFinal.forEach((voz) => {
-            const option = document.createElement('option');
-            option.textContent = `${voz.name} (${voz.lang})`;
-            option.value = voz.name;
-            selectVoz.appendChild(option);
-        });
+        if (responsiveVoice.isPlaying()) {
+            responsiveVoice.pause();
+        } else if (responsiveVoice.isPaused()) {
+            responsiveVoice.resume();
+        } else {
+            // "Spanish Latin American Female" o "Spanish Female" aseguran dicción en español neutro
+            responsiveVoice.speak(texto, "Spanish Latin American Female", {rate: vel});
+        }
     }
 
-    // Inicialización de voces
-    cargarVoces();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = cargarVoces;
+    function pausarTexto() {
+        if (responsiveVoice.isPlaying()) {
+            responsiveVoice.pause();
+        } else if (responsiveVoice.isPaused()) {
+            responsiveVoice.resume();
+        }
     }
 
-    document.getElementById('btnPlay').addEventListener('click', () => {
-        // En móviles es necesario llamar a cancel() antes de arrancar
-        synth.cancel();
-
-        if (synth.paused) {
-            synth.resume();
-            return;
-        }
-
-        const texto = document.getElementById('contenido').innerText;
-        const utterance = new SpeechSynthesisUtterance(texto);
-
-        // Asignar voz seleccionada
-        const nombreVoz = selectVoz.value;
-        const vozObjeto = voces.find(v => v.name === nombreVoz);
-        if (vozObjeto) {
-            utterance.voice = vozObjeto;
-        }
-
-        utterance.lang = 'es-ES';
-        utterance.rate = parseFloat(document.getElementById('velocidad').value);
-
-        synth.speak(utterance);
-    });
-
-    document.getElementById('btnPause').addEventListener('click', () => {
-        if (synth.speaking) {
-            if (synth.paused) {
-                synth.resume();
-            } else {
-                synth.pause();
-            }
-        }
-    });
-
-    document.getElementById('stop').addEventListener('click', () => {
-        synth.cancel();
-    });
+    function detenerTexto() {
+        responsiveVoice.cancel();
+    }
 </script>
 
 </body>
