@@ -40,7 +40,7 @@
             flex-wrap: wrap;
         }
         button {
-            padding: 10px 14px;
+            padding: 12px 14px;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
@@ -48,18 +48,17 @@
             cursor: pointer;
             font-weight: bold;
             flex: 1;
-            min-width: 100px;
+            font-size: 16px;
         }
-        button:hover { background-color: #0056b3; }
+        button:active { background-color: #004085; }
         button#stop { background-color: #dc3545; }
-        button#stop:hover { background-color: #a71d2a; }
         .options {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
         label { font-weight: bold; font-size: 14px; }
-        select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
+        select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 15px; background: #fff; }
         h1, h2 { color: #1a365d; }
         .resumen { background: #e8f4f8; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0; }
     </style>
@@ -67,36 +66,33 @@
 <body>
 
 <div class="container">
-    <h1>Capítulo 4: Segunda semana del desarrollo (disco germinal bilaminar)</h1>
+    <h1>Capítulo 4: Segunda semana del desarrollo</h1>
 
-    <!-- Controles de Audio -->
+    <!-- Controles -->
     <div class="controls">
         <div class="buttons">
-            <button onclick="leerTexto()">▶ Leer</button>
-            <button onclick="pausarTexto()">⏸ Pausar</button>
-            <button id="stop" onclick="detenerTexto()">⏹ Detener</button>
+            <button id="btnPlay">▶ Leer</button>
+            <button id="btnPause">⏸ Pausar</button>
+            <button id="stop">⏹ Detener</button>
         </div>
 
         <div class="options">
-            <div>
-                <label for="selectVoz">Voz del sistema:</label>
-                <select id="selectVoz" style="width: 100%;">
-                    <option value="">Cargando voces...</option>
-                </select>
-            </div>
-            <div>
-                <label for="velocidad">Velocidad:</label>
-                <select id="velocidad" style="width: 100%;" onchange="cambiarVelocidad()">
-                    <option value="0.75">0.75x (Lenta / Entendible)</option>
-                    <option value="1" selected>1.0x (Normal)</option>
-                    <option value="1.25">1.25x (Moderada)</option>
-                    <option value="1.5">1.5x (Rápida)</option>
-                </select>
-            </div>
+            <label for="selectVoz">Voz de lectura:</label>
+            <select id="selectVoz">
+                <option value="">Selecciona una voz...</option>
+            </select>
+
+            <label for="velocidad">Velocidad:</label>
+            <select id="velocidad">
+                <option value="0.75">0.75x (Lenta / Entendible)</option>
+                <option value="1" selected>1.0x (Normal)</option>
+                <option value="1.25">1.25x (Moderada)</option>
+                <option value="1.5">1.5x (Rápida)</option>
+            </select>
         </div>
     </div>
 
-    <!-- Contenido del Texto -->
+    <!-- Contenido -->
     <div id="contenido">
         <p><strong>FIGURA 4-9 Embarazo tubario:</strong> El embrión tiene alrededor de 2 meses de edad de gestación y está a punto de escapar por un sitio de rotura en la pared tubaria.</p>
 
@@ -139,57 +135,50 @@
         voces = synth.getVoices();
         selectVoz.innerHTML = '';
 
-        // Filtrar preferiblemente voces en español
-        const vocesEspanol = voces.filter(v => v.lang.startsWith('es'));
-        const listaAMostrar = vocesEspanol.length > 0 ? vocesEspanol : voces;
+        // Filtrar voces en español
+        const vocesEspanol = voces.filter(v => v.lang.toLowerCase().includes('es'));
+        const listaFinal = vocesEspanol.length > 0 ? vocesEspanol : voces;
 
-        listaAMostrar.forEach((voz) => {
+        listaFinal.forEach((voz) => {
             const option = document.createElement('option');
             option.textContent = `${voz.name} (${voz.lang})`;
             option.value = voz.name;
             selectVoz.appendChild(option);
         });
-
-        if (selectVoz.options.length === 0) {
-            const option = document.createElement('option');
-            option.textContent = "Voz por defecto del sistema";
-            selectVoz.appendChild(option);
-        }
     }
 
-    // Cargar voces inmediatamente y cuando cambien en el sistema
+    // Inicialización de voces
     cargarVoces();
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = cargarVoces;
     }
 
-    function leerTexto() {
-        if (synth.speaking) {
-            if (synth.paused) {
-                synth.resume();
-                return;
-            } else {
-                synth.cancel();
-            }
+    document.getElementById('btnPlay').addEventListener('click', () => {
+        // En móviles es necesario llamar a cancel() antes de arrancar
+        synth.cancel();
+
+        if (synth.paused) {
+            synth.resume();
+            return;
         }
 
         const texto = document.getElementById('contenido').innerText;
         const utterance = new SpeechSynthesisUtterance(texto);
 
-        // Seleccionar la voz elegida
+        // Asignar voz seleccionada
         const nombreVoz = selectVoz.value;
-        const vozSeleccionada = voces.find(v => v.name === nombreVoz);
-        if (vozSeleccionada) {
-            utterance.voice = vozSeleccionada;
+        const vozObjeto = voces.find(v => v.name === nombreVoz);
+        if (vozObjeto) {
+            utterance.voice = vozObjeto;
         }
 
         utterance.lang = 'es-ES';
         utterance.rate = parseFloat(document.getElementById('velocidad').value);
 
         synth.speak(utterance);
-    }
+    });
 
-    function pausarTexto() {
+    document.getElementById('btnPause').addEventListener('click', () => {
         if (synth.speaking) {
             if (synth.paused) {
                 synth.resume();
@@ -197,20 +186,11 @@
                 synth.pause();
             }
         }
-    }
+    });
 
-    function detenerTexto() {
-        if (synth.speaking) {
-            synth.cancel();
-        }
-    }
-
-    function cambiarVelocidad() {
-        if (synth.speaking) {
-            detenerTexto();
-            leerTexto();
-        }
-    }
+    document.getElementById('stop').addEventListener('click', () => {
+        synth.cancel();
+    });
 </script>
 
 </body>
