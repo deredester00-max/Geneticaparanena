@@ -1,339 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Realidad Aumentada - Anatomía 3D Realista</title>
-  <style>
-    * { box-sizing: border-box; user-select: none; }
-    body, html {
-      margin: 0; padding: 0; width: 100%; height: 100%;
-      overflow: hidden; background-color: #000;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #38bdf8;
-    }
-
-    /* Cámara de video */
-    #webcam {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; object-fit: cover;
-      transform: scaleX(-1); z-index: 1;
-    }
-
-    /* Canvas 3D */
-    #hologramCanvas {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; z-index: 2;
-    }
-
-    /* BARRA LATERAL DE DERECHA PARA SELECCIÓN */
-    .selector-bar {
-      position: absolute; right: 20px; top: 50%;
-      transform: translateY(-50%);
-      display: flex; flex-direction: column; gap: 10px;
-      background: rgba(10, 15, 30, 0.85);
-      padding: 12px; border-radius: 16px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      backdrop-filter: blur(10px);
-      z-index: 4; max-height: 80vh; overflow-y: auto;
-    }
-
-    .select-card {
-      background: rgba(2, 132, 199, 0.2);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 10px;
-      padding: 10px 14px; min-width: 110px;
-      text-align: center; cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex; flex-direction: column; align-items: center;
-    }
-
-    .select-card:hover, .select-card.active, .select-card.hover-gesture {
-      background: rgba(56, 189, 248, 0.5);
-      border-color: #00ffcc;
-      box-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
-    }
-
-    .select-card .stage-num {
-      font-size: 10px; color: #7dd3fc; font-weight: bold; text-transform: uppercase;
-    }
-
-    .select-card .stage-name {
-      font-size: 12px; color: #fff; font-weight: 600; margin-top: 2px;
-    }
-
-    /* INDICADOR DE CARGA */
-    #loadingIndicator {
-      position: absolute; left: 20px; top: 20px;
-      background: rgba(0,0,0,0.7); padding: 8px 14px;
-      border-radius: 8px; font-size: 12px; color: #00ffcc;
-      z-index: 5; display: none; border: 1px solid #00ffcc;
-    }
-
-    /* CUADRO INFORMATIVO INFERIOR */
-    .hud-info {
-      position: absolute; left: 20px; bottom: 20px;
-      background: rgba(10, 15, 30, 0.85); border-left: 3px solid #38bdf8;
-      padding: 10px 14px; font-size: 12px; color: #e0f2fe; z-index: 3;
-      max-width: 320px; border-radius: 0 8px 8px 0; backdrop-filter: blur(8px);
-    }
-
-    /* PUNTERO VIRTUAL PARA GESTOS */
-    #virtualCursor {
-      position: absolute; width: 22px; height: 22px;
-      border: 2px solid #00ffcc; border-radius: 50%;
-      background: rgba(0, 255, 204, 0.3); pointer-events: none;
-      z-index: 10; transform: translate(-50%, -50%); display: none;
-    }
-  </style>
-
-  <!-- LIBRERÍAS DE THREE.JS Y GLTFLOADER DE ALTA DEFINICIÓN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
-  <!-- IA RECONOCIMIENTO DE MANO (MEDIAPIPE) -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Embriología</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .controls {
+            position: sticky;
+            top: 10px;
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #0056b3; }
+        button#stop { background-color: #dc3545; }
+        button#stop:hover { background-color: #a71d2a; }
+        label { font-weight: bold; }
+        select, input { padding: 5px; }
+        h1, h2 { color: #1a365d; }
+        .resumen { background: #e8f4f8; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0; }
+    </style>
 </head>
 <body>
 
-  <video id="webcam" autoplay playsinline muted></video>
-  <canvas id="hologramCanvas"></canvas>
-  <div id="loadingIndicator">Cargando modelo 3D...</div>
-  <div id="virtualCursor"></div>
+<div class="container">
+    <h1>Capítulo 4: Segunda semana del desarrollo (disco germinal bilaminar)</h1>
 
-  <!-- SELECTOR DE SISTEMAS ANATÓMICOS (MENU LATERAL) -->
-  <div class="selector-bar">
-    <div class="select-card active" id="card-1" onclick="loadStage(1)">
-      <span class="stage-num">Sistema</span>
-      <span class="stage-name">Esqueleto</span>
-    </div>
-    <div class="select-card" id="card-2" onclick="loadStage(2)">
-      <span class="stage-num">Sistema</span>
-      <span class="stage-name">Muscular</span>
-    </div>
-    <div class="select-card" id="card-3" onclick="loadStage(3)">
-      <span class="stage-num">Sistema</span>
-      <span class="stage-name">Circulatorio</span>
-    </div>
-    <div class="select-card" id="card-4" onclick="loadStage(4)">
-      <span class="stage-num">Sistema</span>
-      <span class="stage-name">Órganos</span>
-    </div>
-  </div>
+    <!-- Controles de Audio -->
+    <div class="controls">
+        <button onclick="leerTexto()">▶ Leer</button>
+        <button onclick="pausarTexto()">⏸ Pausar / Reanudar</button>
+        <button id="stop" onclick="detenerTexto()">⏹ Detener</button>
 
-  <div class="hud-info" id="infoBox">
-    <strong>SISTEMA ESQUELÉTICO</strong><br>
-    Cargando modelo fotorealista HD...
-  </div>
+        <div>
+            <label for="velocidad">Velocidad:</label>
+            <select id="velocidad" onchange="cambiarVelocidad()">
+                <option value="0.75">0.75x (Lenta / Más entendible)</option>
+                <option value="1" selected>1.0x (Normal)</option>
+                <option value="1.25">1.25x (Moderada)</option>
+                <option value="1.5">1.5x (Rápida)</option>
+            </select>
+        </div>
+    </div>
 
-  <script>
-    const video = document.getElementById('webcam');
-    const canvas = document.getElementById('hologramCanvas');
-    const infoBox = document.getElementById('infoBox');
-    const cursor = document.getElementById('virtualCursor');
-    const loadingUI = document.getElementById('loadingIndicator');
+    <!-- Contenido del Texto -->
+    <div id="contenido">
+        <p><strong>FIGURA 4-9 Embarazo tubario:</strong> El embrión tiene alrededor de 2 meses de edad de gestación y está a punto de escapar por un sitio de rotura en la pared tubaria.</p>
 
-    // Inicializar Cámara
-    async function initCamera() {
-      try {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error("API MediaDevices no disponible");
+        <p>En la cavidad abdominal, la mayor parte de las veces el blastocisto se fija a la cubierta peritoneal de la <strong>bolsa rectouterina o bolsa de Douglas</strong>. El blastocisto también puede anclarse a la cubierta peritoneal del tubo digestivo o al omento. En ocasiones, el blastocisto se desarrolla en el ovario propiamente dicho, lo que produce un <strong>embarazo ovárico primario</strong>. Los embarazos ectópicos corresponden al 2% del total, y causan 9% de todas las muertes relacionadas con la gestación en la mujer. En la mayor parte de los embarazos ectópicos, el embrión muere alrededor del segundo mes de la gestación y esto puede resultar en una severa hemorragia para la madre.</p>
+
+        <p>Los blastocistos anormales son comunes. Por ejemplo, en una serie de 26 blastocistos implantados con edad variable, de 7.5 a 17 días, recuperados a partir de pacientes con fecundidad normal, nueve (34.6%) fueron anormales. Algunos sólo estaban constituidos por sincitio; otros mostraban grados diversos de hipoplasia trofoblástica. Dos de ellos carecían de embrioblasto, y en algunos el disco germinal mostraba una orientación anómala.</p>
+
+        <p>Es probable que la mayor parte de los blastocistos anormales no hubiera desencadenado algún signo de embarazo debido a que su trofoblasto era de tan mala calidad que el cuerpo lúteo no hubiera podido persistir. Estos embriones quizá habrían sido abortados en el siguiente flujo menstrual y, así, el embarazo no se habría detectado. A pesar de esto, en algunos casos el trofoblasto se desarrolla y forma las membranas placentarias; no obstante, el tejido embrionario es escaso o no existe. Esta condición se conoce como <strong>mola hidatiforme</strong>. Las molas secretan grandes cantidades de hCG y pueden producir tumores benignos o malignos (mola invasiva, coriocarcinoma).</p>
+
+        <p>El análisis genético de las molas hidatiformes indica que si bien los pronúcleos masculino y femenino pueden tener equivalencia genética, pudieran tener funcionalidad distinta. Esta evidencia deriva del hecho de que si bien las células de las molas son diploides, todo su genoma es paterno. Así, la mayor parte de las molas deriva de la fecundación de un ovocito que carece de núcleo, a lo que sigue la duplicación de los cromosomas masculinos para restablecer el número diploide. Estos resultados también sugieren que los genes paternos regulan la mayor parte del desarrollo del trofoblasto, ya que en las molas este tejido se diferencia incluso en ausencia de un pronúcleo femenino.</p>
+
+        <p>Otros ejemplos de diferencias funcionales entre genes maternos y paternos derivan de la observación de que ciertas enfermedades genéticas dependen de si el gen defectuoso o faltante se hereda del padre o la madre. Por ejemplo, una microdeleción en el cromosoma 15 que se hereda del padre induce síndrome de Prader-Willi (un trastorno que se caracteriza por hipotonía, discapacidad intelectual, hipogonadismo y obesidad), en tanto que la misma deleción heredada de la madre induce síndrome de Angelman (una condición que se caracteriza por crisis convulsivas, lenguaje escaso o nulo, paroxismos de risa y discapacidad intelectual intensa). Este fenómeno, en que existe una modificación diferencial con o sin expresión de alelos homólogos o regiones cromosómicas, que varía con base en el progenitor del cual deriva el material genético, se conoce como <strong>impronta genómica</strong>. Se piensa que menos de 1% de los genes humanos experimenta impronta.</p>
+
+        <p>La falla reproductiva previa o posterior a la implantación es frecuente. Incluso en algunas mujeres fértiles, en condiciones óptimas para el embarazo, 15% de los ovocitos no es fecundado, y de 10 a 15% inicia la segmentación, pero no puede implantarse. De 70 a 75% de los ovocitos que se implantan, sólo 58% sobrevive hasta la segunda semana, y de éstos 16% es anormal. De ahí que para el momento en que se presenta el primer retraso menstrual sólo ha sobrevivido 42% de los óvulos expuestos a espermatozoides. De este porcentaje, cierto número se aborta durante las semanas subsecuentes y otros más tendrán anomalías al momento de nacer.</p>
+
+        <div class="resumen">
+            <h2>RESUMEN</h2>
+            <p>Al inicio de la segunda semana, el blastocisto está incluido de modo parcial en el estroma endometrial. El <strong>trofoblasto</strong> se diferencia en: 1) una capa interna en proliferación activa, el <strong>citotrofoblasto</strong>, y 2) una capa externa, el <strong>sincitiotrofoblasto</strong>, que erosiona los tejidos maternos. Para el día 9, se desarrollan lagunas en el sincitiotrofoblasto. De manera subsecuente, los sinusoides maternos son erosionados por el sincitiotrofoblasto, la sangre materna ingresa a la red lacunar, y para el final de la segunda semana se establece una <strong>circulación uteroplacentaria primitiva</strong>. El citotrofoblasto, entretanto, forma columnas celulares que penetran al sincitio y se mantienen rodeadas por éste. Estas columnas son las vellosidades primarias. Al final de la segunda semana, el blastocisto está completamente implantado y el defecto en la superficie mucosa ha cicatrizado.</p>
+
+            <p>Al mismo tiempo, la <strong>masa celular interna o embrioblasto</strong> se diferencia en 1) el <strong>epiblasto</strong> y 2) el <strong>hipoblasto</strong>, que en conjunto integran el <strong>disco bilaminar</strong>. Las células del epiblasto dan origen a los <strong>amnioblastos</strong> que recubren la cavidad amniótica por encima de la capa epiblástica. Las células del hipoblasto se encuentran en continuidad con la membrana exocelómica, y juntas circundan al <strong>saco vitelino primitivo</strong>. Para el final de la segunda semana, el mesodermo extraembrionario ocupa el espacio ubicado entre el trofoblasto y el amnios, así como la membrana exocelómica en la región interna. Cuando se desarrollan vacuolas en este tejido, se genera el celoma extraembrionario o cavidad coriónica. El mesodermo extraembrionario que cubre al citotrofoblasto y al amnios corresponde al <strong>mesodermo parietal (somático) extraembrionario</strong>; la cubierta que rodea al saco vitelino es el <strong>mesodermo visceral (esplácnico) extraembrionario</strong>.</p>
+
+            <p>La segunda semana del desarrollo se conoce como la <strong>semana "de los dos"</strong>:</p>
+            <ol>
+                <li>El trofoblasto se diferencia en dos capas: citotrofoblasto y sincitiotrofoblasto.</li>
+                <li>El embrioblasto forma dos capas: epiblasto e hipoblasto.</li>
+                <li>El mesodermo extraembrionario se divide en dos hojas: somática y esplácnica.</li>
+                <li>Se forman dos cavidades: el saco amniótico y el vitelino.</li>
+            </ol>
+            <p>La implantación tiene lugar al final de la primera semana. Las células del trofoblasto invaden el epitelio y el estroma endometrial subyacente con ayuda de enzimas proteolíticas. La implantación también es posible fuera del útero, como en la bolsa rectouterina, sobre el mesenterio, en una tuba uterina o en el ovario (<strong>embarazos ectópicos</strong>).</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let synth = window.speechSynthesis;
+    let utterance = null;
+
+    function leerTexto() {
+        if (synth.speaking && synth.paused) {
+            synth.resume();
+            return;
         }
-        const constraints = { video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = stream;
-        return true;
-      } catch (err) {
-        console.warn("Cámara no disponible, continuando en 3D:", err);
-        return false;
-      }
+        
+        synth.cancel(); // Detener lecturas previas
+
+        let texto = document.getElementById('contenido').innerText;
+        utterance = new SpeechSynthesisUtterance(texto);
+        
+        // Configurar idioma a español
+        utterance.lang = 'es-ES';
+        
+        // Configurar velocidad seleccionada
+        let vel = parseFloat(document.getElementById('velocidad').value);
+        utterance.rate = vel;
+
+        synth.speak(utterance);
     }
 
-    // Configuración de la Escena 3D
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Iluminación Profesional para Modelos 3D Complejos
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-    scene.add(ambientLight);
-
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight1.position.set(5, 10, 7);
-    scene.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.8);
-    dirLight2.position.set(-5, -5, -5);
-    scene.add(dirLight2);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-
-    camera.position.set(0, 0, 3.5);
-
-    // Contenedor 3D y Cargador GLTF
-    const gltfLoader = new THREE.GLTFLoader();
-    let currentGroup = new THREE.Group();
-    
-    // DESPLAZAMIENTO A UN LADO (Para no tapar el rostro)
-    currentGroup.position.set(-1.2, -0.6, 0);
-    scene.add(currentGroup);
-
-    let activeModel = null;
-
-    // RUTAS DE MODELOS 3D (.GLB REALES)
-    // Puedes colocar aquí los nombres o URLs de tus archivos .glb descargados
-    const modelsList = {
-      1: {
-        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
-        scale: 1.0,
-        text: "<strong>SISTEMA ESQUELÉTICO / NERVIOSO</strong><br>Estructura anatómica HD detallada."
-      },
-      2: {
-        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb', 
-        scale: 8.0,
-        text: "<strong>SISTEMA MUSCULAR</strong><br>Vista detallada de tejdos y densidades."
-      },
-      3: {
-        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
-        scale: 1.0,
-        text: "<strong>SISTEMA CIRCULATORIO</strong><br>Estructura principal vascularizada."
-      },
-      4: {
-        url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb', 
-        scale: 1.0,
-        text: "<strong>ÓRGANOS INTERNOS</strong><br>Representación en espacio holográfico."
-      }
-    };
-
-    // Función para Cargar el Archivo 3D
-    function loadGLTFModel(stage) {
-      loadingUI.style.display = 'block';
-      const config = modelsList[stage];
-
-      gltfLoader.load(
-        config.url,
-        (gltf) => {
-          if (activeModel) currentGroup.remove(activeModel);
-          
-          activeModel = gltf.scene;
-          activeModel.scale.set(config.scale, config.scale, config.scale);
-          
-          currentGroup.add(activeModel);
-          infoBox.innerHTML = config.text;
-          loadingUI.style.display = 'none';
-        },
-        (xhr) => {
-          const percent = Math.round((xhr.loaded / xhr.total) * 100);
-          if(!isNaN(percent)) loadingUI.innerText = `Cargando 3D: ${percent}%`;
-        },
-        (error) => {
-          console.error("Error al cargar modelo .glb:", error);
-          loadingUI.innerText = "Error cargando archivo 3D";
-        }
-      );
-    }
-
-    // Cambiar de vista desde los botones
-    window.loadStage = function(stage) {
-      document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
-      const card = document.getElementById(`card-${stage}`);
-      if(card) card.classList.add('active');
-
-      loadGLTFModel(stage);
-    };
-
-    // Carga inicial del primer sistema anatómico
-    loadGLTFModel(1);
-
-    // Detección Gestual MediaPipe
-    async function startGestureDetection() {
-      const cameraOk = await initCamera();
-      if (!cameraOk) return;
-
-      try {
-        let isPinching = false;
-        const hands = new Hands({
-          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-        });
-
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5 });
-        hands.onResults((results) => {
-          if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-            const lm = results.multiHandLandmarks[0];
-
-            const indexX = (1 - lm[8].x) * window.innerWidth;
-            const indexY = lm[8].y * window.innerHeight;
-            const thumbX = (1 - lm[4].x) * window.innerWidth;
-            const thumbY = lm[4].y * window.innerHeight;
-
-            cursor.style.display = 'block';
-            cursor.style.left = `${indexX}px`;
-            cursor.style.top = `${indexY}px`;
-
-            const dist = Math.hypot(indexX - thumbX, indexY - thumbY);
-
-            document.querySelectorAll('.select-card').forEach(card => {
-              const rect = card.getBoundingClientRect();
-              if (indexX >= rect.left && indexX <= rect.right && indexY >= rect.top && indexY <= rect.bottom) {
-                card.classList.add('hover-gesture');
-                if (dist < 35 && !isPinching) {
-                  isPinching = true;
-                  card.click();
-                }
-              } else {
-                card.classList.remove('hover-gesture');
-              }
-            });
-
-            if (dist >= 35) isPinching = false;
-          } else {
-            cursor.style.display = 'none';
-          }
-        });
-
-        const camUtils = new Camera(video, {
-          onFrame: async () => { 
-            try {
-              await hands.send({ image: video }); 
-            } catch (e) {
-              console.warn("Manejo de frame:", e);
+    function pausarTexto() {
+        if (synth.speaking) {
+            if (synth.paused) {
+                synth.resume();
+            } else {
+                synth.pause();
             }
-          },
-          width: 640, height: 480
-        });
-        camUtils.start();
-      } catch (err) {
-        console.warn("IA gestual no inicializada:", err);
-      }
+        }
     }
 
-    startGestureDetection();
-
-    // Bucle de Animación
-    function animate() {
-      requestAnimationFrame(animate);
-      if (currentGroup) {
-        currentGroup.rotation.y += 0.005; // Rotación sutil del modelo
-      }
-      controls.update();
-      renderer.render(scene, camera);
+    function detenerTexto() {
+        if (synth.speaking) {
+            synth.cancel();
+        }
     }
-    animate();
 
-    // Ajuste al redimensionar ventana
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+    function cambiarVelocidad() {
+        if (synth.speaking) {
+            detenerTexto();
+            leerTexto();
+        }
+    }
+</script>
+
 </body>
 </html>
-
